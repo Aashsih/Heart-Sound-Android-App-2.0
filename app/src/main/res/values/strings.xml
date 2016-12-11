@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">HeartSounds_2.0</string>
+    <!-- Login Page -->
+    <string name="usernameHint">Username</string>
+    <string name="passwordHint">Password</string>
+    <string name="loginButton">Login</string>
+
+</resources>
