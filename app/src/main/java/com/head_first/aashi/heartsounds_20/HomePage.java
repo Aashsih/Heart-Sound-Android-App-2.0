@@ -14,6 +14,8 @@ public class HomePage extends AppCompatActivity {
         setContentView(R.layout.activity_home_page_1);
         ImageView testGIF = (ImageView)findViewById(R.id.loadingScreen);
         Glide.with(this).load(R.drawable.loading_screen_1).asGif().crossFade().into(testGIF);
+        //Create a Custom FragmentLauncher class so that you dont have
+        //to get the fragment manager and begin the transaction everytime
     }
 
 }
