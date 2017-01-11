@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/userProfile"
+        android:enabled="true"
+        android:icon="@drawable/username_icon"
+        android:title="Profile"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/myPatients"
+        android:enabled="true"
+        android:icon="@drawable/username_icon"
+        android:title="My Patients"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/sharedPatients"
+        android:enabled="true"
+        android:icon="@drawable/username_icon"
+        android:title="Shared Patients"
+        app:showAsAction="ifRoom"/>
+
+</menu>

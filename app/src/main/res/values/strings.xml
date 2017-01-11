@@ -5,6 +5,13 @@
     <string name="passwordHint">Password</string>
     <string name="loginButton">Login</string>
 
+    <!-- FilterDialogFragment -->
+    <string name="searchMenu">Search</string>
+    <string name="filterStringView">Filters Selected</string>
+    <string name="searchButton">Search</string>
+    <string name="filterSearch">Filter Items</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

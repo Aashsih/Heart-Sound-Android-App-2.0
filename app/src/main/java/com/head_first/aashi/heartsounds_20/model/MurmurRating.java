@@ -14,8 +14,6 @@ import com.head_first.aashi.heartsounds_20.enums.S2;
 import com.head_first.aashi.heartsounds_20.enums.SittingForward;
 import com.head_first.aashi.heartsounds_20.enums.Valsalva;
 
-import java.math.BigInteger;
-
 /**
  * Created by Aashish Indorewala on 05-Nov-16.
  */
@@ -77,15 +75,15 @@ public final class MurmurRating {
     /**
      * This constructor should only be called when the MurmurRating is created for the first time
      */
-    public MurmurRating(Doctor doctor, HeartSound heartSound, CardiacPhase cardiacPhase, AddedSounds addedSounds, ChangeWithBreathing changeWithBreathing,
+    public MurmurRating(User user, HeartSound heartSound, CardiacPhase cardiacPhase, AddedSounds addedSounds, ChangeWithBreathing changeWithBreathing,
                         LeftLateralPosition leftLateralPosition, MostIntenseLocation mostIntenseLocation, MurmurDuration murmurDuration, Radiation radiation,
                         S1 s1, S2 s2, SittingForward sittingForward, Valsalva valsalva, FinalDiagnosis finalDiagnosis, Intensity intensity, String ratingInfo,
                         Character character) {
         //deviceId can also be checked for but is skipped for now
 
-        //The first argument needs to be obtained from the current logged in doctor.
+        //The first argument needs to be obtained from the current logged in user.
         //How to validate if the correct heart sound object (to whom the murmur rating belongs) is passed?
-        this(doctor.getId(), heartSound.getId(), cardiacPhase, addedSounds, changeWithBreathing, leftLateralPosition, mostIntenseLocation, murmurDuration,
+        this(user.getId(), heartSound.getId(), cardiacPhase, addedSounds, changeWithBreathing, leftLateralPosition, mostIntenseLocation, murmurDuration,
                 radiation, s1, s2, sittingForward, valsalva, finalDiagnosis, intensity, ratingInfo, character);
     }
 
