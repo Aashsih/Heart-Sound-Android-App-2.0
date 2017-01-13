@@ -10,10 +10,14 @@ import android.view.MenuItem;
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.controller.fragment.Patients;
 import com.head_first.aashi.heartsounds_20.controller.fragment.UserProfileFragment;
+import com.head_first.aashi.heartsounds_20.model.User;
 
 public class UserPatientActivity extends AppCompatActivity {
 
     private static final int DEFAULT_MENU_ITEM = R.id.myPatients;
+
+    //Data
+    private User user; //User could be a Doctor, Student or a
 
     //Views
     private Fragment menuItemFragment;
@@ -48,7 +52,7 @@ public class UserPatientActivity extends AppCompatActivity {
                 menuItemFragment = new Patients();
                 ((Patients) menuItemFragment).setMyPatientClicked(true);
                 break;
-            case R.id.sharedPatients:
+            case R.id.otherPatients:
                 menuItemFragment = new Patients();
                 ((Patients) menuItemFragment).setMyPatientClicked(false);
                 break;

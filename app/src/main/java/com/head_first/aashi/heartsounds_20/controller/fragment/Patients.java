@@ -2,6 +2,7 @@ package com.head_first.aashi.heartsounds_20.controller.fragment;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -16,6 +17,8 @@ import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 
 import com.head_first.aashi.heartsounds_20.R;
+import com.head_first.aashi.heartsounds_20.controller.activities.PatientHeartSoundActivity;
+import com.head_first.aashi.heartsounds_20.controller.activities.UserPatientActivity;
 import com.head_first.aashi.heartsounds_20.model.Filter;
 import com.head_first.aashi.heartsounds_20.utils.DynamicSearchFilter;
 import com.head_first.aashi.heartsounds_20.utils.ExpandablePatientListAdapter;
@@ -139,6 +142,13 @@ public class Patients extends Fragment implements SearchView.OnQueryTextListener
         expandablePatientListAdapter = new ExpandablePatientListAdapter(getContext(), searchContentMap);
         mExpandableListView = (ExpandableListView) mRootView.findViewById(R.id.expandableListView);
         mExpandableListView.setAdapter(expandablePatientListAdapter);
+        mExpandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                onPatientSelected(parent, v, groupPosition, childPosition, id);
+                return false;
+            }
+        });
         setHasOptionsMenu(true);
 
         return mRootView;
@@ -257,7 +267,10 @@ public class Patients extends Fragment implements SearchView.OnQueryTextListener
         return filterContentMap;
     }
 
-
+    private void onPatientSelected(ExpandableListView parent, View view, int groupPosition, int childPosition, long id){
+        Intent patientHeartSoundActivityIntent = new Intent(getActivity(), PatientHeartSoundActivity.class);
+        startActivity(patientHeartSoundActivityIntent);
+    }
 
     //SearchView onCreateOptionsMenu implementation
     @Override

@@ -5,11 +5,24 @@
     <string name="passwordHint">Password</string>
     <string name="loginButton">Login</string>
 
+    <!-- Bottom Navigation Bar Menu Items -->
+    <string name="userProfile">Profile</string>
+    <string name="myPatients">My Patients</string>
+    <string name="sharedPatients">Shared Patients</string>
+    <string name="otherPatients">Other Patients</string>
+
+    <!-- UserPatientActivity -->
+
+
     <!-- FilterDialogFragment -->
     <string name="searchMenu">Search</string>
     <string name="filterStringView">Filters Selected</string>
     <string name="searchButton">Search</string>
     <string name="filterSearch">Filter Items</string>
+
+    <!-- PatientHeartSoundActivity -->
+    <string name="navigationDrawerOpen">Open Navigation Drawer</string>
+    <string name="navigationDrawerClose">Close Navigation Drawer</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

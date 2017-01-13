@@ -6,19 +6,19 @@
         android:id="@+id/userProfile"
         android:enabled="true"
         android:icon="@drawable/username_icon"
-        android:title="Profile"
+        android:title="@string/userProfile"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/myPatients"
         android:enabled="true"
         android:icon="@drawable/username_icon"
-        android:title="My Patients"
+        android:title="@string/myPatients"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/sharedPatients"
+        android:id="@+id/otherPatients"
         android:enabled="true"
         android:icon="@drawable/username_icon"
-        android:title="Shared Patients"
+        android:title="@string/sharedPatients"
         app:showAsAction="ifRoom"/>
 
 </menu>

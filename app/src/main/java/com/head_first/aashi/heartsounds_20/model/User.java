@@ -18,6 +18,7 @@ public abstract class User {
     private String username;
     private Password password;
     private String name;
+    //permissions (need to decide the data type for it)
 
     public User(String username, String password, String name) {
         //The id will be received from the data base

@@ -16,7 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".controller.activities.UserPatientActivity"></activity>
+        <activity android:name=".controller.activities.UserPatientActivity" />
+        <activity android:name=".controller.activities.PatientHeartSoundActivity"></activity>
     </application>
 
 </manifest>
