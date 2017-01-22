@@ -20,9 +20,9 @@ import com.head_first.aashi.heartsounds_20.enums.Valsalva;
 
 public final class MurmurRating {
 
-    private String id;
-    private String doctorId;
-    private String heartSoundId;
+    private long id;
+    private long doctorId;
+    private long heartSoundId;
     //enums
     private CardiacPhase cardiacPhase;
     private AddedSounds addedSounds;
@@ -46,7 +46,7 @@ public final class MurmurRating {
     /**
      *This constructor should be used when gettin data from the database
      */
-    public MurmurRating(String doctorId, String heartSoundId, CardiacPhase cardiacPhase, AddedSounds addedSounds, ChangeWithBreathing changeWithBreathing,
+    public MurmurRating(long doctorId, long heartSoundId, CardiacPhase cardiacPhase, AddedSounds addedSounds, ChangeWithBreathing changeWithBreathing,
                         LeftLateralPosition leftLateralPosition, MostIntenseLocation mostIntenseLocation, MurmurDuration murmurDuration, Radiation radiation,
                         S1 s1, S2 s2, SittingForward sittingForward, Valsalva valsalva, FinalDiagnosis finalDiagnosis, Intensity intensity, String ratingInfo,
                         Character character) {
@@ -88,15 +88,15 @@ public final class MurmurRating {
     }
 
     //Getters and Setters
-    public final String getHeartSoundId() {
+    public final long getHeartSoundId() {
         return heartSoundId;
     }
 
-    public final String getDoctorId() {
+    public final long getDoctorId() {
         return doctorId;
     }
 
-    public final String getId() {
+    public final long getId() {
         return id;
     }
 

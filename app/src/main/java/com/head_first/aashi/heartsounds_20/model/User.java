@@ -4,8 +4,6 @@ import com.head_first.aashi.heartsounds_20.exception.InputException;
 import com.head_first.aashi.heartsounds_20.exception.InvalidNameException;
 import com.head_first.aashi.heartsounds_20.exception.InvalidUsernameException;
 
-import java.math.BigInteger;
-
 /**
  * Created by Aashish Indorewala on 05-Nov-16.
  */
@@ -14,25 +12,27 @@ import java.math.BigInteger;
 public abstract class User {
 
 
-    private String id;
+    private long id;
     private String username;
     private Password password;
-    private String name;
+    private String firstName;
+    private String lastName;
     //permissions (need to decide the data type for it)
 
-    public User(String username, String password, String name) {
+    public User(String username, String password, String firstName, String lastName) {
         //The id will be received from the data base
         //this.id = (ID.add(BigInteger.ONE)).toString();
         this.setUsername(username);
         this.setPassword(password);
-        this.setName(name);
+        this.setFirstName(firstName);
+        this.setLastName(lastName);
     }
 
     //Add abstract Methods here
     //Methods that involve querrying the database to get Data and common user tasks
 
     //Getters and Setters
-    public final String getId() {
+    public final long getId() {
         return id;
     }
 
@@ -57,19 +57,34 @@ public abstract class User {
 
     }
 
-    public final String getName() {
-        return name;
+    public final String getFirstName() {
+        return this.firstName;
     }
 
-    public final void setName(String name) throws InputException{
-        if(name == null || name.equals("")){
+    public final void setFirstName(String firstName) throws InputException{
+        if(firstName == null || firstName.equals("")){
             //possibly throw an exception here
-            throw new InvalidNameException(name);
+            throw new InvalidNameException(firstName);
         }
         else{
-            this.name = name;
+            this.firstName = firstName;
         }
     }
+
+    public final String getLastName() {
+        return this.lastName;
+    }
+
+    public final void setLastName(String lastName) throws InputException{
+        if(lastName == null || lastName.equals("")){
+            //possibly throw an exception here
+            throw new InvalidNameException(lastName);
+        }
+        else{
+            this.lastName = lastName;
+        }
+    }
+
 
     public final Password getPassword() {
         return password;

@@ -6,14 +6,24 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
-    <!-- Container -->
     <LinearLayout
-        android:id="@+id/fragmentContainer"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- The ActionBar displayed at the top -->
+        <include
+            layout="@layout/toolbar_patient_heart_sound"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <!-- Container -->
+        <FrameLayout
+            android:id="@+id/fragmentContainer"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottomNavigationBar"

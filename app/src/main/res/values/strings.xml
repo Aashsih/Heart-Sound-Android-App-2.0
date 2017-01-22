@@ -13,7 +13,20 @@
 
     <!-- UserPatientActivity -->
 
-
+    <!-- PatientHeartSoundActivity -->
+    <string name="addHeartSound">Add Heart Sound</string>
+    <!-- Patient Fragment -->
+    <string name="patientIdLabel">Patient Id</string>
+    <string name="patientIdText">(empty)</string>
+    <string name="createdByLabel">Created By</string>
+    <string name="createdByText">(empty)</string>
+    <string name="genderLabel">Gender</string>
+    <string name="dateOfBirthLabel">Date Of Birth</string>
+    <string name="dateOfBirth">(not set)</string>
+    <string name="visibleToStudentsLabel">Visible to Students</string>
+    <string name="visibleToUsersLabel">Visible to</string>
+    <string name="visibleToUsersCount">0 users</string>
+    <string name="savePatientButtonText">Save Changes</string>
     <!-- FilterDialogFragment -->
     <string name="searchMenu">Search</string>
     <string name="filterStringView">Filters Selected</string>

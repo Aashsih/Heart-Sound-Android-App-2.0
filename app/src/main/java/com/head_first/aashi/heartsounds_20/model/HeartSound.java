@@ -4,23 +4,32 @@ import com.head_first.aashi.heartsounds_20.enums.Gender;
 
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Aashish Indorewala on 05-Nov-16.
  */
 
+/**
+ * Once a HeartSound is created only the creator of the HeartSound can edit it.
+ * The only thing that can be edited for a HeartSound post creation is the VoiceComment Data (this will be overridden)
+ * The HeartSound Data itself should not overridden because there might be multiple MurmerRatings assosciated with it
+ * and will become invalid.
+ * [Make the sure that the VoiceComment and the HeartSound Data are within the defined limits]
+ */
 public final class HeartSound {
-
-    private String id;
-    private String patientId;
+    private long id;
+    private long patientId;
+    private List<MurmurRating> murmurRatingList;
     private byte[] heartSoundData;
     private byte[] voiceCommentData;
     private Integer qualityOfRecording;
 
+
     /**
      *This constructor should be used when gettin data from the database
      */
-    public HeartSound(String patientId, byte[] heartSoundData, byte[] voiceCommentData, Integer qualityOfRecording) {
+    public HeartSound(long patientId, byte[] heartSoundData, byte[] voiceCommentData, Integer qualityOfRecording) {
         //The id will be received from the data base
         //this.id = (ID.add(BigInteger.ONE)).toString();
         this.patientId = patientId;
@@ -40,11 +49,11 @@ public final class HeartSound {
     }
 
     //Getters and Setters
-    public final String getId() {
+    public final long getId() {
         return id;
     }
 
-    public final String getPatientId() {
+    public final long getPatientId() {
         return patientId;
     }
 

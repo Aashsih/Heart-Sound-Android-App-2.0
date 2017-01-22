@@ -18,7 +18,6 @@ import android.widget.ImageButton;
 
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.controller.activities.PatientHeartSoundActivity;
-import com.head_first.aashi.heartsounds_20.controller.activities.UserPatientActivity;
 import com.head_first.aashi.heartsounds_20.model.Filter;
 import com.head_first.aashi.heartsounds_20.utils.DynamicSearchFilter;
 import com.head_first.aashi.heartsounds_20.utils.ExpandablePatientListAdapter;
@@ -31,12 +30,12 @@ import java.util.Map;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link Patients.OnFragmentInteractionListener} interface
+ * {@link PatientListFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link Patients#newInstance} factory method to
+ * Use the {@link PatientListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Patients extends Fragment implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
+public class PatientListFragment extends Fragment implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
 
     private static final String DEFAULT_SEARCH_STRING = "";
 
@@ -75,7 +74,7 @@ public class Patients extends Fragment implements SearchView.OnQueryTextListener
 
     private OnFragmentInteractionListener mListener;
 
-    public Patients() {
+    public PatientListFragment() {
         filter = new Filter(DEFAULT_SEARCH_STRING);
         myPatientClicked = true;
     }
@@ -86,11 +85,11 @@ public class Patients extends Fragment implements SearchView.OnQueryTextListener
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment Patients.
+     * @return A new instance of fragment PatientListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static Patients newInstance(String param1, String param2) {
-        Patients fragment = new Patients();
+    public static PatientListFragment newInstance(String param1, String param2) {
+        PatientListFragment fragment = new PatientListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);

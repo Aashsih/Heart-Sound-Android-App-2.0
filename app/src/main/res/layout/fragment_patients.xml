@@ -1,16 +1,16 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.head_first.aashi.heartsounds_20.controller.fragment.Patients">
+    tools:context="com.head_first.aashi.heartsounds_20.controller.fragment.PatientListFragment">
 
     <LinearLayout
+        android:id="@+id/searchBarContainer"
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1">
+        android:layout_height="wrap_content">
 
         <ImageButton
             android:id="@+id/filterButton"
@@ -37,12 +37,20 @@
             android:layout_gravity="top|right" />
 
     </LinearLayout>
-
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/searchBarContainer"
+        android:background="?android:attr/dividerHorizontal">
+    </View>
+    <!-- To make the dividers disappear set the the childDivider to color transparent -->
     <ExpandableListView
         android:id="@+id/expandableListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="5"></ExpandableListView>
+        android:layout_below="@id/separator">
+    </ExpandableListView>
 
 
-</LinearLayout>
+</RelativeLayout>
