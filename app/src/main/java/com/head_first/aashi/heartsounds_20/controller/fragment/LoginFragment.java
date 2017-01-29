@@ -21,6 +21,7 @@ import com.head_first.aashi.heartsounds_20.R;
  * create an instance of this fragment.
  */
 public class LoginFragment extends Fragment {
+    public static final String LOGIN_FRAGMENT = "LOGIN_FRAGMENT";
 
     private View mRootView;
     private EditText mUsername;

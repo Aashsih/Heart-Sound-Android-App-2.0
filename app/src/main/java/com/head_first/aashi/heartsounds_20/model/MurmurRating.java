@@ -3,6 +3,7 @@ package com.head_first.aashi.heartsounds_20.model;
 import com.head_first.aashi.heartsounds_20.enums.AddedSounds;
 import com.head_first.aashi.heartsounds_20.enums.CardiacPhase;
 import com.head_first.aashi.heartsounds_20.enums.ChangeWithBreathing;
+import com.head_first.aashi.heartsounds_20.enums.CHARACTER;
 import com.head_first.aashi.heartsounds_20.enums.FinalDiagnosis;
 import com.head_first.aashi.heartsounds_20.enums.Intensity;
 import com.head_first.aashi.heartsounds_20.enums.LeftLateralPosition;
@@ -13,6 +14,8 @@ import com.head_first.aashi.heartsounds_20.enums.S1;
 import com.head_first.aashi.heartsounds_20.enums.S2;
 import com.head_first.aashi.heartsounds_20.enums.SittingForward;
 import com.head_first.aashi.heartsounds_20.enums.Valsalva;
+
+import java.util.List;
 
 /**
  * Created by Aashish Indorewala on 05-Nov-16.
@@ -41,7 +44,7 @@ public final class MurmurRating {
     private Intensity intensity;
     private String ratingInfo;
 
-    private Character character;//this has 3 checkboxes..can the user select multiple checkboxes. If so we will use an array
+    private List<CHARACTER> character;//this has 3 checkboxes..can the user select multiple checkboxes. If so we will use an array
 
     /**
      *This constructor should be used when gettin data from the database
@@ -49,7 +52,7 @@ public final class MurmurRating {
     public MurmurRating(long doctorId, long heartSoundId, CardiacPhase cardiacPhase, AddedSounds addedSounds, ChangeWithBreathing changeWithBreathing,
                         LeftLateralPosition leftLateralPosition, MostIntenseLocation mostIntenseLocation, MurmurDuration murmurDuration, Radiation radiation,
                         S1 s1, S2 s2, SittingForward sittingForward, Valsalva valsalva, FinalDiagnosis finalDiagnosis, Intensity intensity, String ratingInfo,
-                        Character character) {
+                        List<CHARACTER> character) {
         //The id will be received from the data base/
         // /this.id = (ID.add(BigInteger.ONE)).toString();
         this.doctorId = doctorId;
@@ -78,7 +81,7 @@ public final class MurmurRating {
     public MurmurRating(User user, HeartSound heartSound, CardiacPhase cardiacPhase, AddedSounds addedSounds, ChangeWithBreathing changeWithBreathing,
                         LeftLateralPosition leftLateralPosition, MostIntenseLocation mostIntenseLocation, MurmurDuration murmurDuration, Radiation radiation,
                         S1 s1, S2 s2, SittingForward sittingForward, Valsalva valsalva, FinalDiagnosis finalDiagnosis, Intensity intensity, String ratingInfo,
-                        Character character) {
+                        List<CHARACTER> character) {
         //deviceId can also be checked for but is skipped for now
 
         //The first argument needs to be obtained from the current logged in user.
@@ -100,11 +103,11 @@ public final class MurmurRating {
         return id;
     }
 
-    public final Character getCharacter() {
+    public final List<CHARACTER> getCharacter() {
         return character;
     }
 
-    public final void setCharacter(Character character) {
+    public final void setCharacter(List<CHARACTER> character) {
         this.character = character;
     }
 

@@ -7,6 +7,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -39,6 +42,8 @@ public class PatientFragment extends Fragment implements DatePickerDialog.OnDate
      *
      * Use the DatePicker (tutorial saved as bookmark) for date of birth
      */
+
+    public static final String PATIENT_FRAGMENT_TAG = "PATIENT_FRAGMENT";
 
     //Data
     private String dateOfBirthString;
@@ -95,6 +100,7 @@ public class PatientFragment extends Fragment implements DatePickerDialog.OnDate
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -160,6 +166,26 @@ public class PatientFragment extends Fragment implements DatePickerDialog.OnDate
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(
+            Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.patient_tool_bar_items, menu);
+        //if the user is the creator of this Patient then display the edit menuitem
+        menu.findItem(R.id.editItem).setVisible(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handling item selection
+        switch (item.getItemId()) {
+            case R.id.sharePatientItem:
+
+            case R.id.deletePatientItem:
+
+        }
+        return true;
     }
 
     @Override

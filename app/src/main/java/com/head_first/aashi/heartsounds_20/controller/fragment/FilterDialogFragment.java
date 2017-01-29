@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
@@ -35,6 +36,7 @@ import java.util.Map;
  * create an instance of this fragment.
  */
 public class FilterDialogFragment extends DialogFragment implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
+    public static final String FILTER_DIALOG_FRAGMENT_TAG = "FILTER_DIALOG_FRAGMENT";
     public static final String FILTER_CONTENT_MAP_TAG = "FILTER_CONTENT_MAP_TAG";
 
     //View related variables
@@ -150,6 +152,7 @@ public class FilterDialogFragment extends DialogFragment implements SearchView.O
     public Dialog onCreateDialog(Bundle savedInstanceState){
         filterDialog = new Dialog(getActivity());
         filterDialog.setCancelable(false);
+        filterDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         filterDialog.setContentView(R.layout.fragment_filter_dialog);
 
         //SearchView Setup
@@ -182,7 +185,6 @@ public class FilterDialogFragment extends DialogFragment implements SearchView.O
             }
         });
         expandableFilterAdapter.notifyDataSetChanged();
-
         filterDialog.create();
         return filterDialog;
     }
@@ -239,11 +241,11 @@ public class FilterDialogFragment extends DialogFragment implements SearchView.O
         mSearchStringView.setText(filter.getSearchString());
     }
 
-    //SearchView onCreateOptionsMenu implementation
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.search_view_menu, menu);
-    }
+    //To display the search button on the toolbar
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        inflater.inflate(R.menu.search_view_menu, menu);
+//    }
 
     //SearchView.OnQueryTextListener Implementation
     @Override

@@ -5,5 +5,16 @@ package com.head_first.aashi.heartsounds_20.enums;
  */
 
 public enum CardiacPhase {
-    SYSTOLIC, DIASTOLIC, CONTINUOUS
+    SYSTOLIC("Systolic"), DIASTOLIC("Diastolic"), CONTINUOUS("Continuous");
+
+    private String value;
+
+    private CardiacPhase(String value){
+        this.value = value;
+    }
+
+    @Override
+    public String toString(){
+        return this.value;
+    }
 }

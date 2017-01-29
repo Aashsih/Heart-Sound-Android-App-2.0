@@ -5,6 +5,17 @@ package com.head_first.aashi.heartsounds_20.enums;
  */
 
 public enum Radiation {
-    AXILLA, LLSE, ULSE, URSE, CAROTID, BACK, PULMONARY,
-    EPIGASTRIUM
+    AXILLA("Axilla"), LLSE("Llse"), ULSE("Ulse"), URSE("Urse"), CAROTID("Carotid"), BACK("Back"), PULMONARY("Pulmonary"),
+    EPIGASTRIUM("Epigastrium");
+
+    private String value;
+
+    private Radiation(String value){
+        this.value = value;
+    }
+
+    @Override
+    public String toString(){
+        return this.value;
+    }
 }

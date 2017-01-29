@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.head_first.aashi.heartsounds_20.R;
+import com.head_first.aashi.heartsounds_20.controller.fragment.MurmerRatingFragment;
 import com.head_first.aashi.heartsounds_20.controller.fragment.PatientListFragment;
 import com.head_first.aashi.heartsounds_20.controller.fragment.UserProfileFragment;
 import com.head_first.aashi.heartsounds_20.model.User;
@@ -17,8 +18,8 @@ public class UserPatientActivity extends AppCompatActivity {
 
     private static final int DEFAULT_MENU_ITEM = R.id.myPatients;
     private static final String PROFILE_PAGE_TITLE = "User Profile";
-    private static final String MY_PATIENTS_PAGE_TITLE = "My PatientListFragment";
-    private static final String SHARED_PATIENTS_PAGE_TITLE = "Shared PatientListFragment";
+    private static final String MY_PATIENTS_PAGE_TITLE = "My Patients";
+    private static final String SHARED_PATIENTS_PAGE_TITLE = "Shared Patients";
     private static final String OTHER_PATIENTS_PAGE_TITLE = "";
 
     //Data
@@ -56,27 +57,40 @@ public class UserPatientActivity extends AppCompatActivity {
             case R.id.userProfile:
                 mToolbar.setTitle(PROFILE_PAGE_TITLE);
                 menuItemFragment = new UserProfileFragment();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragmentContainer, menuItemFragment, UserProfileFragment.USER_PROFILE_FRAGMENT_TAG)
+                        .commit();
                 break;
             case R.id.myPatients:
                 mToolbar.setTitle(MY_PATIENTS_PAGE_TITLE);
                 menuItemFragment = new PatientListFragment();
                 ((PatientListFragment) menuItemFragment).setMyPatientClicked(true);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragmentContainer, menuItemFragment, PatientListFragment.PATIENT_LIST_FRAGMENT_TAG)
+                        .commit();
                 break;
             case R.id.otherPatients:
 //                When the student user is implemented, change this to Other patients
                 mToolbar.setTitle(SHARED_PATIENTS_PAGE_TITLE);
                 menuItemFragment = new PatientListFragment();
                 ((PatientListFragment) menuItemFragment).setMyPatientClicked(false);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragmentContainer, menuItemFragment, PatientListFragment.PATIENT_LIST_FRAGMENT_TAG)
+                        .commit();
                 break;
 
             default:
                 mToolbar.setTitle(MY_PATIENTS_PAGE_TITLE);
                 menuItemFragment = new PatientListFragment();
                 ((PatientListFragment) menuItemFragment).setMyPatientClicked(true);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragmentContainer, menuItemFragment, PatientListFragment.PATIENT_LIST_FRAGMENT_TAG)
+                        .commit();
+
                 break;
         }
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragmentContainer, menuItemFragment)
-                .commit();
+//        getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.fragmentContainer, menuItemFragment)
+//                .commit();
     }
 }

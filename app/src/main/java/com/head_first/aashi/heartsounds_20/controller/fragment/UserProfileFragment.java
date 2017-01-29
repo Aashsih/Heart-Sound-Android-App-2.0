@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.head_first.aashi.heartsounds_20.R;
+import com.head_first.aashi.heartsounds_20.controller.activities.UserPatientActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,6 +20,8 @@ import com.head_first.aashi.heartsounds_20.R;
  * create an instance of this fragment.
  */
 public class UserProfileFragment extends Fragment {
+    public static final String USER_PROFILE_FRAGMENT_TAG = "USER_PROFILE_FRAGMENT";
+    private static final String PROFILE_PAGE_TITLE = "User Profile";
 
     private View mRootView;
 

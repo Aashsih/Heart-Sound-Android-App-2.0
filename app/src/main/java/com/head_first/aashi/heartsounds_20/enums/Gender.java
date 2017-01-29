@@ -5,5 +5,16 @@ package com.head_first.aashi.heartsounds_20.enums;
  */
 
 public enum Gender {
-    MALE, FEMALE, OTHER // confirm
+    MALE("Male"), FEMALE("Female"), OTHER("Other"); // confirm
+
+    private String value;
+
+    private Gender(String value){
+        this.value = value;
+    }
+
+    @Override
+    public String toString(){
+        return this.value;
+    }
 }

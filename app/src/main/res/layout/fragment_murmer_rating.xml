@@ -1,14 +1,367 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.head_first.aashi.heartsounds_20.controller.fragment.MurmerRatingFragment">
+    tools:context="com.head_first.aashi.heartsounds_20.controller.fragment.MurmerRatingFragment"
+    style="@style/patientHeartSoundFragmentPadding">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/tempText"
+    <Button
+        android:id="@+id/saveMurmerRatingButton"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:text="@string/saveMurmerRatingButtonText"
+        android:layout_alignParentBottom="true"/>
 
-</FrameLayout>
+    <ScrollView
+        android:id="@+id/murmerRatingContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/saveMurmerRatingButton">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:id="@+id/phaseOfCardiacCycleContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_alignParentTop="true"
+                style="@style/patientHeartSoundFragmentViewPadding">
+                <TextView
+                    android:id="@+id/phaseOfCardiacCycleText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/phaseOfCardiacCycleText"
+                    android:layout_weight="1"
+                    android:gravity="left"/>
+                <Spinner
+                    android:id="@+id/phaseOfCardiacCycleSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right">
+
+                </Spinner>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/intensityContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/phaseOfCardiacCycleContainer"
+                style="@style/patientHeartSoundFragmentViewPadding">
+                <TextView
+                    android:id="@+id/intensityText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/intensityText"
+                    android:layout_weight="1"
+                    android:gravity="left"/>
+                <Spinner
+                    android:id="@+id/intensitySpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right">
+
+                </Spinner>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/murmerDurationContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/intensityContainer"
+                style="@style/patientHeartSoundFragmentViewPadding">
+                <TextView
+                    android:id="@+id/murmerDurationText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/murmerDurationText"
+                    android:layout_weight="1"
+                    android:gravity="left"/>
+                <Spinner
+                    android:id="@+id/murmerDurationSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right">
+
+                </Spinner>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/mostIntenseLocationContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/murmerDurationContainer"
+                style="@style/patientHeartSoundFragmentViewPadding">
+                <TextView
+                    android:id="@+id/mostIntenseLocationText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mostIntenseLocationText"
+                    android:layout_weight="1"
+                    android:gravity="left"/>
+                <Spinner
+                    android:id="@+id/mostIntenseLocationSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right">
+
+                </Spinner>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/radiationContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/mostIntenseLocationContainer"
+                style="@style/patientHeartSoundFragmentViewPadding">
+                <TextView
+                    android:id="@+id/radiationText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/radiationText"
+                    android:layout_weight="1"
+                    android:gravity="left"/>
+                <Spinner
+                    android:id="@+id/radiationSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right">
+
+                </Spinner>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/characterContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/radiationContainer"
+                style="@style/patientHeartSoundFragmentViewPadding">
+                <TextView
+                    android:id="@+id/characterText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/characterText"
+                    android:layout_weight="1"
+                    android:gravity="left"/>
+                <TextView
+                    android:id="@+id/selectedCharacters"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/selectedCharacters"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:scrollbars = "horizontal">
+
+                </TextView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/addedSoundsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/characterContainer"
+                style="@style/patientHeartSoundFragmentViewPadding">
+                <TextView
+                    android:id="@+id/addedSoundsText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/addedSoundsText"
+                    android:layout_weight="1"
+                    android:gravity="left"/>
+                <Spinner
+                    android:id="@+id/addedSoundsSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right">
+
+                </Spinner>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sOneContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/addedSoundsContainer"
+                style="@style/patientHeartSoundFragmentViewPadding">
+                <TextView
+                    android:id="@+id/sOneText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sOneText"
+                    android:layout_weight="1"
+                    android:gravity="left"/>
+                <Spinner
+                    android:id="@+id/sOneSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right">
+
+                </Spinner>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sTwoContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/sOneContainer"
+                style="@style/patientHeartSoundFragmentViewPadding">
+                <TextView
+                    android:id="@+id/sTwoText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sTwoText"
+                    android:layout_weight="1"
+                    android:gravity="left"/>
+                <Spinner
+                    android:id="@+id/sTwoSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right">
+
+                </Spinner>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/changeWithBreathingContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/sTwoContainer"
+                style="@style/patientHeartSoundFragmentViewPadding">
+                <TextView
+                    android:id="@+id/changeWithBreathingText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/changeWithBreathingText"
+                    android:layout_weight="1"
+                    android:gravity="left"/>
+                <Spinner
+                    android:id="@+id/changeWithBreathingSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right">
+
+                </Spinner>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/valsalvaContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/changeWithBreathingContainer"
+                style="@style/patientHeartSoundFragmentViewPadding">
+                <TextView
+                    android:id="@+id/valsalvaText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/valsalvaText"
+                    android:layout_weight="1"
+                    android:gravity="left"/>
+                <Spinner
+                    android:id="@+id/valsalvaSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right">
+
+                </Spinner>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/leftLateralPositionContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/valsalvaContainer"
+                style="@style/patientHeartSoundFragmentViewPadding">
+                <TextView
+                    android:id="@+id/leftLateralPositionText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/leftLateralPositionText"
+                    android:layout_weight="1"
+                    android:gravity="left"/>
+                <Spinner
+                    android:id="@+id/leftLateralPositionSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right">
+
+                </Spinner>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/sittingForwardContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/leftLateralPositionContainer"
+                style="@style/patientHeartSoundFragmentViewPadding">
+                <TextView
+                    android:id="@+id/sittingForwardText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sittingForwardText"
+                    android:layout_weight="1"
+                    android:gravity="left"/>
+                <Spinner
+                    android:id="@+id/sittingForwardSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right">
+
+                </Spinner>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/finalDiagnosisContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/sittingForwardContainer"
+                style="@style/patientHeartSoundFragmentViewPadding">
+                <TextView
+                    android:id="@+id/finalDiagnosisText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/finalDiagnosisText"
+                    android:layout_weight="1"
+                    android:gravity="left"/>
+                <Spinner
+                    android:id="@+id/finalDiagnosisSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="right">
+
+                </Spinner>
+            </LinearLayout>
+        </RelativeLayout>
+
+    </ScrollView>
+
+
+</RelativeLayout>

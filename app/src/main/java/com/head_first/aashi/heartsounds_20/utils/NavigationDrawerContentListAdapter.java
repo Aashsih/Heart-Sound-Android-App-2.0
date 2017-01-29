@@ -21,10 +21,10 @@ public class NavigationDrawerContentListAdapter<T> extends BaseAdapter{
     private static final int LIST_ITEM_LAYOUT = R.layout.navigation_view_list_adapter_item;
 
     //Views and context
-    Context context;
+    private Context context;
 
     //Data
-    List<T> objects;
+    private List<T> objects;
 
     public NavigationDrawerContentListAdapter(Context context, List<T> objects){
         if(context == null){
@@ -54,7 +54,7 @@ public class NavigationDrawerContentListAdapter<T> extends BaseAdapter{
     public View getView(int position, View convertView, ViewGroup parent) {
         if(convertView == null){
             LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutInflater.inflate(R.layout.navigation_view_list_adapter_item, null);
+            convertView = layoutInflater.inflate(LIST_ITEM_LAYOUT, null);
         }
         TextView textView = (TextView) convertView.findViewById(R.id.navigationViewContentItem);
         textView.setText(objects.get(position).toString());

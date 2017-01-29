@@ -1,14 +1,68 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.head_first.aashi.heartsounds_20.controller.fragment.HeartSoundFragment">
+    tools:context="com.head_first.aashi.heartsounds_20.controller.fragment.PatientFragment"
+    style="@style/patientHeartSoundFragmentPadding">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:id="@+id/tempText"
+        android:id="@+id/heartSoundLabel"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:text="@string/heartSoundIdLabel"
+        android:layout_alignParentLeft="true">
+    </TextView>
+    <TextView
+        android:id="@+id/heartSoundId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/heartSoundIdText"
+        android:layout_below="@id/heartSoundLabel"
+        android:layout_alignParentLeft="true">
+    </TextView>
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/createdByLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/createdByLabel"
+        android:layout_below="@id/heartSoundId"
+        android:layout_alignParentLeft="true"
+        style="@style/patientHeartSoundFragmentViewPadding">
+    </TextView>
+    <TextView
+        android:id="@+id/doctorDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/createdByText"
+        android:layout_below="@id/createdByLabel"
+        android:layout_alignParentLeft="true">
+    </TextView>
+
+    <TextView
+        android:id="@+id/deviceIdLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/deviceIdLabel"
+        android:layout_below="@id/doctorDetails"
+        android:layout_alignParentLeft="true"
+        style="@style/patientHeartSoundFragmentViewPadding">
+    </TextView>
+    <TextView
+        android:id="@+id/deviceId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/deviceIdText"
+        android:layout_below="@id/deviceIdLabel"
+        android:layout_alignParentLeft="true">
+    </TextView>
+
+    <Button
+        android:id="@+id/saveHeartSoundButton"
+        android:text="@string/saveHeartSoundButtonText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

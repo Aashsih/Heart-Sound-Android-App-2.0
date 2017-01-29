@@ -8,9 +8,18 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- FilterFragmentStyles -->
+    <style name="filterFragmentDialog">
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+
+    </style>
+
+
     <!-- PatientHeartSound Fragment Styles -->
     <style name="patientHeartSoundFragmentPadding">
-        <item name="android:paddingTop">90dp</item>
+        <item name="android:paddingTop">50dp</item>
         <item name="android:paddingLeft">15dp</item>
         <item name="android:paddingRight">15dp</item>
     </style>

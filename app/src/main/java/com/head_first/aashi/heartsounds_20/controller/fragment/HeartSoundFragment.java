@@ -5,12 +5,18 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.controller.activities.PatientHeartSoundActivity;
+
+import org.w3c.dom.Text;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,18 +27,29 @@ import com.head_first.aashi.heartsounds_20.controller.activities.PatientHeartSou
  * create an instance of this fragment.
  */
 public class HeartSoundFragment extends Fragment {
-    //Layout and View
-    private View mRootView;
-
     /**
      * This fragment will display the following:
      * 1. HeartSoundId (if not already displayed in the navigation view)
      * 2. HeartSound Data
      * 3. Voice Comment Data
      * 4. Created by (doctor Id)
+     * For heartsound data and voice comment, there will be two buttons:
+     * 1. Play
+     * 2. Record
      *
      *
      */
+
+    public static final String HEART_SOUND_FRAGMENT_TAG = "HEART_SOUND_FRAGMENT";
+
+    //Data
+    private TextView mHeartSoundId;
+    private TextView mDoctorDetails;
+    private TextView mDeviceId;
+    private Button mSaveHeartSoundButton;
+
+    //Layout and View
+    private View mRootView;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -74,6 +91,7 @@ public class HeartSoundFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -81,8 +99,10 @@ public class HeartSoundFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mRootView = inflater.inflate(R.layout.fragment_heart_sound, container, false);
-        TextView textView = (TextView) mRootView.findViewById(R.id.tempText);
-        textView.setText(((PatientHeartSoundActivity)getActivity()).getSelectedHeartSound());//this will be removed later
+        mHeartSoundId = (TextView) mRootView.findViewById(R.id.heartSoundId);
+        mDoctorDetails = (TextView) mRootView.findViewById(R.id.doctorDetails);
+        mDeviceId = (TextView) mRootView.findViewById(R.id.deviceId);
+        mSaveHeartSoundButton = (Button) mRootView.findViewById(R.id.saveHeartSoundButton);
         return mRootView;
     }
 
@@ -123,5 +143,23 @@ public class HeartSoundFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(
+            Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.heart_sound_murmer_rating_tool_bar_items, menu);
+        //if the user is the creator of this HeartSound then display the edit menuitem
+        menu.findItem(R.id.editItem).setVisible(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handling item selection
+        switch (item.getItemId()) {
+            case R.id.deletePatientItem:
+
+        }
+        return true;
     }
 }

@@ -5,5 +5,17 @@ package com.head_first.aashi.heartsounds_20.enums;
  */
 
 public enum LeftLateralPosition {
-    NOT_DONE, LOUDER, SOFTER, NO_CHANGE
+    NOT_DONE("Not Done"), LOUDER("Louder"), SOFTER("Softer"), NO_CHANGE("No Change");
+
+    private String value;
+
+    private LeftLateralPosition(String value){
+        this.value = value;
+    }
+
+    @Override
+    public String toString(){
+        return this.value;
+    }
+
 }

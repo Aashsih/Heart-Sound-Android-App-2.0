@@ -36,8 +36,12 @@ import java.util.Map;
  * create an instance of this fragment.
  */
 public class PatientListFragment extends Fragment implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
+    public static final String PATIENT_LIST_FRAGMENT_TAG = "PATIENT_LIST_FRAGMENT";
 
+    private static final String MY_PATIENTS_PAGE_TITLE = "My Patients";
+    private static final String SHARED_PATIENTS_PAGE_TITLE = "Shared Patients";
     private static final String DEFAULT_SEARCH_STRING = "";
+
 
     private DialogFragment filterFragment;
     private View mRootView;
@@ -114,9 +118,12 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
             setUpDataForViews();
         }
         // Inflate the layout for this fragment
-        mRootView = inflater.inflate(R.layout.fragment_patients, container, false);
+        mRootView = inflater.inflate(R.layout.fragment_patients_list, container, false);
 
-        if(!myPatientClicked){
+        if(myPatientClicked){
+
+        }
+        else{
             mAddNewPatient = (ImageButton) mRootView.findViewById(R.id.addPatient);
             mAddNewPatient.setVisibility(View.INVISIBLE);
         }
@@ -271,11 +278,11 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
         startActivity(patientHeartSoundActivityIntent);
     }
 
-    //SearchView onCreateOptionsMenu implementation
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.search_view_menu, menu);
-    }
+    //To display the search button on the toolbar
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        inflater.inflate(R.menu.search_view_menu, menu);
+//    }
 
     //SearchView.OnQueryTextListener Implementation
     @Override

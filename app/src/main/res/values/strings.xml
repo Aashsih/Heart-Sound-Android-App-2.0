@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">HeartSounds_2.0</string>
+    <string name="positiveButton">OK</string>
     <!-- Login Page -->
     <string name="usernameHint">Username</string>
     <string name="passwordHint">Password</string>
@@ -15,6 +16,14 @@
 
     <!-- PatientHeartSoundActivity -->
     <string name="addHeartSound">Add Heart Sound</string>
+
+    <!-- Common Toolbar items -->
+    <string name="deleteItemText">Delete</string>
+    <string name="editItemText">Edit</string>
+
+    <!-- Patient Toolbar Items-->
+    <string name="sharePatientItemText">Share</string>
+
     <!-- Patient Fragment -->
     <string name="patientIdLabel">Patient Id</string>
     <string name="patientIdText">(empty)</string>
@@ -27,6 +36,35 @@
     <string name="visibleToUsersLabel">Visible to</string>
     <string name="visibleToUsersCount">0 users</string>
     <string name="savePatientButtonText">Save Changes</string>
+
+    <!-- HeartSound Fragment -->
+    <string name="heartSoundIdLabel">Patient Id</string>
+    <string name="heartSoundIdText">(empty)</string>
+    <string name="saveHeartSoundButtonText">Save Changes</string>
+    <string name="deviceIdLabel">Patient Id</string>
+    <string name="deviceIdText">(empty)</string>
+
+    <!-- MurmerRating Fragment -->
+    <string name="phaseOfCardiacCycleText">Phase of Cardiac Cycle:</string>
+    <string name="intensityText">Intensity:</string>
+    <string name="murmerDurationText">Murmer Duration:</string>
+    <string name="mostIntenseLocationText">Most Intense Location:</string>
+    <string name="radiationText">Radiation:</string>
+    <string name="characterText">Character:</string>
+    <string name="selectedCharacters">(none)</string>
+    <string name="addedSoundsText">Added Sounds:</string>
+    <string name="sOneText">S1:</string>
+    <string name="sTwoText">S2:</string>
+    <string name="changeWithBreathingText">Change With Breathing:</string>
+    <string name="valsalvaText">Valsalva:</string>
+    <string name="leftLateralPositionText">Left Lateral Position:</string>
+    <string name="sittingForwardText">Sitting Forward:</string>
+    <string name="finalDiagnosisText">Final Diagnosis:</string>
+    <string name="saveMurmerRatingButtonText">Save Changes:</string>
+
+    <!-- Multi-Character Selector Dialog -->
+    <string name="multipleCharacterSelectorDialogTitle">Characters</string>
+
     <!-- FilterDialogFragment -->
     <string name="searchMenu">Search</string>
     <string name="filterStringView">Filters Selected</string>

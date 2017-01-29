@@ -5,5 +5,16 @@ package com.head_first.aashi.heartsounds_20.enums;
  */
 
 public enum Valsalva {
-    NOT_DONE, SOFTER_INSPIRATION, LOUDER_INSPIRATION
+    NOT_DONE("Not Done"), SOFTER_INSPIRATION("Softer Inspiration"), LOUDER_INSPIRATION("Louder Inspiration");
+
+    private String value;
+
+    private Valsalva(String value){
+        this.value = value;
+    }
+
+    @Override
+    public String toString(){
+        return this.value;
+    }
 }

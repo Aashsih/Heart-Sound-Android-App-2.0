@@ -5,5 +5,16 @@ package com.head_first.aashi.heartsounds_20.enums;
  */
 
 public enum S1 {
-    NORMAL, SOFT, LOUD
+    NORMAL("Normal"), SOFT("Soft"), LOUD("Loud");
+
+    private String value;
+
+    private S1(String value){
+        this.value = value;
+    }
+
+    @Override
+    public String toString(){
+        return this.value;
+    }
 }

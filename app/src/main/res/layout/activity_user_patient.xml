@@ -14,7 +14,7 @@
 
         <!-- The ActionBar displayed at the top -->
         <include
-            layout="@layout/toolbar_patient_heart_sound"
+            layout="@layout/toolbar_user_patient"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <!-- Container -->
