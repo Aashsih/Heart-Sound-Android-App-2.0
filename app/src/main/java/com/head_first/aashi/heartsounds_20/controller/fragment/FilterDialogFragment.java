@@ -38,6 +38,7 @@ import java.util.Map;
 public class FilterDialogFragment extends DialogFragment implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
     public static final String FILTER_DIALOG_FRAGMENT_TAG = "FILTER_DIALOG_FRAGMENT";
     public static final String FILTER_CONTENT_MAP_TAG = "FILTER_CONTENT_MAP_TAG";
+    private static final String DIALOG_TITLE = "Filter";
 
     //View related variables
     private Dialog filterDialog;
@@ -152,7 +153,7 @@ public class FilterDialogFragment extends DialogFragment implements SearchView.O
     public Dialog onCreateDialog(Bundle savedInstanceState){
         filterDialog = new Dialog(getActivity());
         filterDialog.setCancelable(false);
-        filterDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        filterDialog.setTitle(DIALOG_TITLE);
         filterDialog.setContentView(R.layout.fragment_filter_dialog);
 
         //SearchView Setup

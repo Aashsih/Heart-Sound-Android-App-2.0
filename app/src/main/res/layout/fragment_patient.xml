@@ -3,14 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.head_first.aashi.heartsounds_20.controller.fragment.PatientFragment"
-    style="@style/patientHeartSoundFragmentPadding">
+    style="@style/rootLayoutPadding">
 
     <Button
         android:id="@+id/savePatientButton"
         android:text="@string/savePatientButtonText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -43,9 +44,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/createdByLabel"
-                android:layout_below="@id/patientId"
+                android:layout_below="@id/patientIdLabel"
                 android:layout_alignParentLeft="true"
-                style="@style/patientHeartSoundFragmentViewPadding">
+                style="@style/viewSeparation">
             </TextView>
             <TextView
                 android:id="@+id/doctorDetails"
@@ -57,32 +58,13 @@
             </TextView>
 
             <TextView
-                android:id="@+id/genderLabel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/genderLabel"
-                android:layout_below="@id/doctorDetails"
-                android:layout_alignParentLeft="true"
-                style="@style/patientHeartSoundFragmentViewPadding">
-            </TextView>
-            <RadioGroup
-                android:id="@+id/gender"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/genderLabel"
-                android:layout_alignParentLeft="true"
-                android:orientation="horizontal">
-                <!-- Radio Buttons are added dynamically based on the Gender enum -->
-            </RadioGroup>
-
-            <TextView
                 android:id="@+id/dateOfBirthLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/dateOfBirthLabel"
-                android:layout_below="@id/gender"
+                android:layout_below="@id/doctorDetails"
                 android:layout_alignParentLeft="true"
-                style="@style/patientHeartSoundFragmentViewPadding">
+                style="@style/viewSeparation">
             </TextView>
             <TextView
                 android:id="@+id/dateOfBirth"
@@ -92,17 +74,72 @@
                 android:layout_below="@id/dateOfBirthLabel"
                 android:layout_alignParentLeft="true"
                 android:orientation="horizontal">
-                <!-- Radio Buttons are added dynamically based on the Gender enum -->
+
             </TextView>
+
+            <LinearLayout
+                android:id="@+id/genderContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/dateOfBirth"
+                style="@style/viewSeparation">
+
+                <TextView
+                    android:id="@+id/genderLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/genderLabel"
+                    android:layout_weight="1"
+                    android:gravity="left"/>
+                <TextView
+                    android:id="@+id/genderText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/gender"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:scrollbars = "horizontal">
+                </TextView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/studyContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/genderContainer"
+                style="@style/viewSeparation">
+
+                <TextView
+                    android:id="@+id/studyLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/studyLabel"
+                    android:layout_weight="1"
+                    android:gravity="left"/>
+                <TextView
+                    android:id="@+id/studyList"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/studyList"
+                    android:layout_weight="1"
+                    android:gravity="right"
+                    android:scrollbars = "horizontal">
+
+                </TextView>
+
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/visibleToStudentsLabel"
                 android:text="@string/visibleToStudentsLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/dateOfBirth"
+                android:layout_below="@id/studyContainer"
                 android:layout_alignParentLeft="true"
-                style="@style/patientHeartSoundFragmentViewPadding">
+                style="@style/viewSeparation">
             </TextView>
             <Switch
                 android:id="@+id/visibleTOStudents"
@@ -111,7 +148,7 @@
                 android:layout_alignTop="@id/visibleToStudentsLabel"
                 android:layout_below="@id/dateOfBirth"
                 android:layout_alignParentRight="true"
-                style="@style/patientHeartSoundFragmentViewPadding"/>
+                style="@style/viewSeparation"/>
 
             <TextView
                 android:id="@+id/visibleToUsersLabel"
@@ -120,7 +157,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/visibleToStudentsLabel"
                 android:layout_alignParentLeft="true"
-                style="@style/patientHeartSoundFragmentViewPadding">
+                style="@style/viewSeparation">
             </TextView>
             <TextView
                 android:id="@+id/visibleTOUsersCount"
@@ -130,7 +167,7 @@
                 android:layout_alignTop="@id/visibleToUsersLabel"
                 android:layout_below="@id/visibleToStudentsLabel"
                 android:layout_alignParentRight="true"
-                style="@style/patientHeartSoundFragmentViewPadding"/>
+                style="@style/viewSeparation"/>
         </RelativeLayout>
     </ScrollView>
 

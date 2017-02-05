@@ -51,6 +51,19 @@ public class UserPatientActivity extends AppCompatActivity {
         launchSelectedMenuFragment(mBottomNavigationView.getMenu().findItem(DEFAULT_MENU_ITEM));
     }
 
+    @Override
+    public void onBackPressed(){
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        if(fragment instanceof UserProfileFragment){
+            if(((UserProfileFragment) fragment).editModeEnabled()){
+                ((UserProfileFragment) fragment).cancelChanges();
+                return;
+            }
+
+        }
+        super.onBackPressed();
+    }
+
     private void launchSelectedMenuFragment(MenuItem item){
         Fragment menuItemFragment;
         switch(item.getItemId()){

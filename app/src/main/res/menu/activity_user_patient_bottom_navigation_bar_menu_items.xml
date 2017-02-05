@@ -5,19 +5,19 @@
     <item
         android:id="@+id/userProfile"
         android:enabled="true"
-        android:icon="@drawable/username_icon"
+        android:icon="@drawable/ic_account_grey600_48dp"
         android:title="@string/userProfile"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/myPatients"
         android:enabled="true"
-        android:icon="@drawable/username_icon"
+        android:icon="@drawable/ic_account_grey600_48dp"
         android:title="@string/myPatients"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/otherPatients"
         android:enabled="true"
-        android:icon="@drawable/username_icon"
+        android:icon="@drawable/ic_account_grey600_48dp"
         android:title="@string/sharedPatients"
         app:showAsAction="ifRoom"/>
 

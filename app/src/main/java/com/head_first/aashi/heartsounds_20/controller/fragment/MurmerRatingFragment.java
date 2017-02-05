@@ -32,9 +32,10 @@ import com.head_first.aashi.heartsounds_20.enums.S1;
 import com.head_first.aashi.heartsounds_20.enums.S2;
 import com.head_first.aashi.heartsounds_20.enums.SittingForward;
 import com.head_first.aashi.heartsounds_20.enums.Valsalva;
-import com.head_first.aashi.heartsounds_20.utils.MultiCharacterSelectorListAdapter;
+import com.head_first.aashi.heartsounds_20.utils.MultiSelectorListAdapter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -46,27 +47,31 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class MurmerRatingFragment extends Fragment {
+    /**
+     * Highlight the selected MurmerRating in the navigation menu
+     */
     public static final String MURMER_RATING_FRAGMENT_TAG = "MURMER_RATING_FRAGMENT";
     public static final String SELECTED_MURMER_RATING_TAG = "SELECTED_MURMER_RATING_TAG";
 
     //Layout and View
+    private Menu mActionBarMenu;
     private View mRootView;
     //TextViews
-    private TextView mPhaseOfCardiacCycleText;
-    private TextView mIntensityText;
-    private TextView mMurmerDurationText;
-    private TextView mMostIntenseLocationText;
-    private TextView mRadiationText;
-    private TextView mCharacterText;
     private TextView mSelectedCharacters;
-    private TextView mAddedSoundsText;
-    private TextView mSOneText;
-    private TextView mSTwoText;
-    private TextView mChangeWithBreathingText;
-    private TextView mValsalvaText;
-    private TextView mLeftLateralPositionText;
-    private TextView mSittingForwardText;
-    private TextView mFinalDiagnosisText;
+//    private TextView mPhaseOfCardiacCycleText;
+//    private TextView mIntensityText;
+//    private TextView mMurmerDurationText;
+//    private TextView mMostIntenseLocationText;
+//    private TextView mRadiationText;
+//    private TextView mCharacterText;
+//    private TextView mAddedSoundsText;
+//    private TextView mSOneText;
+//    private TextView mSTwoText;
+//    private TextView mChangeWithBreathingText;
+//    private TextView mValsalvaText;
+//    private TextView mLeftLateralPositionText;
+//    private TextView mSittingForwardText;
+//    private TextView mFinalDiagnosisText;
 
     //Spinners
     private Spinner mPhaseOfCardiacCycleSpinner;
@@ -74,7 +79,7 @@ public class MurmerRatingFragment extends Fragment {
     private Spinner mMurmerDurationSpinner;
     private Spinner mMostIntenseLocationSpinner;
     private Spinner mRadiationSpinner;
-    private Spinner mCharacterSpinner;
+    //private Spinner mCharacterSpinner;
     private Spinner mAddedSoundsSpinner;
     private Spinner mSOneSpinner;
     private Spinner mSTwoSpinner;
@@ -93,7 +98,7 @@ public class MurmerRatingFragment extends Fragment {
     private ArrayAdapter<MurmurDuration> mMurmerDurationSpinnerAdapter;
     private ArrayAdapter<MostIntenseLocation> mMostIntenseLocationSpinnerAdapter;
     private ArrayAdapter<Radiation> mRadiationSpinnerAdapter;
-    private ArrayAdapter<CHARACTER> mCharacterSpinnerAdapter;
+    //private ArrayAdapter<CHARACTER> mCharacterSpinnerAdapter;
     private ArrayAdapter<AddedSounds> mAddedSoundsSpinnerAdapter;
     private ArrayAdapter<S1> mSOneSpinnerAdapter;
     private ArrayAdapter<S2> mSTwoSpinnerAdapter;
@@ -102,10 +107,11 @@ public class MurmerRatingFragment extends Fragment {
     private ArrayAdapter<LeftLateralPosition> mLeftLateralPositionSpinnerAdapter;
     private ArrayAdapter<SittingForward> mSittingForwardSpinnerAdapter;
     private ArrayAdapter<FinalDiagnosis> mFinalDiagnosisSpinnerAdapter;
-    private MultiCharacterSelectorListAdapter mMultiCharacterSelectorListAdapter;
+    private MultiSelectorListAdapter mMultiCharacterSelectorListAdapter;
 
     //Data
     private int selectedMurmerRatingPosition;
+    private boolean editMode;
     private List<CHARACTER> selectedCharacters; //this will be deleted. Instead of this the List<CHARACTER> from the MurmerRating object will be used
 
     // TODO: Rename parameter arguments, choose names that match
@@ -149,7 +155,7 @@ public class MurmerRatingFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         setHasOptionsMenu(true);
-        selectedCharacters = new ArrayList<>();
+        selectedCharacters = new ArrayList<>();//delete this later
     }
 
     @Override
@@ -164,7 +170,7 @@ public class MurmerRatingFragment extends Fragment {
         mRootView = inflater.inflate(R.layout.fragment_murmer_rating, container, false);
         setUpTextViews();
         setUpSpinnersAndAdapters();
-
+        makeViewsUneditable();
         return mRootView;
     }
 
@@ -210,9 +216,37 @@ public class MurmerRatingFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(
             Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.heart_sound_murmer_rating_tool_bar_items, menu);
-        //if the user is the creator of this MurmerRating then display the edit menuitem
-        menu.findItem(R.id.editItem).setVisible(true);
+        inflater.inflate(R.menu.activity_patient_heart_sound_tool_bar_items, menu);
+        mActionBarMenu = menu;
+        showActionBarMenuItems();
+    }
+
+    private void showActionBarMenuItems(){
+        for(int i = 0; i < mActionBarMenu.size(); i++){
+            MenuItem menuItem = mActionBarMenu.getItem(i);
+            if(editMode){
+                //if menu item is save or cancel
+                if(menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.saveChangesItemText)) ||
+                        menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.cancelChangesItemText))){
+                    menuItem.setVisible(true);
+                }
+                else{
+                    menuItem.setVisible(false);
+                }
+            }
+            else{
+                if(!(menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.saveChangesItemText)) ||
+                        menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.cancelChangesItemText)) ||
+                        menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.sharePatientItemText)))){
+                    //if() user id matches the CreatedBy user id then display the edit button
+                    //mActionBarMenu.findItem(R.id.editItem).setVisible(false);
+                    menuItem.setVisible(true);
+                }
+                else{
+                    menuItem.setVisible(false);
+                }
+            }
+        }
     }
 
     @Override
@@ -220,31 +254,104 @@ public class MurmerRatingFragment extends Fragment {
         // handling item selection
         switch (item.getItemId()) {
             case R.id.deletePatientItem:
-
+                break;
+            case R.id.editItem:
+                editUserProfile();
+                break;
+            case R.id.refreshViewItem:
+                break;
+            case R.id.saveChangesItem:
+                saveChanges();
+                break;
+            case R.id.cancelChangesItem:
+                cancelChanges();
+                break;
         }
         return true;
     }
 
+    private void editUserProfile(){
+        editMode = true;
+        makeViewsEditable();
+        showActionBarMenuItems();
+    }
+
+    private void saveChanges(){
+        editMode = false;
+        //Copy the data from the views into the models
+
+        makeViewsUneditable();
+        showActionBarMenuItems();
+    }
+
+    public void cancelChanges(){
+        editMode = false;
+        //Copy the data from the models into the Views
+
+        makeViewsUneditable();
+        showActionBarMenuItems();
+    }
+
+    private void makeViewsEditable(){
+        if(editMode){
+            mPhaseOfCardiacCycleSpinner.setEnabled(true);
+            mIntensitySpinner.setEnabled(true);
+            mMurmerDurationSpinner.setEnabled(true);
+            mMostIntenseLocationSpinner.setEnabled(true);
+            mRadiationSpinner.setEnabled(true);
+            //mCharacterSpinner.setEnabled(true);
+            mAddedSoundsSpinner.setEnabled(true);
+            mSOneSpinner.setEnabled(true);
+            mSTwoSpinner.setEnabled(true);
+            mChangeWithBreathingSpinner.setEnabled(true);
+            mValsalvaSpinner.setEnabled(true);
+            mLeftLateralPositionSpinner.setEnabled(true);
+            mSittingForwardSpinner.setEnabled(true);
+            mFinalDiagnosisSpinner.setEnabled(true);
+            mSelectedCharacters.setClickable(true);
+        }
+    }
+
+    private void makeViewsUneditable(){
+        if(!editMode){
+            mPhaseOfCardiacCycleSpinner.setEnabled(false);
+            mIntensitySpinner.setEnabled(false);
+            mMurmerDurationSpinner.setEnabled(false);
+            mMostIntenseLocationSpinner.setEnabled(false);
+            mRadiationSpinner.setEnabled(false);
+            //mCharacterSpinner.setEnabled(false);
+            mAddedSoundsSpinner.setEnabled(false);
+            mSOneSpinner.setEnabled(false);
+            mSTwoSpinner.setEnabled(false);
+            mChangeWithBreathingSpinner.setEnabled(false);
+            mValsalvaSpinner.setEnabled(false);
+            mLeftLateralPositionSpinner.setEnabled(false);
+            mSittingForwardSpinner.setEnabled(false);
+            mFinalDiagnosisSpinner.setEnabled(false);
+            mSelectedCharacters.setClickable(false);
+        }
+    }
+
     private void setUpTextViews(){
-        mPhaseOfCardiacCycleText = (TextView) mRootView.findViewById(R.id.phaseOfCardiacCycleText);
-        mIntensityText = (TextView) mRootView.findViewById(R.id.intensityText);
-        mMurmerDurationText = (TextView) mRootView.findViewById(R.id.murmerDurationText);
-        mMostIntenseLocationText = (TextView) mRootView.findViewById(R.id.mostIntenseLocationText);
-        mRadiationText = (TextView) mRootView.findViewById(R.id.radiationText);
-        mAddedSoundsText = (TextView) mRootView.findViewById(R.id.addedSoundsText);
-        mSOneText = (TextView) mRootView.findViewById(R.id.sOneText);
-        mSTwoText = (TextView) mRootView.findViewById(R.id.sTwoText);
-        mChangeWithBreathingText = (TextView) mRootView.findViewById(R.id.changeWithBreathingText);
-        mValsalvaText = (TextView) mRootView.findViewById(R.id.valsalvaText);
-        mLeftLateralPositionText = (TextView) mRootView.findViewById(R.id.leftLateralPositionText);
-        mSittingForwardText = (TextView) mRootView.findViewById(R.id.sittingForwardText);
-        mFinalDiagnosisText = (TextView) mRootView.findViewById(R.id.finalDiagnosisText);
-        mCharacterText = (TextView) mRootView.findViewById(R.id.murmerDurationText);
+//        mPhaseOfCardiacCycleText = (TextView) mRootView.findViewById(R.id.phaseOfCardiacCycleText);
+//        mIntensityText = (TextView) mRootView.findViewById(R.id.intensityText);
+//        mMurmerDurationText = (TextView) mRootView.findViewById(R.id.murmerDurationText);
+//        mMostIntenseLocationText = (TextView) mRootView.findViewById(R.id.mostIntenseLocationText);
+//        mRadiationText = (TextView) mRootView.findViewById(R.id.radiationText);
+//        mAddedSoundsText = (TextView) mRootView.findViewById(R.id.addedSoundsText);
+//        mSOneText = (TextView) mRootView.findViewById(R.id.sOneText);
+//        mSTwoText = (TextView) mRootView.findViewById(R.id.sTwoText);
+//        mChangeWithBreathingText = (TextView) mRootView.findViewById(R.id.changeWithBreathingText);
+//        mValsalvaText = (TextView) mRootView.findViewById(R.id.valsalvaText);
+//        mLeftLateralPositionText = (TextView) mRootView.findViewById(R.id.leftLateralPositionText);
+//        mSittingForwardText = (TextView) mRootView.findViewById(R.id.sittingForwardText);
+//        mFinalDiagnosisText = (TextView) mRootView.findViewById(R.id.finalDiagnosisText);
+//        mCharacterText = (TextView) mRootView.findViewById(R.id.murmerDurationText);
         mSelectedCharacters = (TextView) mRootView.findViewById(R.id.selectedCharacters);
         mSelectedCharacters.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                displayCharactersDialog();
+            public void onClick(View view) {
+                displayCharactersDialog(view);
             }
         });
 
@@ -331,14 +438,14 @@ public class MurmerRatingFragment extends Fragment {
         mFinalDiagnosisSpinner.setAdapter(mFinalDiagnosisSpinnerAdapter);
 
         //Character Adapter Setup
-        mMultiCharacterSelectorListAdapter = new MultiCharacterSelectorListAdapter(getContext(), selectedCharacters);
+        mMultiCharacterSelectorListAdapter = new MultiSelectorListAdapter(getContext(), Arrays.asList(CHARACTER.values()),selectedCharacters);
     }
 
-    private void displayCharactersDialog(){
+    private void displayCharactersDialog(View view){
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View characterSelectorDialog = (View)inflater.inflate(R.layout.dialog_character_select, null);
+        View characterSelectorDialog = (View)inflater.inflate(R.layout.dialog_multi_selector, null);
 
-        mCharacterSelector = (ListView)characterSelectorDialog.findViewById(R.id.characterSelector);
+        mCharacterSelector = (ListView)characterSelectorDialog.findViewById(R.id.multiSelectorList);
         mCharacterSelector.setAdapter(mMultiCharacterSelectorListAdapter);
         new AlertDialog.Builder(getContext())
                 .setTitle(R.string.multipleCharacterSelectorDialogTitle)
@@ -358,5 +465,9 @@ public class MurmerRatingFragment extends Fragment {
                 .create()
                 .show();
 
+    }
+
+    public boolean editModeEnabled(){
+        return editMode;
     }
 }

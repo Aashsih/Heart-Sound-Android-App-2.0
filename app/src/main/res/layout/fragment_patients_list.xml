@@ -6,42 +6,20 @@
     android:orientation="vertical"
     tools:context="com.head_first.aashi.heartsounds_20.controller.fragment.PatientListFragment">
 
-    <LinearLayout
-        android:id="@+id/searchBarContainer"
-        android:orientation="horizontal"
+
+    <android.support.v7.widget.SearchView
+        android:id="@+id/patientSearchView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:iconifiedByDefault="true">
 
-        <ImageButton
-            android:id="@+id/filterButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:srcCompat="@android:drawable/ic_menu_edit"
-            android:layout_weight="1"
-            android:layout_gravity="top|left" />
+    </android.support.v7.widget.SearchView>
 
-        <android.support.v7.widget.SearchView
-            android:id="@+id/patientSearchView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:iconifiedByDefault="true"
-            android:layout_weight="6"
-            android:layout_gravity="top|left"></android.support.v7.widget.SearchView>
-
-        <ImageButton
-            android:id="@+id/addPatient"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:srcCompat="@android:drawable/ic_input_add"
-            android:layout_weight="1"
-            android:layout_gravity="top|right" />
-
-    </LinearLayout>
     <View
         android:id="@+id/separator"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_below="@id/searchBarContainer"
+        android:layout_below="@id/patientSearchView"
         android:background="?android:attr/dividerHorizontal">
     </View>
     <!-- To make the dividers disappear set the the childDivider to color transparent -->

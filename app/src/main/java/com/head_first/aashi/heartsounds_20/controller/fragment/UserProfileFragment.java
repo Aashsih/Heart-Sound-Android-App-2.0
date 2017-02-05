@@ -3,10 +3,17 @@ package com.head_first.aashi.heartsounds_20.controller.fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.transition.Visibility;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.controller.activities.UserPatientActivity;
@@ -23,7 +30,18 @@ public class UserProfileFragment extends Fragment {
     public static final String USER_PROFILE_FRAGMENT_TAG = "USER_PROFILE_FRAGMENT";
     private static final String PROFILE_PAGE_TITLE = "User Profile";
 
+    //Layouts and views
+    private Menu mActionBarMenu;
     private View mRootView;
+    private TextView mFirstNameText;
+    private TextView mLastNameText;
+    private TextView mUserNameText;
+    private TextView mLogoutButtonText;
+    private EditText mEditableFirstName;
+    private EditText mEditableLastName;
+
+    //Data
+    private boolean editMode;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -65,6 +83,7 @@ public class UserProfileFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -72,6 +91,13 @@ public class UserProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mRootView = inflater.inflate(R.layout.fragment_user_profile, container, false);
+        mFirstNameText = (TextView) mRootView.findViewById(R.id.firstNameText);
+        mLastNameText = (TextView) mRootView.findViewById(R.id.lastNameText);
+        mUserNameText = (TextView) mRootView.findViewById(R.id.userNameText);
+        mEditableFirstName = (EditText) mRootView.findViewById(R.id.editableFirstName);
+        mEditableLastName = (EditText) mRootView.findViewById(R.id.editableLastName);
+        mLogoutButtonText = (Button) mRootView.findViewById(R.id.logoutButton);
+
         return mRootView;
     }
 
@@ -112,5 +138,129 @@ public class UserProfileFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.activity_user_patient_tool_bar_items, menu);
+        mActionBarMenu = menu;
+        showActionBarMenuItems();
+//        menu.findItem(R.id.filterPatientsItem).setVisible(false);
+//        menu.findItem(R.id.addPatientItem).setVisible(false);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handling item selection
+        switch (item.getItemId()) {
+            case R.id.editItem:
+                editUserProfile();
+                break;
+            case R.id.refreshViewItem:
+                break;
+            case R.id.saveChangesItem:
+                saveChanges();
+                break;
+            case R.id.cancelChangesItem:
+                cancelChanges();
+                break;
+        }
+        return true;
+    }
+
+    private void editUserProfile(){
+        editMode = true;
+        hideNonEditableViews();
+        showEditableViews();
+        showActionBarMenuItems();
+        copyDataFromTextViewToEditText();
+    }
+
+    private void saveChanges(){
+        editMode = false;
+        saveChangesFromEditText();
+        hideEditableViews();
+        showNonEditableViews();
+        showActionBarMenuItems();
+    }
+
+    public void cancelChanges(){
+        editMode = false;
+        hideEditableViews();
+        showNonEditableViews();
+        showActionBarMenuItems();
+    }
+
+    private void showEditableViews(){
+        if(editMode){
+            mEditableFirstName.setVisibility(View.VISIBLE);
+            mEditableLastName.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void showNonEditableViews(){
+        if(!editMode){
+            mFirstNameText.setVisibility(View.VISIBLE);
+            mLastNameText.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void hideNonEditableViews(){
+        if(editMode){
+            mFirstNameText.setVisibility(View.GONE);
+            mLastNameText.setVisibility(View.GONE);
+        }
+    }
+
+    private void hideEditableViews(){
+        if(!editMode){
+            mEditableFirstName.setVisibility(View.INVISIBLE);
+            mEditableLastName.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void copyDataFromTextViewToEditText(){
+        mEditableFirstName.setText(mFirstNameText.getText().toString());
+        mEditableLastName.setText(mLastNameText.getText().toString());
+    }
+
+    private void saveChangesFromEditText(){
+        //Save the changes made to the EditText in the models
+        //after that copy the same to the TextViews
+        mFirstNameText.setText(mEditableFirstName.getText().toString());
+        mLastNameText.setText(mEditableLastName.getText().toString());
+    }
+
+
+
+    private void showActionBarMenuItems(){
+        for(int i = 0; i < mActionBarMenu.size(); i++){
+            MenuItem menuItem = mActionBarMenu.getItem(i);
+            if(editMode){
+                //if menu item is save or cancel
+                if(menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.saveChangesItemText)) ||
+                        menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.cancelChangesItemText))){
+                    menuItem.setVisible(true);
+                }
+                else{
+                    menuItem.setVisible(false);
+                }
+            }
+            else{
+                //if menu item is edit or refresh
+                if(menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.editItemText)) ||
+                        menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.refreshViewItemText))){
+                    menuItem.setVisible(true);
+                }
+                else{
+                    menuItem.setVisible(false);
+                }
+            }
+        }
+    }
+
+    public boolean editModeEnabled(){
+        return this.editMode;
     }
 }

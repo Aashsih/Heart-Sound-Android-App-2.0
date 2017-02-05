@@ -9,7 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.head_first.aashi.heartsounds_20.R;
 
 /**
@@ -75,6 +77,9 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mRootView = inflater.inflate(R.layout.fragment_login, container, false);
+        ImageView loginScreenGIFView = (ImageView) mRootView.findViewById(R.id.loadingScreen);
+        Glide.with(getContext()).load(R.drawable.loading_screen_1).asGif().crossFade().into(loginScreenGIFView);
+
         mUsername = (EditText) mRootView.findViewById(R.id.username);
         mPassword = (EditText) mRootView.findViewById(R.id.password);
         mLoginButton = (Button) mRootView.findViewById(R.id.loginButton);

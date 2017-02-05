@@ -33,7 +33,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                app:srcCompat="@drawable/username_icon"
+                app:srcCompat="@drawable/ic_account_grey600_24dp"
                 android:id="@+id/usernameImage"
                 android:layout_weight="0.5" />
 
@@ -63,7 +63,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                app:srcCompat="@drawable/password_icon"
+                app:srcCompat="@drawable/ic_lock_grey600_24dp"
                 android:id="@+id/passwordImage"
                 android:layout_weight="0.5" />
 

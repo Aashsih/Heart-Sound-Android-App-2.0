@@ -7,19 +7,27 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.head_first.aashi.heartsounds_20.controller.activities.UserPatientActivity;
+import com.head_first.aashi.heartsounds_20.controller.fragment.LoginFragment;
+import com.head_first.aashi.heartsounds_20.controller.fragment.MurmerRatingFragment;
 
 public class HomePage extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home_page_1);
-        ImageView testGIF = (ImageView)findViewById(R.id.loadingScreen);
-        Glide.with(this).load(R.drawable.loading_screen_1).asGif().crossFade().into(testGIF);
+        setContentView(R.layout.activity_home_page);
+//
 
         //Navigate to heart_sound_ui_experiments experiment
         Intent heartSoundMainActivityIntent = new Intent(this, UserPatientActivity.class);
         startActivity(heartSoundMainActivityIntent);
+
+
+//        LoginFragment loginFragment = new LoginFragment();
+//        getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.fragmentContainer, loginFragment, LoginFragment.LOGIN_FRAGMENT)
+//                .addToBackStack(null)
+//                .commit();
     }
 
 }

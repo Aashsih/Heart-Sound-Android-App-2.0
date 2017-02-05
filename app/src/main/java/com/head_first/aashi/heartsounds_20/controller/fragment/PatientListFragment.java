@@ -11,10 +11,10 @@ import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
-import android.widget.ImageButton;
 
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.controller.activities.PatientHeartSoundActivity;
@@ -45,9 +45,7 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
 
     private DialogFragment filterFragment;
     private View mRootView;
-    private ImageButton mFilterButton;
     private SearchView mSearchView;
-    private ImageButton mAddNewPatient;
     private ExpandableListView mExpandableListView;
     private ExpandablePatientListAdapter expandablePatientListAdapter;
 
@@ -108,6 +106,7 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        setHasOptionsMenu(true);
         oldFilterString = "null";
     }
 
@@ -124,18 +123,8 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
 
         }
         else{
-            mAddNewPatient = (ImageButton) mRootView.findViewById(R.id.addPatient);
-            mAddNewPatient.setVisibility(View.INVISIBLE);
-        }
 
-        //Filter Button
-        mFilterButton = (ImageButton) mRootView.findViewById(R.id.filterButton);
-        mFilterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchFilterFragment();
-            }
-        });
+        }
 
         //SearchView Setup
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
@@ -204,6 +193,35 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.activity_user_patient_tool_bar_items, menu);
+        //if the Shared Patients is selected then set add patient button to false
+        if(!myPatientClicked){
+            menu.findItem(R.id.addPatientItem).setVisible(false);
+        }
+        menu.findItem(R.id.editItem).setVisible(false);
+        menu.findItem(R.id.saveChangesItem).setVisible(false);
+        menu.findItem(R.id.cancelChangesItem).setVisible(false);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handling item selection
+        switch (item.getItemId()) {
+            case R.id.addPatientItem:
+                break;
+            case R.id.filterPatientsItem:
+                launchFilterFragment();
+                break;
+            case R.id.refreshViewItem:
+                break;
+        }
+        return true;
+    }
+
 
     public void setMyPatientClicked(boolean myPatientClicked){
         this.myPatientClicked = myPatientClicked;

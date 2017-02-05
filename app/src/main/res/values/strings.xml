@@ -1,10 +1,38 @@
 <resources>
     <string name="app_name">HeartSounds_2.0</string>
     <string name="positiveButton">OK</string>
+
+    <!-- Common Toolbar items -->
+    <string name="refreshViewItemText">Refresh</string>
+    <string name="saveChangesItemText">Save</string>
+    <string name="cancelChangesItemText">Cancel</string>
+
+    <!-- Common Patient HearSound activity Toolbar items -->
+    <string name="deleteItemText">Delete</string>
+    <string name="editItemText">Edit</string>
+
+
+    <!-- User Patient activity Toolbar items -->
+    <string name="filterPatientsItemText">Filter</string>
+    <string name="addPatientItemText">New Patient</string>
+
+    <!-- Patient Toolbar Items-->
+    <string name="sharePatientItemText">Share</string>
+
     <!-- Login Page -->
     <string name="usernameHint">Username</string>
     <string name="passwordHint">Password</string>
     <string name="loginButton">Login</string>
+
+    <!-- User Profile Fragment -->
+    <string name="userRoleText">User Role</string>
+    <string name="firstNameLabel">First Name</string>
+    <string name="firstNameHint">first name</string>
+    <string name="lastNameLabel">Last Name</string>
+    <string name="lastNameHint">last name</string>
+    <string name="userNameLabel">Username</string>
+    <string name="userNameHint">username</string>
+    <string name="logoutButtonText">Log Out</string>
 
     <!-- Bottom Navigation Bar Menu Items -->
     <string name="userProfile">Profile</string>
@@ -17,19 +45,15 @@
     <!-- PatientHeartSoundActivity -->
     <string name="addHeartSound">Add Heart Sound</string>
 
-    <!-- Common Toolbar items -->
-    <string name="deleteItemText">Delete</string>
-    <string name="editItemText">Edit</string>
-
-    <!-- Patient Toolbar Items-->
-    <string name="sharePatientItemText">Share</string>
-
     <!-- Patient Fragment -->
     <string name="patientIdLabel">Patient Id</string>
     <string name="patientIdText">(empty)</string>
+    <string name="studyLabel">Study</string>
+    <string name="studyList">(not set)</string>
     <string name="createdByLabel">Created By</string>
     <string name="createdByText">(empty)</string>
     <string name="genderLabel">Gender</string>
+    <string name="gender">(not set)</string>
     <string name="dateOfBirthLabel">Date Of Birth</string>
     <string name="dateOfBirth">(not set)</string>
     <string name="visibleToStudentsLabel">Visible to Students</string>
@@ -60,10 +84,17 @@
     <string name="leftLateralPositionText">Left Lateral Position:</string>
     <string name="sittingForwardText">Sitting Forward:</string>
     <string name="finalDiagnosisText">Final Diagnosis:</string>
-    <string name="saveMurmerRatingButtonText">Save Changes:</string>
+    <string name="saveMurmerRatingButtonText">Save Changes</string>
 
     <!-- Multi-Character Selector Dialog -->
     <string name="multipleCharacterSelectorDialogTitle">Characters</string>
+
+    <!-- Multi-Character Selector Dialog -->
+    <string name="multipleStudySelectorDialogTitle">Study List</string>
+
+    <!-- Gender Selector Dialog -->
+    <string name="genderSelectorDialogTitle">Gender</string>
+
 
     <!-- FilterDialogFragment -->
     <string name="searchMenu">Search</string>

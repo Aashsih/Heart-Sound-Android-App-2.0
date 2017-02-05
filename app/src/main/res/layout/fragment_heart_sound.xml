@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.head_first.aashi.heartsounds_20.controller.fragment.PatientFragment"
-    style="@style/patientHeartSoundFragmentPadding">
+    style="@style/rootLayoutPadding">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
@@ -29,7 +29,7 @@
         android:text="@string/createdByLabel"
         android:layout_below="@id/heartSoundId"
         android:layout_alignParentLeft="true"
-        style="@style/patientHeartSoundFragmentViewPadding">
+        style="@style/viewSeparation">
     </TextView>
     <TextView
         android:id="@+id/doctorDetails"
@@ -47,7 +47,7 @@
         android:text="@string/deviceIdLabel"
         android:layout_below="@id/doctorDetails"
         android:layout_alignParentLeft="true"
-        style="@style/patientHeartSoundFragmentViewPadding">
+        style="@style/viewSeparation">
     </TextView>
     <TextView
         android:id="@+id/deviceId"
@@ -63,6 +63,7 @@
         android:text="@string/saveHeartSoundButtonText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"/>
 
 </RelativeLayout>

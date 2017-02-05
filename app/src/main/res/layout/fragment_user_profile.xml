@@ -1,111 +1,93 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.head_first.aashi.heartsounds_20.controller.fragment.UserProfileFragment">
+    tools:context="com.head_first.aashi.heartsounds_20.controller.fragment.UserProfileFragment"
+    style="@style/layoutPadding">
 
     <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:id="@+id/userRoleText"
+        android:text="@string/userRoleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"/>
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <RelativeLayout
+        android:id="@+id/firstNameContainer"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="top|center_horizontal"
-        android:layout_gravity="top">
-
+        android:layout_height="wrap_content"
+        android:layout_below="@id/userRoleText">
         <TextView
-            android:text="TextView"
+            android:id="@+id/firstNameLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView4"
-            android:layout_weight="1"
-            android:textAlignment="center" />
-    </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="?android:attr/dividerHorizontal">
-    </View>
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="4"
-        android:gravity="center_horizontal">
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/name"
-                android:text="TextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-        </LinearLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="?android:attr/dividerHorizontal">
-        </View>
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/lastName"
-                android:text="TextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-        </LinearLayout>
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="?android:attr/dividerHorizontal">
-        </View>
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/userName"
-                android:text="TextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-        </LinearLayout>
-    </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="?android:attr/dividerHorizontal">
-    </View>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:gravity="bottom"
-        android:layout_weight="1"
-        android:layout_gravity="bottom|end">
-
-        <Button
-            android:text="Save"
+            android:text="@string/firstNameLabel"
+            style="@style/viewSeparation"/>
+        <TextView
+            android:id="@+id/firstNameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/button2"
-            android:layout_weight="1"
-            android:layout_gravity="bottom" />
-    </LinearLayout>
+            android:hint="@string/firstNameHint"
+            android:layout_below="@id/firstNameLabel"/>
+        <EditText
+            android:id="@+id/editableFirstName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/firstNameHint"
+            android:visibility="gone"
+            android:layout_below="@id/firstNameLabel"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/lastNameContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/firstNameContainer">
+        <TextView
+            android:id="@+id/lastNameLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/lastNameLabel"
+            style="@style/viewSeparation"/>
+        <TextView
+            android:id="@+id/lastNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/lastNameHint"
+            android:layout_below="@id/lastNameLabel"/>
+        <EditText
+            android:id="@+id/editableLastName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/lastNameHint"
+            android:visibility="gone"
+            android:layout_below="@id/lastNameLabel"/>
+    </RelativeLayout>
 
 
-</LinearLayout>
+    <TextView
+        android:id="@+id/userNameLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/userNameLabel"
+        android:layout_below="@id/lastNameContainer"
+        style="@style/viewSeparation"/>
+    <TextView
+        android:id="@+id/userNameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/userNameHint"
+        android:layout_below="@id/userNameLabel"/>
+
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/logoutButtonText"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

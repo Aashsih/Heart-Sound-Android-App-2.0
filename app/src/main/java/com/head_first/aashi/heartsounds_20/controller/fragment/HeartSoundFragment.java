@@ -14,9 +14,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.head_first.aashi.heartsounds_20.R;
-import com.head_first.aashi.heartsounds_20.controller.activities.PatientHeartSoundActivity;
-
-import org.w3c.dom.Text;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,13 +40,15 @@ public class HeartSoundFragment extends Fragment {
     public static final String HEART_SOUND_FRAGMENT_TAG = "HEART_SOUND_FRAGMENT";
 
     //Data
+    private boolean editMode;
+
+    //Layout and View
+    private Menu mActionBarMenu;
+    private View mRootView;
     private TextView mHeartSoundId;
     private TextView mDoctorDetails;
     private TextView mDeviceId;
     private Button mSaveHeartSoundButton;
-
-    //Layout and View
-    private View mRootView;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -148,9 +147,38 @@ public class HeartSoundFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(
             Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.heart_sound_murmer_rating_tool_bar_items, menu);
+        inflater.inflate(R.menu.activity_patient_heart_sound_tool_bar_items, menu);
+        mActionBarMenu =  menu;
         //if the user is the creator of this HeartSound then display the edit menuitem
-        menu.findItem(R.id.editItem).setVisible(true);
+        showActionBarMenuItems();
+    }
+
+    private void showActionBarMenuItems(){
+        for(int i = 0; i < mActionBarMenu.size(); i++){
+            MenuItem menuItem = mActionBarMenu.getItem(i);
+            if(editMode){
+                //if menu item is save or cancel
+                if(menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.saveChangesItemText)) ||
+                        menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.cancelChangesItemText))){
+                    menuItem.setVisible(true);
+                }
+                else{
+                    menuItem.setVisible(false);
+                }
+            }
+            else{
+                if(!(menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.saveChangesItemText)) ||
+                        menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.cancelChangesItemText)) ||
+                        menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.sharePatientItemText)))){
+                    //if() user id matches the CreatedBy user id then display the edit button
+                    //mActionBarMenu.findItem(R.id.editItem).setVisible(false);
+                    menuItem.setVisible(true);
+                }
+                else{
+                    menuItem.setVisible(false);
+                }
+            }
+        }
     }
 
     @Override
@@ -158,8 +186,16 @@ public class HeartSoundFragment extends Fragment {
         // handling item selection
         switch (item.getItemId()) {
             case R.id.deletePatientItem:
-
+                break;
+            case R.id.editItem:
+                break;
+            case R.id.refreshViewItem:
+                break;
         }
         return true;
+    }
+
+    public boolean editModeEnabled(){
+        return editMode;
     }
 }

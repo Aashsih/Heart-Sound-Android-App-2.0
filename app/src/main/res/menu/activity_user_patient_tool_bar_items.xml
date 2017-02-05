@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/editItem"
+        android:icon="@drawable/ic_pencil_grey600_24dp"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="1"
+        android:title="@string/editItemText">
+    </item>
+
+    <item
+        android:id="@+id/addPatientItem"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="2"
+        android:title="@string/addPatientItemText"
+        android:icon="@drawable/ic_plus_grey600_48dp">
+    </item>
+
+    <item
+        android:id="@+id/filterPatientsItem"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="3"
+        android:title="@string/filterPatientsItemText"
+        android:icon="@drawable/ic_filter_grey600_24dp">
+    </item>
+
+    <item
+        android:id="@+id/refreshViewItem"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="4"
+        android:title="@string/refreshViewItemText"
+        android:icon="@drawable/ic_refresh_grey600_24dp">
+    </item>
+
+    <item
+        android:id="@+id/saveChangesItem"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="5"
+        android:title="@string/saveChangesItemText"
+        android:icon="@drawable/ic_check_white_24dp">
+    </item>
+
+    <item
+        android:id="@+id/cancelChangesItem"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="6"
+        android:title="@string/cancelChangesItemText"
+        android:icon="@drawable/ic_cancel_white_24dp">
+    </item>
+</menu>
