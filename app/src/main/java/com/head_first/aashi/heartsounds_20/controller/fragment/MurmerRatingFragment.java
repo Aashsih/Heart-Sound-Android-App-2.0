@@ -18,6 +18,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.head_first.aashi.heartsounds_20.R;
+import com.head_first.aashi.heartsounds_20.controller.EditableFragment;
 import com.head_first.aashi.heartsounds_20.enums.AddedSounds;
 import com.head_first.aashi.heartsounds_20.enums.CardiacPhase;
 import com.head_first.aashi.heartsounds_20.enums.ChangeWithBreathing;
@@ -46,7 +47,7 @@ import java.util.List;
  * Use the {@link MurmerRatingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MurmerRatingFragment extends Fragment {
+public class MurmerRatingFragment extends EditableFragment {
     /**
      * Highlight the selected MurmerRating in the navigation menu
      */
@@ -58,20 +59,20 @@ public class MurmerRatingFragment extends Fragment {
     private View mRootView;
     //TextViews
     private TextView mSelectedCharacters;
-//    private TextView mPhaseOfCardiacCycleText;
-//    private TextView mIntensityText;
-//    private TextView mMurmerDurationText;
-//    private TextView mMostIntenseLocationText;
-//    private TextView mRadiationText;
-//    private TextView mCharacterText;
-//    private TextView mAddedSoundsText;
-//    private TextView mSOneText;
-//    private TextView mSTwoText;
-//    private TextView mChangeWithBreathingText;
-//    private TextView mValsalvaText;
-//    private TextView mLeftLateralPositionText;
-//    private TextView mSittingForwardText;
-//    private TextView mFinalDiagnosisText;
+    private TextView mPhaseOfCardiacCycleText;
+    private TextView mIntensityText;
+    private TextView mMurmerDurationText;
+    private TextView mMostIntenseLocationText;
+    private TextView mRadiationText;
+    private TextView mCharacterText;
+    private TextView mAddedSoundsText;
+    private TextView mSOneText;
+    private TextView mSTwoText;
+    private TextView mChangeWithBreathingText;
+    private TextView mValsalvaText;
+    private TextView mLeftLateralPositionText;
+    private TextView mSittingForwardText;
+    private TextView mFinalDiagnosisText;
 
     //Spinners
     private Spinner mPhaseOfCardiacCycleSpinner;
@@ -111,7 +112,6 @@ public class MurmerRatingFragment extends Fragment {
 
     //Data
     private int selectedMurmerRatingPosition;
-    private boolean editMode;
     private List<CHARACTER> selectedCharacters; //this will be deleted. Instead of this the List<CHARACTER> from the MurmerRating object will be used
 
     // TODO: Rename parameter arguments, choose names that match
@@ -170,7 +170,11 @@ public class MurmerRatingFragment extends Fragment {
         mRootView = inflater.inflate(R.layout.fragment_murmer_rating, container, false);
         setUpTextViews();
         setUpSpinnersAndAdapters();
-        makeViewsUneditable();
+        //If MurmerRating object is not null copy data from the MurmerRating object into the views
+        //else load default data
+        loadDefaultDataIntoViews();
+
+        //makeViewsUneditable();
         return mRootView;
     }
 
@@ -221,7 +225,8 @@ public class MurmerRatingFragment extends Fragment {
         showActionBarMenuItems();
     }
 
-    private void showActionBarMenuItems(){
+    @Override
+    protected void showActionBarMenuItems(){
         for(int i = 0; i < mActionBarMenu.size(); i++){
             MenuItem menuItem = mActionBarMenu.getItem(i);
             if(editMode){
@@ -270,83 +275,197 @@ public class MurmerRatingFragment extends Fragment {
         return true;
     }
 
-    private void editUserProfile(){
+    @Override
+    protected void editUserProfile(){
         editMode = true;
+        hideNonEditableViews();
+        showEditableViews();
         makeViewsEditable();
         showActionBarMenuItems();
+        copyDataFromTextViewToSpinner();
     }
 
-    private void saveChanges(){
+    @Override
+    protected void saveChanges(){
         editMode = false;
-        //Copy the data from the views into the models
+        //Copy the data from the views into the models and make a PUT request to update the database
 
+        saveChangesFromSpinnerSelection();
+        hideEditableViews();
+        showNonEditableViews();
         makeViewsUneditable();
         showActionBarMenuItems();
     }
 
+    @Override
     public void cancelChanges(){
         editMode = false;
         //Copy the data from the models into the Views
 
+        hideEditableViews();
+        showNonEditableViews();
         makeViewsUneditable();
         showActionBarMenuItems();
     }
 
-    private void makeViewsEditable(){
+    @Override
+    protected void makeViewsEditable(){
         if(editMode){
-            mPhaseOfCardiacCycleSpinner.setEnabled(true);
-            mIntensitySpinner.setEnabled(true);
-            mMurmerDurationSpinner.setEnabled(true);
-            mMostIntenseLocationSpinner.setEnabled(true);
-            mRadiationSpinner.setEnabled(true);
-            //mCharacterSpinner.setEnabled(true);
-            mAddedSoundsSpinner.setEnabled(true);
-            mSOneSpinner.setEnabled(true);
-            mSTwoSpinner.setEnabled(true);
-            mChangeWithBreathingSpinner.setEnabled(true);
-            mValsalvaSpinner.setEnabled(true);
-            mLeftLateralPositionSpinner.setEnabled(true);
-            mSittingForwardSpinner.setEnabled(true);
-            mFinalDiagnosisSpinner.setEnabled(true);
+//            mPhaseOfCardiacCycleSpinner.setEnabled(true);
+//            mIntensitySpinner.setEnabled(true);
+//            mMurmerDurationSpinner.setEnabled(true);
+//            mMostIntenseLocationSpinner.setEnabled(true);
+//            mRadiationSpinner.setEnabled(true);
+//            //mCharacterSpinner.setEnabled(true);
+//            mAddedSoundsSpinner.setEnabled(true);
+//            mSOneSpinner.setEnabled(true);
+//            mSTwoSpinner.setEnabled(true);
+//            mChangeWithBreathingSpinner.setEnabled(true);
+//            mValsalvaSpinner.setEnabled(true);
+//            mLeftLateralPositionSpinner.setEnabled(true);
+//            mSittingForwardSpinner.setEnabled(true);
+//            mFinalDiagnosisSpinner.setEnabled(true);
             mSelectedCharacters.setClickable(true);
         }
     }
 
-    private void makeViewsUneditable(){
+    @Override
+    protected void makeViewsUneditable(){
         if(!editMode){
-            mPhaseOfCardiacCycleSpinner.setEnabled(false);
-            mIntensitySpinner.setEnabled(false);
-            mMurmerDurationSpinner.setEnabled(false);
-            mMostIntenseLocationSpinner.setEnabled(false);
-            mRadiationSpinner.setEnabled(false);
-            //mCharacterSpinner.setEnabled(false);
-            mAddedSoundsSpinner.setEnabled(false);
-            mSOneSpinner.setEnabled(false);
-            mSTwoSpinner.setEnabled(false);
-            mChangeWithBreathingSpinner.setEnabled(false);
-            mValsalvaSpinner.setEnabled(false);
-            mLeftLateralPositionSpinner.setEnabled(false);
-            mSittingForwardSpinner.setEnabled(false);
-            mFinalDiagnosisSpinner.setEnabled(false);
+//            mPhaseOfCardiacCycleSpinner.setEnabled(false);
+//            mIntensitySpinner.setEnabled(false);
+//            mMurmerDurationSpinner.setEnabled(false);
+//            mMostIntenseLocationSpinner.setEnabled(false);
+//            mRadiationSpinner.setEnabled(false);
+//            //mCharacterSpinner.setEnabled(false);
+//            mAddedSoundsSpinner.setEnabled(false);
+//            mSOneSpinner.setEnabled(false);
+//            mSTwoSpinner.setEnabled(false);
+//            mChangeWithBreathingSpinner.setEnabled(false);
+//            mValsalvaSpinner.setEnabled(false);
+//            mLeftLateralPositionSpinner.setEnabled(false);
+//            mSittingForwardSpinner.setEnabled(false);
+//            mFinalDiagnosisSpinner.setEnabled(false);
             mSelectedCharacters.setClickable(false);
         }
     }
 
+    @Override
+    protected void showEditableViews(){
+        if(editMode){
+            mPhaseOfCardiacCycleSpinner.setVisibility(View.VISIBLE);
+            mIntensitySpinner.setVisibility(View.VISIBLE);
+            mMurmerDurationSpinner.setVisibility(View.VISIBLE);
+            mMostIntenseLocationSpinner.setVisibility(View.VISIBLE);
+            mRadiationSpinner.setVisibility(View.VISIBLE);
+            mAddedSoundsSpinner.setVisibility(View.VISIBLE);
+            mSOneSpinner.setVisibility(View.VISIBLE);
+            mSTwoSpinner.setVisibility(View.VISIBLE);
+            mChangeWithBreathingSpinner.setVisibility(View.VISIBLE);
+            mValsalvaSpinner.setVisibility(View.VISIBLE);
+            mLeftLateralPositionSpinner.setVisibility(View.VISIBLE);
+            mSittingForwardSpinner.setVisibility(View.VISIBLE);
+            mFinalDiagnosisSpinner.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    protected void showNonEditableViews(){
+        if(!editMode){
+            mPhaseOfCardiacCycleText.setVisibility(View.VISIBLE);
+            mIntensityText.setVisibility(View.VISIBLE);
+            mMurmerDurationText.setVisibility(View.VISIBLE);
+            mMostIntenseLocationText.setVisibility(View.VISIBLE);
+            mRadiationText.setVisibility(View.VISIBLE);
+            mCharacterText.setVisibility(View.VISIBLE);
+            mAddedSoundsText.setVisibility(View.VISIBLE);
+            mSOneText.setVisibility(View.VISIBLE);
+            mSTwoText.setVisibility(View.VISIBLE);
+            mChangeWithBreathingText.setVisibility(View.VISIBLE);
+            mValsalvaText.setVisibility(View.VISIBLE);
+            mLeftLateralPositionText.setVisibility(View.VISIBLE);
+            mSittingForwardText.setVisibility(View.VISIBLE);
+            mFinalDiagnosisText.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    protected void hideNonEditableViews(){
+        if(editMode){
+            mPhaseOfCardiacCycleText.setVisibility(View.GONE);
+            mIntensityText.setVisibility(View.GONE);
+            mMurmerDurationText.setVisibility(View.GONE);
+            mMostIntenseLocationText.setVisibility(View.GONE);
+            mRadiationText.setVisibility(View.GONE);
+            mCharacterText.setVisibility(View.GONE);
+            mAddedSoundsText.setVisibility(View.GONE);
+            mSOneText.setVisibility(View.GONE);
+            mSTwoText.setVisibility(View.GONE);
+            mChangeWithBreathingText.setVisibility(View.GONE);
+            mValsalvaText.setVisibility(View.GONE);
+            mLeftLateralPositionText.setVisibility(View.GONE);
+            mSittingForwardText.setVisibility(View.GONE);
+            mFinalDiagnosisText.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    protected void hideEditableViews(){
+        if(!editMode){
+            mPhaseOfCardiacCycleSpinner.setVisibility(View.GONE);
+            mIntensitySpinner.setVisibility(View.GONE);
+            mMurmerDurationSpinner.setVisibility(View.GONE);
+            mMostIntenseLocationSpinner.setVisibility(View.GONE);
+            mRadiationSpinner.setVisibility(View.GONE);
+            mAddedSoundsSpinner.setVisibility(View.GONE);
+            mSOneSpinner.setVisibility(View.GONE);
+            mSTwoSpinner.setVisibility(View.GONE);
+            mChangeWithBreathingSpinner.setVisibility(View.GONE);
+            mValsalvaSpinner.setVisibility(View.GONE);
+            mLeftLateralPositionSpinner.setVisibility(View.GONE);
+            mSittingForwardSpinner.setVisibility(View.GONE);
+            mFinalDiagnosisSpinner.setVisibility(View.GONE);        }
+    }
+
+    private void copyDataFromTextViewToSpinner(){
+        mPhaseOfCardiacCycleSpinner.setSelection(mPhaseOfCardiacCycleSpinnerAdapter.getPosition(CardiacPhase.getCardiacPhase(mPhaseOfCardiacCycleText.getText().toString())));
+        mIntensitySpinner.setSelection(mIntensitySpinnerAdapter.getPosition(Intensity.getIntensity(mIntensityText.getText().toString())));
+        mMurmerDurationSpinner.setSelection(mMurmerDurationSpinnerAdapter.getPosition(MurmurDuration.getMurmurDuration(mMurmerDurationText.getText().toString())));
+        mMostIntenseLocationSpinner.setSelection(mMostIntenseLocationSpinnerAdapter.getPosition(MostIntenseLocation.getMostIntenseLocation(mMostIntenseLocationText.getText().toString())));;
+        mRadiationSpinner.setSelection(mRadiationSpinnerAdapter.getPosition(Radiation.getRadiation(mRadiationText.getText().toString())));;
+        mAddedSoundsSpinner.setSelection(mAddedSoundsSpinnerAdapter.getPosition(AddedSounds.getAddedSounds(mAddedSoundsText.getText().toString())));;
+        mSOneSpinner.setSelection(mSOneSpinnerAdapter.getPosition(S1.getSOne(mSOneText.getText().toString())));;
+        mSTwoSpinner.setSelection(mSTwoSpinnerAdapter.getPosition(S2.getSTwo(mSTwoText.getText().toString())));;
+        mChangeWithBreathingSpinner.setSelection(mChangeWithBreathingSpinnerAdapter.getPosition(ChangeWithBreathing.getChangeWithBreathing(mChangeWithBreathingText.getText().toString())));;
+        mValsalvaSpinner.setSelection(mValsalvaSpinnerAdapter.getPosition(Valsalva.getValsalva(mValsalvaText.getText().toString())));;
+        mLeftLateralPositionSpinner.setSelection(mLeftLateralPositionSpinnerAdapter.getPosition(LeftLateralPosition.getLeftLateralPosition(mLeftLateralPositionText.getText().toString())));;
+        mSittingForwardSpinner.setSelection(mSittingForwardSpinnerAdapter.getPosition(SittingForward.getSittingForward(mSittingForwardText.getText().toString())));;
+        mFinalDiagnosisSpinner.setSelection(mFinalDiagnosisSpinnerAdapter.getPosition(FinalDiagnosis.getFinalDiagnosis(mFinalDiagnosisText.getText().toString())));;
+    }
+
+    private void saveChangesFromSpinnerSelection(){
+        //copy the data to the models and then make a PUT request to the database
+
+        //copy the data from the models to the text views
+        //the method to do the above will be used in the onCreateView as well
+
+    }
+
     private void setUpTextViews(){
-//        mPhaseOfCardiacCycleText = (TextView) mRootView.findViewById(R.id.phaseOfCardiacCycleText);
-//        mIntensityText = (TextView) mRootView.findViewById(R.id.intensityText);
-//        mMurmerDurationText = (TextView) mRootView.findViewById(R.id.murmerDurationText);
-//        mMostIntenseLocationText = (TextView) mRootView.findViewById(R.id.mostIntenseLocationText);
-//        mRadiationText = (TextView) mRootView.findViewById(R.id.radiationText);
-//        mAddedSoundsText = (TextView) mRootView.findViewById(R.id.addedSoundsText);
-//        mSOneText = (TextView) mRootView.findViewById(R.id.sOneText);
-//        mSTwoText = (TextView) mRootView.findViewById(R.id.sTwoText);
-//        mChangeWithBreathingText = (TextView) mRootView.findViewById(R.id.changeWithBreathingText);
-//        mValsalvaText = (TextView) mRootView.findViewById(R.id.valsalvaText);
-//        mLeftLateralPositionText = (TextView) mRootView.findViewById(R.id.leftLateralPositionText);
-//        mSittingForwardText = (TextView) mRootView.findViewById(R.id.sittingForwardText);
-//        mFinalDiagnosisText = (TextView) mRootView.findViewById(R.id.finalDiagnosisText);
-//        mCharacterText = (TextView) mRootView.findViewById(R.id.murmerDurationText);
+        mPhaseOfCardiacCycleText = (TextView) mRootView.findViewById(R.id.phaseOfCardiacCycleText);
+        mIntensityText = (TextView) mRootView.findViewById(R.id.intensityText);
+        mMurmerDurationText = (TextView) mRootView.findViewById(R.id.murmerDurationText);
+        mMostIntenseLocationText = (TextView) mRootView.findViewById(R.id.mostIntenseLocationText);
+        mRadiationText = (TextView) mRootView.findViewById(R.id.radiationText);
+        mAddedSoundsText = (TextView) mRootView.findViewById(R.id.addedSoundsText);
+        mSOneText = (TextView) mRootView.findViewById(R.id.sOneText);
+        mSTwoText = (TextView) mRootView.findViewById(R.id.sTwoText);
+        mChangeWithBreathingText = (TextView) mRootView.findViewById(R.id.changeWithBreathingText);
+        mValsalvaText = (TextView) mRootView.findViewById(R.id.valsalvaText);
+        mLeftLateralPositionText = (TextView) mRootView.findViewById(R.id.leftLateralPositionText);
+        mSittingForwardText = (TextView) mRootView.findViewById(R.id.sittingForwardText);
+        mFinalDiagnosisText = (TextView) mRootView.findViewById(R.id.finalDiagnosisText);
+        mCharacterText = (TextView) mRootView.findViewById(R.id.murmerDurationText);
         mSelectedCharacters = (TextView) mRootView.findViewById(R.id.selectedCharacters);
         mSelectedCharacters.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -441,6 +560,24 @@ public class MurmerRatingFragment extends Fragment {
         mMultiCharacterSelectorListAdapter = new MultiSelectorListAdapter(getContext(), Arrays.asList(CHARACTER.values()),selectedCharacters);
     }
 
+    private void loadDefaultDataIntoViews(){
+
+        mPhaseOfCardiacCycleText.setText(mPhaseOfCardiacCycleSpinner.getSelectedItem().toString());
+        mIntensityText.setText(mIntensitySpinner.getSelectedItem().toString());
+        mMurmerDurationText.setText(mMurmerDurationSpinner.getSelectedItem().toString());
+        mMostIntenseLocationText.setText(mMostIntenseLocationSpinner.getSelectedItem().toString());
+        mRadiationText.setText(mRadiationSpinner.getSelectedItem().toString());
+        mAddedSoundsText.setText(mAddedSoundsSpinner.getSelectedItem().toString());
+        mSOneText.setText(mSOneSpinner.getSelectedItem().toString());
+        mSTwoText.setText(mSTwoSpinner.getSelectedItem().toString());
+        mChangeWithBreathingText.setText(mChangeWithBreathingSpinner.getSelectedItem().toString());
+        mValsalvaText.setText(mValsalvaSpinner.getSelectedItem().toString());
+        mLeftLateralPositionText.setText(mLeftLateralPositionSpinner.getSelectedItem().toString());
+        mSittingForwardText.setText(mSittingForwardSpinner.getSelectedItem().toString());
+        mFinalDiagnosisText.setText(mFinalDiagnosisSpinner.getSelectedItem().toString());
+
+    }
+
     private void displayCharactersDialog(View view){
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View characterSelectorDialog = (View)inflater.inflate(R.layout.dialog_multi_selector, null);
@@ -467,6 +604,7 @@ public class MurmerRatingFragment extends Fragment {
 
     }
 
+    @Override
     public boolean editModeEnabled(){
         return editMode;
     }

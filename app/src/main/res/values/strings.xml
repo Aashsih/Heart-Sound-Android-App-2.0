@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">HeartSounds_2.0</string>
     <string name="positiveButton">OK</string>
+    <string name="defaultSpinnerString">(not set)</string>
 
     <!-- Common Toolbar items -->
     <string name="refreshViewItemText">Refresh</string>
@@ -69,21 +70,21 @@
     <string name="deviceIdText">(empty)</string>
 
     <!-- MurmerRating Fragment -->
-    <string name="phaseOfCardiacCycleText">Phase of Cardiac Cycle:</string>
-    <string name="intensityText">Intensity:</string>
-    <string name="murmerDurationText">Murmer Duration:</string>
-    <string name="mostIntenseLocationText">Most Intense Location:</string>
-    <string name="radiationText">Radiation:</string>
+    <string name="phaseOfCardiacCycleLabel">Phase of Cardiac Cycle:</string>
+    <string name="intensityLabel">Intensity:</string>
+    <string name="murmerDurationLabel">Murmer Duration:</string>
+    <string name="mostIntenseLocationLabel">Most Intense Location:</string>
+    <string name="radiationLabel">Radiation:</string>
     <string name="characterText">Character:</string>
     <string name="selectedCharacters">(none)</string>
-    <string name="addedSoundsText">Added Sounds:</string>
-    <string name="sOneText">S1:</string>
-    <string name="sTwoText">S2:</string>
-    <string name="changeWithBreathingText">Change With Breathing:</string>
-    <string name="valsalvaText">Valsalva:</string>
-    <string name="leftLateralPositionText">Left Lateral Position:</string>
-    <string name="sittingForwardText">Sitting Forward:</string>
-    <string name="finalDiagnosisText">Final Diagnosis:</string>
+    <string name="addedSoundsLabel">Added Sounds:</string>
+    <string name="sOneLabel">S1:</string>
+    <string name="sTwoLabel">S2:</string>
+    <string name="changeWithBreathingLabel">Change With Breathing:</string>
+    <string name="valsalvaLabel">Valsalva:</string>
+    <string name="leftLateralPositionLabel">Left Lateral Position:</string>
+    <string name="sittingForwardLabel">Sitting Forward:</string>
+    <string name="finalDiagnosisLabel">Final Diagnosis:</string>
     <string name="saveMurmerRatingButtonText">Save Changes</string>
 
     <!-- Multi-Character Selector Dialog -->

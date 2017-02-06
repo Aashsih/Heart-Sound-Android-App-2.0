@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.head_first.aashi.heartsounds_20.R;
+import com.head_first.aashi.heartsounds_20.controller.EditableFragment;
 import com.head_first.aashi.heartsounds_20.controller.activities.UserPatientActivity;
 
 /**
@@ -26,7 +27,7 @@ import com.head_first.aashi.heartsounds_20.controller.activities.UserPatientActi
  * Use the {@link UserProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class UserProfileFragment extends Fragment {
+public class UserProfileFragment extends EditableFragment {
     public static final String USER_PROFILE_FRAGMENT_TAG = "USER_PROFILE_FRAGMENT";
     private static final String PROFILE_PAGE_TITLE = "User Profile";
 
@@ -41,7 +42,6 @@ public class UserProfileFragment extends Fragment {
     private EditText mEditableLastName;
 
     //Data
-    private boolean editMode;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -169,7 +169,8 @@ public class UserProfileFragment extends Fragment {
         return true;
     }
 
-    private void editUserProfile(){
+    @Override
+    protected void editUserProfile(){
         editMode = true;
         hideNonEditableViews();
         showEditableViews();
@@ -177,14 +178,18 @@ public class UserProfileFragment extends Fragment {
         copyDataFromTextViewToEditText();
     }
 
-    private void saveChanges(){
+    @Override
+    protected void saveChanges(){
         editMode = false;
+        //Copy data into the models and make a PUT request to update the database
+
         saveChangesFromEditText();
         hideEditableViews();
         showNonEditableViews();
         showActionBarMenuItems();
     }
 
+    @Override
     public void cancelChanges(){
         editMode = false;
         hideEditableViews();
@@ -192,31 +197,35 @@ public class UserProfileFragment extends Fragment {
         showActionBarMenuItems();
     }
 
-    private void showEditableViews(){
+    @Override
+    protected void showEditableViews(){
         if(editMode){
             mEditableFirstName.setVisibility(View.VISIBLE);
             mEditableLastName.setVisibility(View.VISIBLE);
         }
     }
 
-    private void showNonEditableViews(){
+    @Override
+    protected void showNonEditableViews(){
         if(!editMode){
             mFirstNameText.setVisibility(View.VISIBLE);
             mLastNameText.setVisibility(View.VISIBLE);
         }
     }
 
-    private void hideNonEditableViews(){
+    @Override
+    protected void hideNonEditableViews(){
         if(editMode){
             mFirstNameText.setVisibility(View.GONE);
             mLastNameText.setVisibility(View.GONE);
         }
     }
 
-    private void hideEditableViews(){
+    @Override
+    protected void hideEditableViews(){
         if(!editMode){
-            mEditableFirstName.setVisibility(View.INVISIBLE);
-            mEditableLastName.setVisibility(View.INVISIBLE);
+            mEditableFirstName.setVisibility(View.GONE);
+            mEditableLastName.setVisibility(View.GONE);
         }
     }
 
@@ -225,6 +234,7 @@ public class UserProfileFragment extends Fragment {
         mEditableLastName.setText(mLastNameText.getText().toString());
     }
 
+
     private void saveChangesFromEditText(){
         //Save the changes made to the EditText in the models
         //after that copy the same to the TextViews
@@ -232,9 +242,8 @@ public class UserProfileFragment extends Fragment {
         mLastNameText.setText(mEditableLastName.getText().toString());
     }
 
-
-
-    private void showActionBarMenuItems(){
+    @Override
+    protected void showActionBarMenuItems(){
         for(int i = 0; i < mActionBarMenu.size(); i++){
             MenuItem menuItem = mActionBarMenu.getItem(i);
             if(editMode){
@@ -260,7 +269,18 @@ public class UserProfileFragment extends Fragment {
         }
     }
 
+    @Override
     public boolean editModeEnabled(){
         return this.editMode;
+    }
+
+    @Override
+    protected void makeViewsEditable() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void makeViewsUneditable(){
+        throw new UnsupportedOperationException();
     }
 }

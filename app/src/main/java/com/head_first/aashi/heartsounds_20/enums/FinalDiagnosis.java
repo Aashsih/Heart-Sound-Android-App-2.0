@@ -1,5 +1,8 @@
 package com.head_first.aashi.heartsounds_20.enums;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Aashish Indorewala on 05-Nov-16.
  */
@@ -13,6 +16,18 @@ public enum FinalDiagnosis {
     PULMONARY_REGURGITATION("Pulmonary Regurgitation"), PATENT_DUCTUS_ARTERIOSUS("Patent Ductus Arteriosus"),
     FISTULA("Fistula"), VENTRICULAR_SEPTAL_DEFECT("Ventricular Septal Defect"), ATRIAL_SEPTAL_DEFECT("Atrial Septal Defect"),
     HYPERTROPHIC_CARDIOMYOPATHY_WITH_LEFT_VENTRICULAR_OUTFLOW_OBSTRUCTION("Hypertrophic Cardiomyopathy With Left Ventricular Outflow Obstruction");
+
+    private static Map<String, FinalDiagnosis> valueToFinalDiagnosis = new HashMap<String, FinalDiagnosis>();
+
+    static {
+        for(FinalDiagnosis finalDiagnosis : FinalDiagnosis.values()){
+            valueToFinalDiagnosis.put(finalDiagnosis.value,finalDiagnosis);
+        }
+    }
+
+    public static FinalDiagnosis getFinalDiagnosis(String value){
+        return valueToFinalDiagnosis.get(value);
+    }
 
     private String value;
 

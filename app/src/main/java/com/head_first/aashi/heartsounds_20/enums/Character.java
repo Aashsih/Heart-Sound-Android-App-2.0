@@ -10,14 +10,19 @@ import java.util.Map;
 public enum CHARACTER {
     HIGH_PITCHED("High Pitched"), LOW_PITCHED("Low Pitched"), RUMBLING("Rumbling");
 
-    private String value;
     private static Map<String, CHARACTER> valueToCharacter = new HashMap<String, CHARACTER>();
 
     static {
-        for(CHARACTER accessModifier : CHARACTER.values()){
-            valueToCharacter.put(accessModifier.value,accessModifier);
+        for(CHARACTER character : CHARACTER.values()){
+            valueToCharacter.put(character.value,character);
         }
     }
+
+    public static CHARACTER getCharacter(String value){
+        return valueToCharacter.get(value);
+    }
+
+    private String value;
 
     private CHARACTER(String value){
         this.value = value;
@@ -28,7 +33,5 @@ public enum CHARACTER {
         return this.value;
     }
 
-    public static CHARACTER getCharacter(String value){
-        return valueToCharacter.get(value);
-    }
+
 }

@@ -31,20 +31,31 @@
                 android:layout_alignParentTop="true"
                 style="@style/viewSeparation">
                 <TextView
-                    android:id="@+id/phaseOfCardiacCycleText"
+                    android:id="@+id/phaseOfCardiacCycleLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/phaseOfCardiacCycleText"
+                    android:text="@string/phaseOfCardiacCycleLabel"
                     android:layout_weight="1"
                     android:gravity="left"/>
-                <Spinner
-                    android:id="@+id/phaseOfCardiacCycleSpinner"
+
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="right">
+                    <TextView
+                        android:id="@+id/phaseOfCardiacCycleText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/defaultSpinnerString"/>
+                    <Spinner
+                        android:id="@+id/phaseOfCardiacCycleSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone">
 
-                </Spinner>
+                    </Spinner>
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -55,20 +66,30 @@
                 android:layout_below="@id/phaseOfCardiacCycleContainer"
                 style="@style/viewSeparation">
                 <TextView
-                    android:id="@+id/intensityText"
+                    android:id="@+id/intensityLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/intensityText"
+                    android:text="@string/intensityLabel"
                     android:layout_weight="1"
                     android:gravity="left"/>
-                <Spinner
-                    android:id="@+id/intensitySpinner"
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="right">
+                    <TextView
+                        android:id="@+id/intensityText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/defaultSpinnerString"/>
+                    <Spinner
+                        android:id="@+id/intensitySpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone">
 
-                </Spinner>
+                    </Spinner>
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -79,20 +100,30 @@
                 android:layout_below="@id/intensityContainer"
                 style="@style/viewSeparation">
                 <TextView
-                    android:id="@+id/murmerDurationText"
+                    android:id="@+id/murmerDurationLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/murmerDurationText"
+                    android:text="@string/murmerDurationLabel"
                     android:layout_weight="1"
                     android:gravity="left"/>
-                <Spinner
-                    android:id="@+id/murmerDurationSpinner"
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="right">
+                    <TextView
+                        android:id="@+id/murmerDurationText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/defaultSpinnerString"/>
+                    <Spinner
+                        android:id="@+id/murmerDurationSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone">
 
-                </Spinner>
+                    </Spinner>
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -103,20 +134,30 @@
                 android:layout_below="@id/murmerDurationContainer"
                 style="@style/viewSeparation">
                 <TextView
-                    android:id="@+id/mostIntenseLocationText"
+                    android:id="@+id/mostIntenseLocationLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/mostIntenseLocationText"
+                    android:text="@string/mostIntenseLocationLabel"
                     android:layout_weight="1"
                     android:gravity="left"/>
-                <Spinner
-                    android:id="@+id/mostIntenseLocationSpinner"
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="right">
+                    <TextView
+                        android:id="@+id/mostIntenseLocationText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/defaultSpinnerString"/>
+                    <Spinner
+                        android:id="@+id/mostIntenseLocationSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone">
 
-                </Spinner>
+                    </Spinner>
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -127,20 +168,30 @@
                 android:layout_below="@id/mostIntenseLocationContainer"
                 style="@style/viewSeparation">
                 <TextView
-                    android:id="@+id/radiationText"
+                    android:id="@+id/radiationLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/radiationText"
+                    android:text="@string/radiationLabel"
                     android:layout_weight="1"
                     android:gravity="left"/>
-                <Spinner
-                    android:id="@+id/radiationSpinner"
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="right">
+                    <TextView
+                        android:id="@+id/radiationText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/defaultSpinnerString"/>
+                    <Spinner
+                        android:id="@+id/radiationSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone">
 
-                </Spinner>
+                    </Spinner>
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -154,7 +205,7 @@
                     android:id="@+id/characterText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/characterText"
+                    android:hint="@string/characterText"
                     android:layout_weight="1"
                     android:gravity="left"/>
                 <TextView
@@ -177,20 +228,30 @@
                 android:layout_below="@id/characterContainer"
                 style="@style/viewSeparation">
                 <TextView
-                    android:id="@+id/addedSoundsText"
+                    android:id="@+id/addedSoundsLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/addedSoundsText"
+                    android:text="@string/addedSoundsLabel"
                     android:layout_weight="1"
                     android:gravity="left"/>
-                <Spinner
-                    android:id="@+id/addedSoundsSpinner"
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="right">
+                    <TextView
+                        android:id="@+id/addedSoundsText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/defaultSpinnerString"/>
+                    <Spinner
+                        android:id="@+id/addedSoundsSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone">
 
-                </Spinner>
+                    </Spinner>
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -201,20 +262,30 @@
                 android:layout_below="@id/addedSoundsContainer"
                 style="@style/viewSeparation">
                 <TextView
-                    android:id="@+id/sOneText"
+                    android:id="@+id/sOneLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/sOneText"
+                    android:text="@string/sOneLabel"
                     android:layout_weight="1"
                     android:gravity="left"/>
-                <Spinner
-                    android:id="@+id/sOneSpinner"
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="right">
+                    <TextView
+                        android:id="@+id/sOneText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/defaultSpinnerString"/>
+                    <Spinner
+                        android:id="@+id/sOneSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone">
 
-                </Spinner>
+                    </Spinner>
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -225,20 +296,30 @@
                 android:layout_below="@id/sOneContainer"
                 style="@style/viewSeparation">
                 <TextView
-                    android:id="@+id/sTwoText"
+                    android:id="@+id/sTwoLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/sTwoText"
+                    android:text="@string/sTwoLabel"
                     android:layout_weight="1"
                     android:gravity="left"/>
-                <Spinner
-                    android:id="@+id/sTwoSpinner"
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="right">
+                    <TextView
+                        android:id="@+id/sTwoText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/defaultSpinnerString"/>
+                    <Spinner
+                        android:id="@+id/sTwoSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone">
 
-                </Spinner>
+                    </Spinner>
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -249,20 +330,30 @@
                 android:layout_below="@id/sTwoContainer"
                 style="@style/viewSeparation">
                 <TextView
-                    android:id="@+id/changeWithBreathingText"
+                    android:id="@+id/changeWithBreathingLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/changeWithBreathingText"
+                    android:text="@string/changeWithBreathingLabel"
                     android:layout_weight="1"
                     android:gravity="left"/>
-                <Spinner
-                    android:id="@+id/changeWithBreathingSpinner"
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="right">
+                    <TextView
+                        android:id="@+id/changeWithBreathingText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/defaultSpinnerString"/>
+                    <Spinner
+                        android:id="@+id/changeWithBreathingSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone">
 
-                </Spinner>
+                    </Spinner>
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -273,20 +364,30 @@
                 android:layout_below="@id/changeWithBreathingContainer"
                 style="@style/viewSeparation">
                 <TextView
-                    android:id="@+id/valsalvaText"
+                    android:id="@+id/valsalvaLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/valsalvaText"
+                    android:text="@string/valsalvaLabel"
                     android:layout_weight="1"
                     android:gravity="left"/>
-                <Spinner
-                    android:id="@+id/valsalvaSpinner"
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="right">
+                    <TextView
+                        android:id="@+id/valsalvaText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/defaultSpinnerString"/>
+                    <Spinner
+                        android:id="@+id/valsalvaSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone">
 
-                </Spinner>
+                    </Spinner>
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -297,20 +398,30 @@
                 android:layout_below="@id/valsalvaContainer"
                 style="@style/viewSeparation">
                 <TextView
-                    android:id="@+id/leftLateralPositionText"
+                    android:id="@+id/leftLateralPositionLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/leftLateralPositionText"
+                    android:text="@string/leftLateralPositionLabel"
                     android:layout_weight="1"
                     android:gravity="left"/>
-                <Spinner
-                    android:id="@+id/leftLateralPositionSpinner"
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="right">
+                    <TextView
+                        android:id="@+id/leftLateralPositionText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/defaultSpinnerString"/>
+                    <Spinner
+                        android:id="@+id/leftLateralPositionSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone">
 
-                </Spinner>
+                    </Spinner>
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -321,20 +432,30 @@
                 android:layout_below="@id/leftLateralPositionContainer"
                 style="@style/viewSeparation">
                 <TextView
-                    android:id="@+id/sittingForwardText"
+                    android:id="@+id/sittingForwardLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/sittingForwardText"
+                    android:text="@string/sittingForwardLabel"
                     android:layout_weight="1"
                     android:gravity="left"/>
-                <Spinner
-                    android:id="@+id/sittingForwardSpinner"
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="right">
+                    <TextView
+                        android:id="@+id/sittingForwardText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/defaultSpinnerString"/>
+                    <Spinner
+                        android:id="@+id/sittingForwardSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone">
 
-                </Spinner>
+                    </Spinner>
+                </RelativeLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -345,20 +466,31 @@
                 android:layout_below="@id/sittingForwardContainer"
                 style="@style/viewSeparation">
                 <TextView
-                    android:id="@+id/finalDiagnosisText"
+                    android:id="@+id/finalDiagnosisLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/finalDiagnosisText"
+                    android:text="@string/finalDiagnosisLabel"
                     android:layout_weight="1"
                     android:gravity="left"/>
-                <Spinner
-                    android:id="@+id/finalDiagnosisSpinner"
+
+                <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="right">
+                    <TextView
+                        android:id="@+id/finalDiagnosisText"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:hint="@string/defaultSpinnerString"/>
+                    <Spinner
+                        android:id="@+id/finalDiagnosisSpinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:visibility="gone">
 
-                </Spinner>
+                    </Spinner>
+                </RelativeLayout>
             </LinearLayout>
         </RelativeLayout>
 

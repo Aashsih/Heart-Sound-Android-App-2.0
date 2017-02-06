@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.head_first.aashi.heartsounds_20.R;
+import com.head_first.aashi.heartsounds_20.controller.EditableFragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,7 +24,7 @@ import com.head_first.aashi.heartsounds_20.R;
  * Use the {@link HeartSoundFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HeartSoundFragment extends Fragment {
+public class HeartSoundFragment extends EditableFragment {
     /**
      * This fragment will display the following:
      * 1. HeartSoundId (if not already displayed in the navigation view)
@@ -40,7 +41,6 @@ public class HeartSoundFragment extends Fragment {
     public static final String HEART_SOUND_FRAGMENT_TAG = "HEART_SOUND_FRAGMENT";
 
     //Data
-    private boolean editMode;
 
     //Layout and View
     private Menu mActionBarMenu;
@@ -102,6 +102,8 @@ public class HeartSoundFragment extends Fragment {
         mDoctorDetails = (TextView) mRootView.findViewById(R.id.doctorDetails);
         mDeviceId = (TextView) mRootView.findViewById(R.id.deviceId);
         mSaveHeartSoundButton = (Button) mRootView.findViewById(R.id.saveHeartSoundButton);
+        //If HeartSound object is not null copy data from the HeartSound object into the views
+
         return mRootView;
     }
 
@@ -153,7 +155,43 @@ public class HeartSoundFragment extends Fragment {
         showActionBarMenuItems();
     }
 
-    private void showActionBarMenuItems(){
+    @Override
+    protected void editUserProfile() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void saveChanges() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void cancelChanges() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void showEditableViews() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void showNonEditableViews() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void hideNonEditableViews() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void hideEditableViews() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void showActionBarMenuItems(){
         for(int i = 0; i < mActionBarMenu.size(); i++){
             MenuItem menuItem = mActionBarMenu.getItem(i);
             if(editMode){
@@ -195,7 +233,20 @@ public class HeartSoundFragment extends Fragment {
         return true;
     }
 
+    @Override
     public boolean editModeEnabled(){
         return editMode;
     }
+
+    @Override
+    protected void makeViewsEditable() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void makeViewsUneditable() {
+        throw new UnsupportedOperationException();
+    }
+
+
 }

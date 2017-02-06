@@ -23,6 +23,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.head_first.aashi.heartsounds_20.R;
+import com.head_first.aashi.heartsounds_20.controller.EditableFragment;
 import com.head_first.aashi.heartsounds_20.enums.Gender;
 import com.head_first.aashi.heartsounds_20.utils.MultiSelectorListAdapter;
 
@@ -40,7 +41,7 @@ import java.util.List;
  * Use the {@link PatientFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PatientFragment extends Fragment implements DatePickerDialog.OnDateSetListener{
+public class PatientFragment extends EditableFragment implements DatePickerDialog.OnDateSetListener{
     /**
      * Display share patient option at the top
      * Number of doctors that can see the patient (Shared with = number of doctors)
@@ -53,7 +54,6 @@ public class PatientFragment extends Fragment implements DatePickerDialog.OnDate
     public static final String PATIENT_FRAGMENT_TAG = "PATIENT_FRAGMENT";
 
     //Data
-    private boolean editMode;
     private String dateOfBirthString;
     private List<String> selectedStudy; //this will be deleted. Instead of this the List<CHARACTER> from the MurmerRating object will be used
 
@@ -129,7 +129,7 @@ public class PatientFragment extends Fragment implements DatePickerDialog.OnDate
         mPatientId = (TextView) mRootView.findViewById(R.id.patientId);
         mDoctorDetails = (TextView) mRootView.findViewById(R.id.doctorDetails);
         mDateOfBirth = (TextView) mRootView.findViewById(R.id.dateOfBirth);
-        mDateOfBirth.setClickable(false);
+        //mDateOfBirth.setClickable(false);
         mGender = (TextView) mRootView.findViewById(R.id.genderText);
         mStudyList = (TextView) mRootView.findViewById(R.id.studyList);
         mVisibleToStudents = (Switch) mRootView.findViewById(R.id.visibleTOStudents);
@@ -159,6 +159,8 @@ public class PatientFragment extends Fragment implements DatePickerDialog.OnDate
             }
         });
         mMultiStudySelectorListAdapter = new MultiSelectorListAdapter(getContext(), Arrays.asList(new String[]{"Study1","Study2","Study3","Study4","Study5"}),selectedStudy);
+        //If Patient object is not null copy data from the Patient object into the views
+
         makeViewsUneditable();
         return mRootView;
     }
@@ -211,7 +213,8 @@ public class PatientFragment extends Fragment implements DatePickerDialog.OnDate
 
     }
 
-    private void showActionBarMenuItems(){
+    @Override
+    protected void showActionBarMenuItems(){
         for(int i = 0; i < mActionBarMenu.size(); i++){
             MenuItem menuItem = mActionBarMenu.getItem(i);
             if(editMode){
@@ -261,13 +264,15 @@ public class PatientFragment extends Fragment implements DatePickerDialog.OnDate
         return true;
     }
 
-    private void editUserProfile(){
+    @Override
+    protected void editUserProfile(){
         editMode = true;
         makeViewsEditable();
         showActionBarMenuItems();
     }
 
-    private void saveChanges(){
+    @Override
+    protected void saveChanges(){
         editMode = false;
         //Copy the data from the views into the models
 
@@ -275,6 +280,7 @@ public class PatientFragment extends Fragment implements DatePickerDialog.OnDate
         showActionBarMenuItems();
     }
 
+    @Override
     public void cancelChanges(){
         editMode = false;
         //Copy the data from the models into the Views
@@ -283,7 +289,28 @@ public class PatientFragment extends Fragment implements DatePickerDialog.OnDate
         showActionBarMenuItems();
     }
 
-    private void makeViewsEditable(){
+    @Override
+    protected void showEditableViews() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void showNonEditableViews() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void hideNonEditableViews() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void hideEditableViews() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void makeViewsEditable(){
         if(editMode){
             mGender.setClickable(true);
             mStudyList.setClickable(true);
@@ -291,7 +318,8 @@ public class PatientFragment extends Fragment implements DatePickerDialog.OnDate
         }
     }
 
-    private void makeViewsUneditable(){
+    @Override
+    protected void makeViewsUneditable(){
         if(!editMode){
             mGender.setClickable(false);
             mStudyList.setClickable(false);
@@ -413,6 +441,7 @@ public class PatientFragment extends Fragment implements DatePickerDialog.OnDate
         }
     }
 
+    @Override
     public boolean editModeEnabled(){
         return this.editMode;
     }

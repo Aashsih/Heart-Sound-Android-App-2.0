@@ -1,11 +1,26 @@
 package com.head_first.aashi.heartsounds_20.enums;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Aashish Indorewala on 05-Nov-16.
  */
 
 public enum S1 {
     NORMAL("Normal"), SOFT("Soft"), LOUD("Loud");
+
+    private static Map<String, S1> valueToSOne = new HashMap<String, S1>();
+
+    static {
+        for(S1 sOne : S1.values()){
+            valueToSOne.put(sOne.value,sOne);
+        }
+    }
+
+    public static S1 getSOne(String value){
+        return valueToSOne.get(value);
+    }
 
     private String value;
 

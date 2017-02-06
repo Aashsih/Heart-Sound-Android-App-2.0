@@ -15,7 +15,13 @@ import com.head_first.aashi.heartsounds_20.controller.fragment.UserProfileFragme
 import com.head_first.aashi.heartsounds_20.model.User;
 
 public class UserPatientActivity extends AppCompatActivity {
-
+    /**
+     * In order to implement multiple themes for the app, create different styles for light and dark combinations
+     * and create a class that contains all those options. Store user preference in SharedPreference and then dynamically
+     * set the theme for the different views.
+     *
+     * For now basic background colour has been set in activities. (Login Fragment is an exception due to the colour of the gif)
+     */
     private static final int DEFAULT_MENU_ITEM = R.id.myPatients;
     private static final String PROFILE_PAGE_TITLE = "User Profile";
     private static final String MY_PATIENTS_PAGE_TITLE = "My Patients";
