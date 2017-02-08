@@ -20,9 +20,6 @@ public final class Patient {
 
     private long id;
     private long doctorId;
-    private List<HeartSound> heartSoundList;
-    private List<Study> studyList;
-    private String deviceId;
     private Date dateOfBirth;
     private Gender gender;
     private boolean isPublic; //Public students are visible to Students
@@ -30,12 +27,11 @@ public final class Patient {
     /**
      *This constructor should be used when gettin data from the database
      */
-    public Patient(long doctorId, String deviceId, String name, Date dateOfBirth, Gender gender) {
+    public Patient(long doctorId, String name, Date dateOfBirth, Gender gender) {
 
         //The id will be received from the data base
         //this.id = (ID.add(BigInteger.ONE)).toString();
         this.doctorId = doctorId;
-        this.deviceId = deviceId;
         this.setDateOfBirth(dateOfBirth);
         this.setGender(gender);
     }
@@ -43,11 +39,11 @@ public final class Patient {
     /**
      * This constructor should only be called when the patient is created for the first time
      */
-    public Patient(String deviceId,String name, Date dateOfBirth, Gender gender) {
+    public Patient(String name, Date dateOfBirth, Gender gender) {
         //deviceId can also be checked for but is skipped for now
 
         //The first argument needs to be obtained from the current user logged in doctor.
-        this(0, deviceId,name, dateOfBirth, gender);
+        this(0,name, dateOfBirth, gender);
     }
 
 
@@ -59,10 +55,6 @@ public final class Patient {
 
     public final long getDoctorId() {
         return doctorId;
-    }
-
-    public final String getDeviceId() {
-        return deviceId;
     }
 
 

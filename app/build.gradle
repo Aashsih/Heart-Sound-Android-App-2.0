@@ -37,6 +37,5 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.android.support:support-v4:25.1.0'
     compile 'com.android.support:design:25.1.0'
-    compile 'com.github.wonderkiln:blurkit-android:50b0999983'
     testCompile 'junit:junit:4.12'
 }

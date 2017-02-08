@@ -10,9 +10,18 @@ import com.head_first.aashi.heartsounds_20.exception.InvalidUsernameException;
 
 
 public abstract class User {
-
+    /**
+     * only store the necessary information like
+     * Create a new class to store the following:
+     * id, username, password, access token for the user session
+     *
+     * All other models should reflect excatly what is stored in the database so that when a JSON
+     * response is obtained it can be converted into objects of those type using external libraries
+     *
+     */
 
     private long id;
+    private long userPermissionId;
     private String username;
     private Password password;
     private String firstName;

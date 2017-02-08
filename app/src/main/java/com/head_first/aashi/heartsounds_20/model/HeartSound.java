@@ -20,7 +20,8 @@ import java.util.List;
 public final class HeartSound {
     private long id;
     private long patientId;
-    private List<MurmurRating> murmurRatingList;
+    private long doctorId;
+    private long deviceId;
     private byte[] heartSoundData;
     private byte[] voiceCommentData;
     private Integer qualityOfRecording;
