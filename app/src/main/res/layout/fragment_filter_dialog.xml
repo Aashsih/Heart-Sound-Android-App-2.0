@@ -11,6 +11,13 @@
         android:layout_height="wrap_content"
         android:iconifiedByDefault="true"
         android:layout_alignParentTop="true" />
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@id/filterItems"
+        android:background="@android:color/darker_gray">
+    </View>
 
     <LinearLayout
         android:id="@+id/bottomContainer"
@@ -39,7 +46,8 @@
         android:id="@+id/expandableFilterView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/filterItems"
-        android:layout_above="@id/bottomContainer">
+        android:layout_below="@id/separator"
+        android:layout_above="@id/bottomContainer"
+        style="@style/viewSeparation">
     </ExpandableListView>
 </RelativeLayout>

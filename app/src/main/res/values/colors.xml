@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#040304</color>
+    <color name="colorPrimary">#040304</color>
+    <color name="colorPrimaryDark">#020102</color>
     <color name="colorAccent">#FF4081</color>
     <color name="holo_primary">#e91e63</color>
-    <color name="colorPrimaryLight">#FAFBFA</color>
-    <color name="homeScreenBackground">#FFFFFF</color>
-    <color name="transparent">#00000000</color>
 </resources>
