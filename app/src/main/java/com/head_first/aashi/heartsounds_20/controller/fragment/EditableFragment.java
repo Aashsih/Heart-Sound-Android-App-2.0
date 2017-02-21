@@ -1,4 +1,4 @@
-package com.head_first.aashi.heartsounds_20.controller;
+package com.head_first.aashi.heartsounds_20.controller.fragment;
 
 import android.support.v4.app.Fragment;
 

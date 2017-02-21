@@ -16,7 +16,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:layout_centerVeritcal="true"
+
             android:background="@drawable/shape_oval"
             android:src="@drawable/ic_arrow_right_drop_circle_grey600_48dp" />
 

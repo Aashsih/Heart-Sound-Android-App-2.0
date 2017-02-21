@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,7 +22,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.head_first.aashi.heartsounds_20.R;
-import com.head_first.aashi.heartsounds_20.controller.EditableFragment;
 import com.head_first.aashi.heartsounds_20.enums.Gender;
 import com.head_first.aashi.heartsounds_20.utils.MultiSelectorListAdapter;
 

@@ -3,7 +3,6 @@ package com.head_first.aashi.heartsounds_20.controller.fragment;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.transition.Visibility;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,8 +15,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.head_first.aashi.heartsounds_20.R;
-import com.head_first.aashi.heartsounds_20.controller.EditableFragment;
-import com.head_first.aashi.heartsounds_20.controller.activities.UserPatientActivity;
 
 /**
  * A simple {@link Fragment} subclass.

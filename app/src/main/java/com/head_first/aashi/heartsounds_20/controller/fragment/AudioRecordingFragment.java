@@ -1,9 +1,13 @@
 package com.head_first.aashi.heartsounds_20.controller.fragment;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,9 +15,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.utils.AudioRecorder;
+import com.head_first.aashi.heartsounds_20.utils.VoiceRecorder;
 
 import java.io.IOException;
 
@@ -26,6 +32,7 @@ import java.io.IOException;
  * create an instance of this fragment.
  */
 public class AudioRecordingFragment extends Fragment {
+    public static final String AUDIO_RECORDING_FRAGMENT_TAG = "AUDIO_RECORDING_FRAGMENT_TAG";
 
     //View and layout
     private Menu mActionBarMenu;
@@ -77,6 +84,8 @@ public class AudioRecordingFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        //Check which Recorder needs to be instantiated : VoiceRecoreder or HeartSoundRecorder
+        audioRecorder = new VoiceRecorder();
     }
 
     @Override
@@ -170,10 +179,14 @@ public class AudioRecordingFragment extends Fragment {
 
     private void saveChanges(){
         //upload the file that was recorded
+
+        //close the fragment
     }
 
     public void cancelChanges(){
         //delete the file that was recorded
+
+        //close the fragment
     }
 
     private void setupListenersForButtons(){
@@ -182,7 +195,12 @@ public class AudioRecordingFragment extends Fragment {
             public void onClick(View v) {
                 try {
                     audioRecorder.beginRecording();
+                    //before setting any boolean to true, check which ones needs to be set to false
+                    audioRecorder.setRecording(true);
+                    Toast.makeText(getContext(),"Recording Started", Toast.LENGTH_SHORT)
+                            .show();
                 } catch (IOException e) {
+                    Log.d("Logging an exception", "Logging an exception");
                     e.printStackTrace();
                 }
             }
@@ -196,6 +214,24 @@ public class AudioRecordingFragment extends Fragment {
                 else if(audioRecorder.isReplaying()){
                     audioRecorder.stopReplay();
                 }
+                //before setting any boolean to true, check which ones needs to be set to false
+                audioRecorder.setStopped(true);
+                Toast.makeText(getContext(),"Recording/Playing Stopped", Toast.LENGTH_SHORT)
+                        .show();
+            }
+        });
+        mReplayButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(audioRecorder.isStopped()){
+                    try {
+                        audioRecorder.playRecording();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                Toast.makeText(getContext(),"Replaying Recording", Toast.LENGTH_SHORT)
+                        .show();
             }
         });
     }

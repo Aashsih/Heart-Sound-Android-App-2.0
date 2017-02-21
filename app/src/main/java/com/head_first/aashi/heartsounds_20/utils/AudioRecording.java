@@ -7,7 +7,6 @@ import java.io.IOException;
  */
 
 public interface AudioRecording {
-
     public void beginRecording() throws IOException;
     public void playRecording() throws IOException;
     public void pauseRecording();

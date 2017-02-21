@@ -2,6 +2,7 @@
     <string name="app_name">HeartSounds_2.0</string>
     <string name="positiveButton">OK</string>
     <string name="defaultSpinnerString">(not set)</string>
+    <string name="defaultEmptyString">(empty)</string>
 
     <!-- Common Toolbar items -->
     <string name="refreshViewItemText">Refresh</string>
@@ -44,15 +45,14 @@
     <!-- UserPatientActivity -->
 
     <!-- PatientHeartSoundActivity -->
-    <string name="addHeartSound">Add Heart Sound</string>
+    <string name="addHeartSoundButtonLabel">Add Heart Sound</string>
+    <string name="addMurmurRatingButtonLabel">Add Murmur Rating</string>
 
     <!-- Patient Fragment -->
     <string name="patientIdLabel">Patient Id</string>
-    <string name="patientIdText">(empty)</string>
     <string name="studyLabel">Study</string>
     <string name="studyList">(not set)</string>
     <string name="createdByLabel">Created By</string>
-    <string name="createdByText">(empty)</string>
     <string name="genderLabel">Gender</string>
     <string name="gender">(not set)</string>
     <string name="dateOfBirthLabel">Date Of Birth</string>
@@ -63,13 +63,13 @@
     <string name="savePatientButtonText">Save Changes</string>
 
     <!-- HeartSound Fragment -->
-    <string name="heartSoundIdLabel">Patient Id</string>
-    <string name="heartSoundIdText">(empty)</string>
+    <string name="heartSoundIdLabel">HeartSound Id</string>
     <string name="saveHeartSoundButtonText">Save Changes</string>
-    <string name="deviceIdLabel">Patient Id</string>
-    <string name="deviceIdText">(empty)</string>
+    <string name="deviceIdLabel">Device Id</string>
+    <string name="voiceCommentLabel">Voice Comment</string>
+    <string name="heartSoundLabel">Heart Sound</string>
 
-    <!-- MurmerRating Fragment -->
+    <!-- MurmurRating Fragment -->
     <string name="phaseOfCardiacCycleLabel">Phase of Cardiac Cycle:</string>
     <string name="intensityLabel">Intensity:</string>
     <string name="murmerDurationLabel">Murmer Duration:</string>

@@ -1,69 +1,144 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.head_first.aashi.heartsounds_20.controller.fragment.PatientFragment"
     style="@style/rootLayoutPadding">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/heartSoundLabel"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/heartSoundIdLabel"
-        android:layout_alignParentLeft="true">
-    </TextView>
-    <TextView
-        android:id="@+id/heartSoundId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/heartSoundIdText"
-        android:layout_below="@id/heartSoundLabel"
-        android:layout_alignParentLeft="true">
-    </TextView>
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <LinearLayout
+            android:id="@+id/voiceCommentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            style="@style/viewSeparation">
+            <TextView
+                android:id="@+id/voiceCommentLabel"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/voiceCommentLabel"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+            <LinearLayout
+                android:id="@+id/voiceCommentButtonContainer"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:gravity="right">
+                <ImageButton
+                    android:id="@+id/voiceCommentPlayRecordingButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_arrow_right_drop_circle_grey600_24dp" />
+                <ImageButton
+                    android:id="@+id/voiceCommentNewRecordingButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_microphone_grey600_24dp" />
+            </LinearLayout>
 
-    <TextView
-        android:id="@+id/createdByLabel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/createdByLabel"
-        android:layout_below="@id/heartSoundId"
-        android:layout_alignParentLeft="true"
-        style="@style/viewSeparation">
-    </TextView>
-    <TextView
-        android:id="@+id/doctorDetails"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/createdByText"
-        android:layout_below="@id/createdByLabel"
-        android:layout_alignParentLeft="true">
-    </TextView>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/heartSoundContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/voiceCommentContainer"
+            style="@style/viewSeparation">
+            <TextView
+                android:id="@+id/heartSoundLabel"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/heartSoundLabel"
+                android:layout_weight="1"
+                android:gravity="center_vertical"/>
+            <LinearLayout
+                android:id="@+id/heartSoundButtonContainer"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:gravity="right">
+                <ImageButton
+                    android:id="@+id/heartSoundPlayRecordingButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_arrow_right_drop_circle_grey600_24dp" />
+                <ImageButton
+                    android:id="@+id/heartSoundNewRecordingButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_microphone_grey600_24dp" />
+            </LinearLayout>
 
-    <TextView
-        android:id="@+id/deviceIdLabel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/deviceIdLabel"
-        android:layout_below="@id/doctorDetails"
-        android:layout_alignParentLeft="true"
-        style="@style/viewSeparation">
-    </TextView>
-    <TextView
-        android:id="@+id/deviceId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/deviceIdText"
-        android:layout_below="@id/deviceIdLabel"
-        android:layout_alignParentLeft="true">
-    </TextView>
+        </LinearLayout>
+    </RelativeLayout>
 
-    <Button
-        android:id="@+id/saveHeartSoundButton"
-        android:text="@string/saveHeartSoundButtonText"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:visibility="gone"/>
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <!-- TODO: Update blank fragment layout -->
+        <TextView
+            android:id="@+id/heartSoundIdLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/heartSoundIdLabel"
+            android:layout_alignParentLeft="true">
+        </TextView>
+        <TextView
+            android:id="@+id/heartSoundId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/defaultEmptyString"
+            android:layout_below="@id/heartSoundIdLabel"
+            android:layout_alignParentLeft="true">
+        </TextView>
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/createdByLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/createdByLabel"
+            android:layout_below="@id/heartSoundId"
+            android:layout_alignParentLeft="true"
+            style="@style/viewSeparation">
+        </TextView>
+        <TextView
+            android:id="@+id/doctorDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/defaultEmptyString"
+            android:layout_below="@id/createdByLabel"
+            android:layout_alignParentLeft="true">
+        </TextView>
+
+        <TextView
+            android:id="@+id/deviceIdLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/deviceIdLabel"
+            android:layout_below="@id/doctorDetails"
+            android:layout_alignParentLeft="true"
+            style="@style/viewSeparation">
+        </TextView>
+        <TextView
+            android:id="@+id/deviceId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/defaultEmptyString"
+            android:layout_below="@id/deviceIdLabel"
+            android:layout_alignParentLeft="true">
+        </TextView>
+    </RelativeLayout>
+
+</LinearLayout>

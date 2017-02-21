@@ -18,7 +18,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.head_first.aashi.heartsounds_20.R;
-import com.head_first.aashi.heartsounds_20.controller.EditableFragment;
 import com.head_first.aashi.heartsounds_20.enums.AddedSounds;
 import com.head_first.aashi.heartsounds_20.enums.CardiacPhase;
 import com.head_first.aashi.heartsounds_20.enums.ChangeWithBreathing;

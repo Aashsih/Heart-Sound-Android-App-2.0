@@ -34,7 +34,7 @@
                 android:id="@+id/patientId"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/patientIdText"
+                android:text="@string/defaultEmptyString"
                 android:layout_below="@id/patientIdLabel"
                 android:layout_alignParentLeft="true">
             </TextView>
@@ -52,7 +52,7 @@
                 android:id="@+id/doctorDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/createdByText"
+                android:text="@string/defaultEmptyString"
                 android:layout_below="@id/createdByLabel"
                 android:layout_alignParentLeft="true">
             </TextView>

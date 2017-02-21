@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -11,10 +12,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.head_first.aashi.heartsounds_20.R;
-import com.head_first.aashi.heartsounds_20.controller.EditableFragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,10 +46,14 @@ public class HeartSoundFragment extends EditableFragment {
     //Layout and View
     private Menu mActionBarMenu;
     private View mRootView;
+    private ImageButton mPlayVoiceCommentButton;
+    private ImageButton mRecordNewVoiceCommentButton;
+    private ImageButton mPlayHeartSoundButton;
+    private ImageButton mRecordNewHeartSoundButton;
     private TextView mHeartSoundId;
     private TextView mDoctorDetails;
     private TextView mDeviceId;
-    private Button mSaveHeartSoundButton;
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -98,10 +103,19 @@ public class HeartSoundFragment extends EditableFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mRootView = inflater.inflate(R.layout.fragment_heart_sound, container, false);
+        //Buttons
+        mRecordNewVoiceCommentButton = (ImageButton) mRootView.findViewById(R.id.voiceCommentNewRecordingButton);
+        mRecordNewVoiceCommentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchAudioRecordingFragment();
+            }
+        });
+
+        //TextViews
         mHeartSoundId = (TextView) mRootView.findViewById(R.id.heartSoundId);
         mDoctorDetails = (TextView) mRootView.findViewById(R.id.doctorDetails);
         mDeviceId = (TextView) mRootView.findViewById(R.id.deviceId);
-        mSaveHeartSoundButton = (Button) mRootView.findViewById(R.id.saveHeartSoundButton);
         //If HeartSound object is not null copy data from the HeartSound object into the views
 
         return mRootView;
@@ -248,5 +262,14 @@ public class HeartSoundFragment extends EditableFragment {
         throw new UnsupportedOperationException();
     }
 
+    private void launchAudioRecordingFragment(){
+        //Pass the state of the fragment eg: play or record
+        AudioRecordingFragment audioRecordingFragment = new AudioRecordingFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, audioRecordingFragment, AudioRecordingFragment.AUDIO_RECORDING_FRAGMENT_TAG)
+                .addToBackStack(null)
+                .commit();
+    }
 
 }
