@@ -13,8 +13,8 @@ public class HeartSoundRecorder extends AudioRecorder {
     }
 
     @Override
-    public void startPlaying() throws IOException {
-
+    public void startPlaying() {
+        super.startPlaying();
     }
 
     @Override
@@ -37,13 +37,4 @@ public class HeartSoundRecorder extends AudioRecorder {
 
     }
 
-    @Override
-    public void closeMediaRecorder() {
-
-    }
-
-    @Override
-    public void closeMediaPlayer() {
-
-    }
 }
