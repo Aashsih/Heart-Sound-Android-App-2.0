@@ -35,13 +35,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_arrow_right_drop_circle_grey600_24dp" />
+                    android:src="@drawable/ic_arrow_right_drop_circle_grey600_24dp"
+                    style="@style/roundShapeView"/>
                 <ImageButton
                     android:id="@+id/voiceCommentNewRecordingButton"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_microphone_grey600_24dp" />
+                    android:src="@drawable/ic_microphone_grey600_24dp"
+                    style="@style/roundShapeView"/>
             </LinearLayout>
 
         </LinearLayout>
@@ -71,13 +73,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_arrow_right_drop_circle_grey600_24dp" />
+                    android:src="@drawable/ic_arrow_right_drop_circle_grey600_24dp"
+                    style="@style/roundShapeView"/>
                 <ImageButton
                     android:id="@+id/heartSoundNewRecordingButton"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_microphone_grey600_24dp" />
+                    android:src="@drawable/ic_microphone_grey600_24dp"
+                    style="@style/roundShapeView"/>
             </LinearLayout>
 
         </LinearLayout>

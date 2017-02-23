@@ -4,6 +4,22 @@
     android:layout_height="match_parent"
     tools:context="com.head_first.aashi.heartsounds_20.controller.fragment.AudioRecordingFragment">
 
+    <!-- define constants for bubble size, wave height, footer height, change background colour -->
+    <com.cleveroad.audiovisualization.GLAudioVisualizationView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/audioVisualizerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:av_bubble_size="15dp"
+        app:av_randomize_bubble_size="true"
+        app:av_wave_height="50dp"
+        app:av_footer_height="300dp"
+        app:av_waves_count="6"
+        app:av_layers_count="2"
+        app:av_background_color="@color/colorAccent"
+        />
+
     <!-- TODO: Update blank fragment layout -->
     <RelativeLayout
         android:id="@+id/buttonContainer"
@@ -16,9 +32,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-
-            android:background="@drawable/shape_oval"
-            android:src="@drawable/ic_arrow_right_drop_circle_grey600_48dp" />
+            android:src="@drawable/ic_arrow_right_drop_circle_grey600_48dp"
+            style="@style/roundShapeView"/>
 
         <ImageButton
             android:id="@+id/replayButton"
@@ -26,9 +41,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/shape_oval"
             android:src="@drawable/ic_replay_grey600_36dp"
-            />
+            style="@style/roundShapeView"/>
 
         <ImageButton
             android:id="@+id/stopButton"
@@ -36,9 +50,10 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
-            android:background="@drawable/shape_oval"
-            android:src="@drawable/ic_stop_circle_grey600_36dp" />
+            android:src="@drawable/ic_stop_circle_grey600_36dp"
+            style="@style/roundShapeView"/>
 
     </RelativeLayout>
+
 
 </RelativeLayout>

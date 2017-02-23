@@ -1,8 +1,13 @@
 package com.head_first.aashi.heartsounds_20.utils;
 
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.speech.RecognitionListener;
+import android.speech.SpeechRecognizer;
 import android.widget.Toast;
 
 import java.io.File;
@@ -23,47 +28,70 @@ public class VoiceRecorder extends AudioRecorder{
     private MediaPlayer mediaPlayer;
     private MediaRecorder mediaRecorder;
 
-    //Implemented methods
-    @Override
-    public void beginRecording() throws IOException {
-        File outputFile = new File(OUTPUT_FILE_NAME);
-        if(outputFile.exists()){
-            outputFile.delete();
-        }
+
+    private void setupMediaRecorder(){
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(OUTPUT_FILE_FORMAT);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         mediaRecorder.setOutputFile(OUTPUT_FILE_NAME);
+    }
+
+    private void setupMediaPlayer()throws IOException{
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setDataSource(OUTPUT_FILE_NAME);
+    }
+
+    private void closeMediaRecorder() {
+        if(mediaRecorder != null){
+            mediaRecorder.release();
+        }
+    }
+
+    private void closeMediaPlayer() {
+        if(mediaPlayer != null){
+            mediaPlayer.release();
+        }
+    }
+
+    //Implemented methods
+    @Override
+    public void startRecording() throws IOException {
+        super.startRecording();
+        File outputFile = new File(OUTPUT_FILE_NAME);
+        if(outputFile.exists()){
+            outputFile.delete();
+        }
+        setupMediaRecorder();
         mediaRecorder.prepare();
         mediaRecorder.start();
     }
 
     @Override
-    public void playRecording() throws IOException {
-        closeMediaPlayer();
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setDataSource(OUTPUT_FILE_NAME);
-        mediaPlayer.prepare();
-        mediaPlayer.start();
+    public void startPlaying() {
+        super.startPlaying();
     }
 
     @Override
-    public void pauseRecording() {
-
-
+    public void pausePlaying() {
+        super.pausePlaying();
     }
 
     @Override
-    public void finishRecording() {
+    public void stopRecording() {
+        super.stopRecording();
         if(mediaRecorder != null){
             mediaRecorder.stop();
         }
     }
 
     @Override
-    public void replayRecording() {
-
+    public void replayRecording() throws IOException{
+        super.replayRecording();
+        closeMediaPlayer();
+        setupMediaPlayer();
+        mediaPlayer.prepare();
+        mediaPlayer.start();
     }
 
     @Override
@@ -71,19 +99,14 @@ public class VoiceRecorder extends AudioRecorder{
 
     }
 
-    @Override
-    public void closeMediaRecorder() {
-        if(mediaRecorder != null){
-            mediaRecorder.release();
-        }
+
+    //Getters and Setters
+    public MediaPlayer getMediaPlayer(){
+        return this.mediaPlayer;
     }
 
-    @Override
-    public void closeMediaPlayer() {
-        if(mediaPlayer != null){
-            mediaPlayer.release();
-        }
+    public MediaRecorder getMediaRecorder(){
+        return this.mediaRecorder;
     }
-
 
 }
