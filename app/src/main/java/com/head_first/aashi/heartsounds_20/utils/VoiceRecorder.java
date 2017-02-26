@@ -21,15 +21,13 @@ import java.io.IOException;
  */
 
 public class VoiceRecorder extends AudioRecorder{
-    //Note: the output file format if changed, the extension of the file also needs to be chnaged
-    private static final String OUTPUT_FILE_NAME = Environment.getExternalStorageDirectory().toString()+ "/recording.3gpp";
-    private static final int OUTPUT_FILE_FORMAT = MediaRecorder.OutputFormat.THREE_GPP;
 
-    private MediaPlayer mediaPlayer;
+
+
     private MediaRecorder mediaRecorder;
+    private int pauseLocation;
 
-
-    private void setupMediaRecorder(){
+    protected void setupMediaRecorder(){
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(OUTPUT_FILE_FORMAT);
@@ -37,20 +35,10 @@ public class VoiceRecorder extends AudioRecorder{
         mediaRecorder.setOutputFile(OUTPUT_FILE_NAME);
     }
 
-    private void setupMediaPlayer()throws IOException{
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setDataSource(OUTPUT_FILE_NAME);
-    }
 
-    private void closeMediaRecorder() {
+    public void closeMediaRecorder() {
         if(mediaRecorder != null){
             mediaRecorder.release();
-        }
-    }
-
-    private void closeMediaPlayer() {
-        if(mediaPlayer != null){
-            mediaPlayer.release();
         }
     }
 
@@ -68,45 +56,42 @@ public class VoiceRecorder extends AudioRecorder{
     }
 
     @Override
-    public void startPlaying() {
-        super.startPlaying();
-    }
-
-    @Override
     public void pausePlaying() {
         super.pausePlaying();
+        mediaPlayer.pause();
+        pauseLocation = mediaPlayer.getCurrentPosition();
     }
 
     @Override
     public void stopRecording() {
-        super.stopRecording();
-        if(mediaRecorder != null){
+        if(mediaRecorder != null && this.isRecording()){
             mediaRecorder.stop();
         }
+        super.stopRecording();
     }
 
     @Override
     public void replayRecording() throws IOException{
+        //closeMediaPlayer();
+        if(this.isPaused()){
+            setupMediaPlayer(false);
+            mediaPlayer.seekTo(pauseLocation);
+            mediaPlayer.start();
+        }
+        else{
+            setupMediaPlayer(true);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+        }
         super.replayRecording();
-        closeMediaPlayer();
-        setupMediaPlayer();
-        mediaPlayer.prepare();
-        mediaPlayer.start();
     }
 
     @Override
     public void stopReplay() {
-
-    }
-
-
-    //Getters and Setters
-    public MediaPlayer getMediaPlayer(){
-        return this.mediaPlayer;
-    }
-
-    public MediaRecorder getMediaRecorder(){
-        return this.mediaRecorder;
+        if(mediaPlayer != null && (this.isReplaying() || this.isPaused())){
+            mediaPlayer.stop();
+        }
+        super.stopPlaying();
     }
 
 }

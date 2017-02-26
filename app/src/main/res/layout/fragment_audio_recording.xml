@@ -21,39 +21,54 @@
         />
 
     <!-- TODO: Update blank fragment layout -->
+    <Space
+        android:id="@+id/bottomSpace"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"/>
+
     <RelativeLayout
         android:id="@+id/buttonContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+        android:layout_above="@id/bottomSpace"
+        >
         <!-- This image button will be switch among: play, pause, record -->
         <ImageButton
-            android:id="@+id/recordButton"
+            android:id="@+id/centreButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:clickable="false"
             android:src="@drawable/ic_arrow_right_drop_circle_grey600_48dp"
             style="@style/roundShapeView"/>
 
         <ImageButton
-            android:id="@+id/replayButton"
+            android:id="@+id/leftButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+            android:clickable="false"
             android:src="@drawable/ic_replay_grey600_36dp"
             style="@style/roundShapeView"/>
 
         <ImageButton
-            android:id="@+id/stopButton"
+            android:id="@+id/rightButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
+            android:clickable="false"
             android:src="@drawable/ic_stop_circle_grey600_36dp"
             style="@style/roundShapeView"/>
 
     </RelativeLayout>
 
+    <SeekBar
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/buttonContainer" />
 
 </RelativeLayout>

@@ -13,11 +13,6 @@ public class HeartSoundRecorder extends AudioRecorder {
     }
 
     @Override
-    public void startPlaying() {
-        super.startPlaying();
-    }
-
-    @Override
     public void pausePlaying() {
 
     }

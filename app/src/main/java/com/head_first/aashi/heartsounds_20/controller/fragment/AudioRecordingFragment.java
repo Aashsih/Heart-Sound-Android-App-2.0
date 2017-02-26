@@ -1,6 +1,7 @@
 package com.head_first.aashi.heartsounds_20.controller.fragment;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.cleveroad.audiovisualization.AudioVisualization;
@@ -19,10 +21,12 @@ import com.cleveroad.audiovisualization.DbmHandler;
 import com.cleveroad.audiovisualization.VisualizerDbmHandler;
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.utils.AudioRecorder;
+import com.head_first.aashi.heartsounds_20.utils.AudioRecordingButtonState;
 import com.head_first.aashi.heartsounds_20.utils.HeartSoundRecorder;
 import com.head_first.aashi.heartsounds_20.utils.VoiceRecorder;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,7 +36,7 @@ import java.io.IOException;
  * Use the {@link AudioRecordingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AudioRecordingFragment extends Fragment {
+public class AudioRecordingFragment extends Fragment implements AudioRecordingButtonState{
     /**
      * if this fragment is exited while recording or playing the mediaPlayer/Recorder needs to be closed
      * Ensure that the stop method is called that releases those resources on the cancelChanges()
@@ -58,19 +62,27 @@ public class AudioRecordingFragment extends Fragment {
      * a) Set the centre button to the play image, the left button to "pause" image and grey out the "stop" and "pause" button
      * b) Once the "play" button is pressed, it should be greyed out and the "stop" and "pause" button should be made available
      * c) if the "stop" button is pressed, it should be greyed along with the "pause" button and the "play" button should me made available.
-     * d) if the "pause" button is pressed, it should be greyed out and the "stop" and "play" button should be made available.
+     * d) if the "pause" button is pressed, it should be greyed out along with the "stop" button and "play" button should be made available.
      * e) if "play" button is pressed, do the same as (b)
      * f) if "stop" button is pressed, do the same as (c)
      */
     public static final String AUDIO_RECORDING_FRAGMENT_TAG = "AUDIO_RECORDING_FRAGMENT_TAG";
+    public static final String IS_REORD_MODE_TAG = "IS_REORD_MODE_TAG";
+    public static final String IS_VOICE_COMMENT_MODE_TAG = "IS_VOICE_COMMENT_MODE_TAG";
+    private static final int MEDIA_PLAYER_LISTENER_UPDATE_FREQUENCY = 200;
 
     //View and layout
     private Menu mActionBarMenu;
     private View mRootView;
-    private ImageButton mRecordButton;
-    private ImageButton mReplayButton;
-    private ImageButton mStopButton;
+    private ImageButton mCentreButton;
+    private ImageButton mLeftButton;
+    private ImageButton mRightButton;
     private AudioVisualization mAudioVisualizerView;
+    private SeekBar mSeekBar;
+
+    //Handlers
+    private VisualizerDbmHandler visualizerHandler;
+    private MediaPlayerListener mediaPlayerListener;
 
     //Data
     private AudioRecorder audioRecorder;
@@ -117,6 +129,12 @@ public class AudioRecordingFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        setHasOptionsMenu(true);
+        Bundle bundle = getArguments();
+        if(bundle != null){
+            recordMode = (boolean) bundle.getBoolean(AudioRecordingFragment.IS_REORD_MODE_TAG);
+            voiceCommentMode = (boolean) bundle.getBoolean(AudioRecordingFragment.IS_VOICE_COMMENT_MODE_TAG);
+        }
         if(voiceCommentMode){
             audioRecorder = new VoiceRecorder();
         }
@@ -131,27 +149,18 @@ public class AudioRecordingFragment extends Fragment {
         // Inflate the layout for this fragment
         mRootView = inflater.inflate(R.layout.fragment_audio_recording, container, false);
         mAudioVisualizerView = (AudioVisualization) mRootView.findViewById(R.id.audioVisualizerView);
-        mRecordButton = (ImageButton) mRootView.findViewById(R.id.recordButton);
-        mReplayButton = (ImageButton) mRootView.findViewById(R.id.replayButton);
-        mStopButton = (ImageButton) mRootView.findViewById(R.id.stopButton);
+        mSeekBar = (SeekBar) mRootView.findViewById(R.id.progressBar);
+        mCentreButton = (ImageButton) mRootView.findViewById(R.id.centreButton);
+        mLeftButton = (ImageButton) mRootView.findViewById(R.id.leftButton);
+        mRightButton = (ImageButton) mRootView.findViewById(R.id.rightButton);
         setupListenersForButtons();
-        /*
-        VisualizerDbmHandler speechRecognizerDbmHandler = DbmHandler.Factory.newVisualizerHandler(((VoiceRecorder)audioRecorder).getMediaPlayer());
-        //if(Voice comment is accessed)
-        //then set the speechRecognizerDbmHandler.innerRecognitionListener()
-        speechRecognizerDbmHandler.setInnerOnPreparedListener(new MediaPlayer.OnPreparedListener(){
-            @Override
-            public void onPrepared(MediaPlayer mediaPlayer){
-                try {
-                    ((VoiceRecorder)audioRecorder).getMediaPlayer().prepare();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        //speechRecognizerDbmHandler.setInnerOnCompletionListener();
-        mAudioVisualizerView.linkTo(speechRecognizerDbmHandler);
-        */
+        if(recordMode){
+            setupRecordModeButtons();
+        }
+        else{
+            setupPlayModeButtons();
+        }
+        audioRecorder.resetAudioRecorder();
         return mRootView;
     }
 
@@ -171,6 +180,29 @@ public class AudioRecordingFragment extends Fragment {
 //            throw new RuntimeException(context.toString()
 //                    + " must implement OnFragmentInteractionListener");
 //        }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        mAudioVisualizerView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        mAudioVisualizerView.onPause();
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroyView(){
+        mAudioVisualizerView.release();
+        if(recordMode){
+            if(voiceCommentMode){
+                ((VoiceRecorder)audioRecorder).closeMediaRecorder();
+            }
+        }
+        audioRecorder.closeMediaPlayer();
+        super.onDestroyView();
     }
 
     @Override
@@ -217,9 +249,18 @@ public class AudioRecordingFragment extends Fragment {
     }
 
     protected void showActionBarMenuItems(){
+        if(recordMode) {
+            displayEditableMenuItems();
+        }
+        else{
+            hideAllMenuItems();
+        }
+
+    }
+
+    private void displayEditableMenuItems(){
         for(int i = 0; i < mActionBarMenu.size(); i++){
             MenuItem menuItem = mActionBarMenu.getItem(i);
-
             //if menu item is save or cancel
             if(menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.saveChangesItemText)) ||
                     menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.cancelChangesItemText))){
@@ -232,64 +273,337 @@ public class AudioRecordingFragment extends Fragment {
         }
     }
 
+    private void hideAllMenuItems(){
+        for(int i = 0; i < mActionBarMenu.size(); i++){
+            MenuItem menuItem = mActionBarMenu.getItem(i);
+                menuItem.setVisible(false);
+        }
+    }
+
     private void saveChanges(){
         //upload the file that was recorded
 
         //close the fragment
+        cancelChanges();
     }
 
     public void cancelChanges(){
         //delete the file that was recorded
+        //audioRecorder.deleteRecordedMediaFile(); -- this has been commented out for testing, when the APIs are ready, this line should be taken out of comments
+        //close all the Media Resources
+        if(recordMode){
+            stopRecording();
+        }
+        stopPlayingRecordedAudio();
+        getActivity().getSupportFragmentManager().popBackStack();
+        //getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
+    }
 
-        //close the fragment
+    private void setupRecordModeButtons(){
+        enableRecordButton();
+        disableStopButton();
+        disableReplayButton();
+    }
+
+    private void setupPlayModeButtons(){
+        enablePlayButton();
+        disableStopButton();
+        disablePauseButton();
     }
 
     private void setupListenersForButtons(){
-        mRecordButton.setOnClickListener(new View.OnClickListener() {
+        mCentreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    audioRecorder.startRecording();
-                    Toast.makeText(getContext(),"Recording Started", Toast.LENGTH_SHORT)
-                            .show();
-                } catch (IOException e) {
-                    Log.d("Logging an exception", "Logging an exception");
-                    e.printStackTrace();
-                }
+                onCentreButtonClicked();
             }
         });
-        mStopButton.setOnClickListener(new View.OnClickListener() {
+        mRightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(audioRecorder.isRecording()){
-                    audioRecorder.stopRecording();
-                }
-                else if(audioRecorder.isReplaying()){
-                    audioRecorder.stopReplay();
-                }
-                mAudioVisualizerView.release();
-                //before setting any boolean to true, check which ones needs to be set to false
-                audioRecorder.stopRecording();
-                Toast.makeText(getContext(),"Recording/Playing Stopped", Toast.LENGTH_SHORT)
-                        .show();
+                onRightButtonClicked();
             }
         });
-        mReplayButton.setOnClickListener(new View.OnClickListener() {
+        mLeftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(audioRecorder.isStopRecording()){
-                    try {
-                        audioRecorder.replayRecording();
-                        mAudioVisualizerView.onResume();
-                        VisualizerDbmHandler speechRecognizerDbmHandler = DbmHandler.Factory.newVisualizerHandler(((VoiceRecorder)audioRecorder).getMediaPlayer());
-                        mAudioVisualizerView.linkTo(speechRecognizerDbmHandler);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                Toast.makeText(getContext(),"Replaying Recording", Toast.LENGTH_SHORT)
-                        .show();
+                onLeftButtonClicked();
             }
         });
     }
+
+    private void onCentreButtonClicked(){
+        if(recordMode){
+            startRecording();
+        }
+        else{
+            replayRecordedMedia();
+            enableLeftButton();
+        }
+    }
+
+    private void onRightButtonClicked(){
+        if(recordMode){
+            if(audioRecorder.isRecording()){
+                stopRecording();
+            }
+            else if(audioRecorder.isReplaying()){
+                stopPlayingRecordedAudio();
+            }
+        }
+        else{
+            stopPlayingRecordedAudio();
+        }
+
+    }
+
+    private void onLeftButtonClicked(){
+        if(recordMode){
+            replayRecordedMedia();
+        }
+        else{
+            pausePlayingMedia();
+        }
+
+    }
+
+    private void startRecording(){
+        try {
+            audioRecorder.startRecording();
+            disableCentreButton();
+            disableLeftButton();
+            enableRightButton();
+            Toast.makeText(getContext(),"Recording", Toast.LENGTH_SHORT)
+                    .show();
+        } catch (IOException e) {
+            Log.d("Logging an exception", "Logging an exception");
+            e.printStackTrace();
+        }
+    }
+
+    private void replayRecordedMedia(){
+        try {
+            if(!audioRecorder.isPaused()){
+                mSeekBar.setProgress(0);
+            }
+            audioRecorder.replayRecording();
+            //Reset the progress of the SeekBar
+            mSeekBar.setMax(audioRecorder.getMediaPlayer().getDuration());
+            startMediaPlayerListener();
+            disableLeftButton();
+            disableCentreButton();
+            enableRightButton();
+            setupAudioVisualizer();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Toast.makeText(getContext(),"Playing", Toast.LENGTH_SHORT)
+                .show();
+    }
+
+    private void setupAudioVisualizer(){
+        if(visualizerHandler == null){
+            visualizerHandler = DbmHandler.Factory.newVisualizerHandler(audioRecorder.getMediaPlayer());
+            visualizerHandler.setInnerOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    onReplayFinished();
+                }
+            });
+            mAudioVisualizerView.linkTo(visualizerHandler);
+        }
+    }
+
+    private void stopRecording(){
+        audioRecorder.stopRecording();
+        disableRightButton();
+        enableLeftButton();
+        enableCentreButton();
+        Toast.makeText(getContext(),"Recording Stopped", Toast.LENGTH_SHORT)
+                .show();
+    }
+
+    private void onReplayFinished(){
+        disableRightButton();
+        enableCentreButton();
+        if(recordMode){
+            enableLeftButton();
+        }
+        else{
+            disableLeftButton();
+        }
+        if(mediaPlayerListener != null){
+            mediaPlayerListener.stopMediaPlayerListener();
+            mSeekBar.setProgress(audioRecorder.getMediaPlayer().getCurrentPosition());
+            Toast.makeText(getContext(),"Stopped", Toast.LENGTH_SHORT)
+                    .show();
+        }
+    }
+
+    private void stopPlayingRecordedAudio(){
+        //The implementation of this methods needs to be checked again
+        audioRecorder.stopReplay();
+        onReplayFinished();
+    }
+
+    private void pausePlayingMedia(){
+        audioRecorder.pausePlaying();
+        mediaPlayerListener.resumeMediaPlayerListener();
+        disableLeftButton();
+        disableRightButton();
+        enableCentreButton();
+        Toast.makeText(getContext(),"Paused", Toast.LENGTH_SHORT)
+                .show();
+    }
+
+    private void startMediaPlayerListener(){
+        mediaPlayerListener = new MediaPlayerListener();
+        new Thread(mediaPlayerListener).start();
+    }
+
+    private void enableCentreButton(){
+        if(recordMode){
+            enableRecordButton();
+        }
+        else{
+            enablePlayButton();
+        }
+    }
+
+    private void disableCentreButton(){
+        if(recordMode){
+            disableRecordButton();
+        }
+        else{
+            disablePlayButton();
+        }
+    }
+
+    private void enableLeftButton(){
+        if(recordMode){
+            enableReplayButton();
+        }
+        else{
+            enablePauseButton();
+        }
+    }
+
+    private void disableLeftButton(){
+        if(recordMode){
+            disableReplayButton();
+        }
+        else{
+            disablePauseButton();
+        }
+    }
+
+    private void enableRightButton(){
+        enableStopButton();
+    }
+
+    private void disableRightButton(){
+        disableStopButton();
+    }
+
+
+    //---------------------------------------
+    @Override
+    public void enableRecordButton() {
+        mCentreButton.setClickable(true);
+        mCentreButton.setImageResource(R.drawable.ic_microphone_white_48dp);
+    }
+
+    @Override
+    public void disableRecordButton() {
+        mCentreButton.setClickable(false);
+        mCentreButton.setImageResource(R.drawable.ic_microphone_grey600_48dp);
+    }
+
+    @Override
+    public void enablePlayButton() {
+        mCentreButton.setClickable(true);
+        mCentreButton.setImageResource(R.drawable.ic_arrow_right_drop_circle_white_48dp);
+    }
+
+    @Override
+    public void disablePlayButton() {
+        mCentreButton.setClickable(false);
+        mCentreButton.setImageResource(R.drawable.ic_arrow_right_drop_circle_grey600_48dp);
+    }
+
+    @Override
+    public void enableStopButton() {
+        mRightButton.setClickable(true);
+        mRightButton.setImageResource(R.drawable.ic_stop_circle_white_36dp);
+    }
+
+    @Override
+    public void disableStopButton() {
+        mRightButton.setClickable(false);
+        mRightButton.setImageResource(R.drawable.ic_stop_circle_grey600_36dp);
+    }
+
+    @Override
+    public void enableReplayButton() {
+        mLeftButton.setClickable(true);
+        mLeftButton.setImageResource(R.drawable.ic_replay_white_36dp);
+    }
+
+    @Override
+    public void disableReplayButton() {
+        mLeftButton.setClickable(false);
+        mLeftButton.setImageResource(R.drawable.ic_replay_grey600_36dp);
+    }
+
+    @Override
+    public void enablePauseButton() {
+        mLeftButton.setClickable(true);
+        mLeftButton.setImageResource(R.drawable.ic_pause_circle_white_36dp);
+    }
+
+    @Override
+    public void disablePauseButton() {
+        mLeftButton.setClickable(false);
+        mLeftButton.setImageResource(R.drawable.ic_pause_circle_grey600_36dp);
+    }
+
+    private class MediaPlayerListener implements Runnable{
+
+        private AtomicBoolean stop = new AtomicBoolean(false);
+
+        public void stopMediaPlayerListener(){
+            stop.set(true);
+        }
+
+        public void resumeMediaPlayerListener(){
+            if(audioRecorder.isReplaying()){
+                this.notify();
+            }
+        }
+
+        public void pauseMediaPlayerListener(){
+            if(audioRecorder.isPaused()){
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        @Override
+        public void run() {
+            while(!stop.get()){
+                if(audioRecorder.getMediaPlayer().isPlaying()){
+                    try {
+                        mSeekBar.setProgress(audioRecorder.getMediaPlayer().getCurrentPosition());
+                        Thread.sleep(MEDIA_PLAYER_LISTENER_UPDATE_FREQUENCY);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
 }

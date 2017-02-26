@@ -16,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.head_first.aashi.heartsounds_20.R;
+import com.head_first.aashi.heartsounds_20.utils.AudioRecorder;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -105,19 +106,16 @@ public class HeartSoundFragment extends EditableFragment {
         mRootView = inflater.inflate(R.layout.fragment_heart_sound, container, false);
         //Buttons
         mRecordNewVoiceCommentButton = (ImageButton) mRootView.findViewById(R.id.voiceCommentNewRecordingButton);
-        mRecordNewVoiceCommentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchAudioRecordingFragment();
-            }
-        });
-
+        mPlayVoiceCommentButton = (ImageButton) mRootView.findViewById(R.id.voiceCommentPlayRecordingButton);
+        mRecordNewHeartSoundButton = (ImageButton) mRootView.findViewById(R.id.heartSoundNewRecordingButton);
+        mPlayHeartSoundButton = (ImageButton) mRootView.findViewById(R.id.heartSoundPlayRecordingButton);
         //TextViews
         mHeartSoundId = (TextView) mRootView.findViewById(R.id.heartSoundId);
         mDoctorDetails = (TextView) mRootView.findViewById(R.id.doctorDetails);
         mDeviceId = (TextView) mRootView.findViewById(R.id.deviceId);
         //If HeartSound object is not null copy data from the HeartSound object into the views
 
+        setupListenersForButtons();
         return mRootView;
     }
 
@@ -158,6 +156,47 @@ public class HeartSoundFragment extends EditableFragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private void setupListenersForButtons(){
+        mRecordNewVoiceCommentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchAudioRecordingFragment(true, true);
+            }
+        });
+        mPlayVoiceCommentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchAudioRecordingFragment(false, true);
+            }
+        });
+        mRecordNewHeartSoundButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchAudioRecordingFragment(true, false);
+            }
+        });
+        mPlayHeartSoundButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchAudioRecordingFragment(false, false);
+            }
+        });
+    }
+
+    private void launchAudioRecordingFragment(boolean recordMode, boolean voiceCommentMode){
+        //Pass the state of the fragment eg: play or record
+        AudioRecordingFragment audioRecordingFragment = new AudioRecordingFragment();
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(AudioRecordingFragment.IS_REORD_MODE_TAG, recordMode);
+        bundle.putBoolean(AudioRecordingFragment.IS_VOICE_COMMENT_MODE_TAG, voiceCommentMode);
+        audioRecordingFragment.setArguments(bundle);
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, audioRecordingFragment, AudioRecordingFragment.AUDIO_RECORDING_FRAGMENT_TAG)
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
@@ -262,14 +301,5 @@ public class HeartSoundFragment extends EditableFragment {
         throw new UnsupportedOperationException();
     }
 
-    private void launchAudioRecordingFragment(){
-        //Pass the state of the fragment eg: play or record
-        AudioRecordingFragment audioRecordingFragment = new AudioRecordingFragment();
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, audioRecordingFragment, AudioRecordingFragment.AUDIO_RECORDING_FRAGMENT_TAG)
-                .addToBackStack(null)
-                .commit();
-    }
 
 }
