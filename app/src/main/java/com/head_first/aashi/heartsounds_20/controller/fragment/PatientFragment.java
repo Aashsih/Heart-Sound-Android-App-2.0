@@ -22,6 +22,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.head_first.aashi.heartsounds_20.R;
+import com.head_first.aashi.heartsounds_20.controller.activities.PatientHeartSoundActivity;
+import com.head_first.aashi.heartsounds_20.controller.activities.UserPatientActivity;
 import com.head_first.aashi.heartsounds_20.enums.Gender;
 import com.head_first.aashi.heartsounds_20.utils.MultiSelectorListAdapter;
 
@@ -179,6 +181,12 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
 //            throw new RuntimeException(context.toString()
 //                    + " must implement OnFragmentInteractionListener");
 //        }
+    }
+
+    @Override
+    public void onResume(){
+        ((PatientHeartSoundActivity)getActivity()).setActionBarTitle(PatientHeartSoundActivity.PATIENT_PAGE_TITLE);
+        super.onResume();
     }
 
     @Override

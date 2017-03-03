@@ -39,10 +39,10 @@ public class Filter implements Serializable{
         List<GroupItem> groupHeader1Items = new ArrayList<>();
         List<GroupItem> groupHeader2Items = new ArrayList<>();
         List<GroupItem> groupHeader3Items = new ArrayList<>();
-        if(temp){
-            groupHeaders.add("Patient 1");
-            groupHeaders.add("Patient 2");
-            groupHeaders.add("Patient 3");
+        if(!temp){
+            groupHeaders.add("Study");
+            groupHeaders.add("Doctor");
+            groupHeaders.add("Sample");
             String[] itemFilters = StringUtil.split(this.searchString, SEARCH_STRING_GROUP_HEADER_SEPARATOR.charAt(0));
 
             if(itemFilters[0].contains("Item1")){
@@ -83,30 +83,11 @@ public class Filter implements Serializable{
                 groupHeader2Items.add(new GroupItem("Item3", false));
             }
 
-
-            if(itemFilters[0].contains("Item1")){
-                groupHeader3Items.add(new GroupItem("Item1", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item1", false));
-            }
-            if(itemFilters[0].contains("Item2")){
-                groupHeader3Items.add(new GroupItem("Item2", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item2", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item3", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item3", false));
-            }
         }
         else{
-            groupHeaders.add("Shared Patient 1");
-            groupHeaders.add("Shared Patient 2");
-            groupHeaders.add("Shared Patient 3");
+            groupHeaders.add("Study 1");
+            groupHeaders.add("Study 2");
+            groupHeaders.add("Study 3");
             String[] itemFilters = StringUtil.split(this.searchString, SEARCH_STRING_GROUP_HEADER_SEPARATOR.charAt(0));
 
             if(itemFilters[0].contains("Item1")){
@@ -173,138 +154,6 @@ public class Filter implements Serializable{
             }
             else{
                 groupHeader3Items.add(new GroupItem("Item4", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
-            }
-            if(itemFilters[0].contains("Item3")){
-                groupHeader3Items.add(new GroupItem("Item5", true));
-            }
-            else{
-                groupHeader3Items.add(new GroupItem("Item5", false));
             }
 
         }

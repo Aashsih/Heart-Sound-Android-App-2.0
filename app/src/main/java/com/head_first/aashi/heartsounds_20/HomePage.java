@@ -16,18 +16,13 @@ public class HomePage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
-//
-
-        //Navigate to heart_sound_ui_experiments experiment
-        Intent heartSoundMainActivityIntent = new Intent(this, UserPatientActivity.class);
-        startActivity(heartSoundMainActivityIntent);
 
 
-//        LoginFragment loginFragment = new LoginFragment();
-//        getSupportFragmentManager().beginTransaction()
-//                .replace(R.id.fragmentContainer, loginFragment, LoginFragment.LOGIN_FRAGMENT)
-//                .addToBackStack(null)
-//                .commit();
+        LoginFragment loginFragment = new LoginFragment();
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragmentContainer, loginFragment, LoginFragment.LOGIN_FRAGMENT)
+                .addToBackStack(null)
+                .commit();
     }
 
 }

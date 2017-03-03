@@ -9,7 +9,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.head_first.aashi.heartsounds_20.R;
-import com.head_first.aashi.heartsounds_20.controller.fragment.MurmerRatingFragment;
 import com.head_first.aashi.heartsounds_20.controller.fragment.PatientListFragment;
 import com.head_first.aashi.heartsounds_20.controller.fragment.UserProfileFragment;
 import com.head_first.aashi.heartsounds_20.model.User;
@@ -24,7 +23,9 @@ public class UserPatientActivity extends AppCompatActivity {
      */
     private static final int DEFAULT_MENU_ITEM = R.id.myPatients;
     private static final String PROFILE_PAGE_TITLE = "User Profile";
-    private static final String MY_PATIENTS_PAGE_TITLE = "My Patients";
+    //the MY_PATIENTS_PAGE_TITLE is made public because Android has some limitation right now
+    //and it doesnt change the actionbar title for the first attached fragment
+    public static final String MY_PATIENTS_PAGE_TITLE = "My Patients";
     private static final String SHARED_PATIENTS_PAGE_TITLE = "Shared Patients";
     private static final String OTHER_PATIENTS_PAGE_TITLE = "";
 
@@ -33,7 +34,7 @@ public class UserPatientActivity extends AppCompatActivity {
 
     //Views
     private Toolbar mToolbar;
-    private Fragment menuItemFragment;
+    private Fragment activeMenuItemFragment;
     private BottomNavigationView mBottomNavigationView;
 
     @Override
@@ -70,46 +71,69 @@ public class UserPatientActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    @Override
+    public void onAttachFragment(Fragment fragment){
+        super.onAttachFragment(fragment);
+        if(fragment instanceof UserProfileFragment){
+            mToolbar.setTitle(PROFILE_PAGE_TITLE);
+        }
+        else if(fragment instanceof PatientListFragment){
+            if(((PatientListFragment) fragment).isMyPatientClicked()){
+                mToolbar.setTitle(MY_PATIENTS_PAGE_TITLE);
+            }
+            else{
+                mToolbar.setTitle(SHARED_PATIENTS_PAGE_TITLE);
+            }
+        }
+    }
+
+
     private void launchSelectedMenuFragment(MenuItem item){
-        Fragment menuItemFragment;
         switch(item.getItemId()){
             case R.id.userProfile:
-                mToolbar.setTitle(PROFILE_PAGE_TITLE);
-                menuItemFragment = new UserProfileFragment();
+
+                activeMenuItemFragment = new UserProfileFragment();
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentContainer, menuItemFragment, UserProfileFragment.USER_PROFILE_FRAGMENT_TAG)
+                        .replace(R.id.fragmentContainer, activeMenuItemFragment, UserProfileFragment.USER_PROFILE_FRAGMENT_TAG)
                         .commit();
                 break;
             case R.id.myPatients:
-                mToolbar.setTitle(MY_PATIENTS_PAGE_TITLE);
-                menuItemFragment = new PatientListFragment();
-                ((PatientListFragment) menuItemFragment).setMyPatientClicked(true);
+
+                activeMenuItemFragment = new PatientListFragment();
+                ((PatientListFragment) activeMenuItemFragment).setMyPatientClicked(true);
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentContainer, menuItemFragment, PatientListFragment.PATIENT_LIST_FRAGMENT_TAG)
+                        .replace(R.id.fragmentContainer, activeMenuItemFragment, PatientListFragment.PATIENT_LIST_FRAGMENT_TAG)
                         .commit();
                 break;
             case R.id.otherPatients:
 //                When the student user is implemented, change this to Other patients
-                mToolbar.setTitle(SHARED_PATIENTS_PAGE_TITLE);
-                menuItemFragment = new PatientListFragment();
-                ((PatientListFragment) menuItemFragment).setMyPatientClicked(false);
+
+                activeMenuItemFragment = new PatientListFragment();
+                ((PatientListFragment) activeMenuItemFragment).setMyPatientClicked(false);
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentContainer, menuItemFragment, PatientListFragment.PATIENT_LIST_FRAGMENT_TAG)
+                        .replace(R.id.fragmentContainer, activeMenuItemFragment, PatientListFragment.PATIENT_LIST_FRAGMENT_TAG)
                         .commit();
                 break;
 
             default:
                 mToolbar.setTitle(MY_PATIENTS_PAGE_TITLE);
-                menuItemFragment = new PatientListFragment();
-                ((PatientListFragment) menuItemFragment).setMyPatientClicked(true);
+                activeMenuItemFragment = new PatientListFragment();
+                ((PatientListFragment) activeMenuItemFragment).setMyPatientClicked(true);
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentContainer, menuItemFragment, PatientListFragment.PATIENT_LIST_FRAGMENT_TAG)
+                        .replace(R.id.fragmentContainer, activeMenuItemFragment, PatientListFragment.PATIENT_LIST_FRAGMENT_TAG)
                         .commit();
 
                 break;
         }
 //        getSupportFragmentManager().beginTransaction()
-//                .replace(R.id.fragmentContainer, menuItemFragment)
+//                .replace(R.id.fragmentContainer, activeMenuItemFragment)
 //                .commit();
     }
+
+    public void setActionBarTitle(String title){
+        if(title != null && !title.isEmpty()) {
+            mToolbar.setTitle(title);
+        }
+    }
+
 }

@@ -18,6 +18,7 @@ import android.widget.ExpandableListView;
 
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.controller.activities.PatientHeartSoundActivity;
+import com.head_first.aashi.heartsounds_20.controller.activities.UserPatientActivity;
 import com.head_first.aashi.heartsounds_20.model.Filter;
 import com.head_first.aashi.heartsounds_20.utils.DynamicSearchFilter;
 import com.head_first.aashi.heartsounds_20.utils.ExpandablePatientListAdapter;
@@ -165,6 +166,12 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
 //            throw new RuntimeException(context.toString()
 //                    + " must implement OnFragmentInteractionListener");
 //        }
+    }
+
+    @Override
+    public void onResume(){
+        ((UserPatientActivity)getActivity()).setTitle(UserPatientActivity.MY_PATIENTS_PAGE_TITLE);
+        super.onResume();
     }
 
     @Override

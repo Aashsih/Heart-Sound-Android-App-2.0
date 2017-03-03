@@ -1,6 +1,7 @@
 package com.head_first.aashi.heartsounds_20.controller.fragment;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,10 +24,12 @@ import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.utils.AudioRecorder;
 import com.head_first.aashi.heartsounds_20.utils.AudioRecordingButtonState;
 import com.head_first.aashi.heartsounds_20.utils.HeartSoundRecorder;
+import com.head_first.aashi.heartsounds_20.utils.RequestPermission;
 import com.head_first.aashi.heartsounds_20.utils.VoiceRecorder;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.jar.Manifest;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -88,6 +91,7 @@ public class AudioRecordingFragment extends Fragment implements AudioRecordingBu
     private AudioRecorder audioRecorder;
     private boolean recordMode;
     private boolean voiceCommentMode;
+    private boolean permissionGranted;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -368,37 +372,53 @@ public class AudioRecordingFragment extends Fragment implements AudioRecordingBu
     }
 
     private void startRecording(){
-        try {
-            audioRecorder.startRecording();
-            disableCentreButton();
-            disableLeftButton();
-            enableRightButton();
-            Toast.makeText(getContext(),"Recording", Toast.LENGTH_SHORT)
+        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.RECORD_AUDIO, RequestPermission.RECORD_AUDIO);
+        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE, RequestPermission.READ_EXTERNAL_STORAGE);
+        if(permissionGranted){
+            try {
+                audioRecorder.startRecording();
+                disableCentreButton();
+                disableLeftButton();
+                enableRightButton();
+                Toast.makeText(getContext(),"Recording", Toast.LENGTH_SHORT)
+                        .show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else{
+            Toast.makeText(getContext(),"You did not grant the required permission to the app", Toast.LENGTH_SHORT)
                     .show();
-        } catch (IOException e) {
-            Log.d("Logging an exception", "Logging an exception");
-            e.printStackTrace();
         }
     }
 
     private void replayRecordedMedia(){
-        try {
-            if(!audioRecorder.isPaused()){
-                mSeekBar.setProgress(0);
+        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE, RequestPermission.READ_EXTERNAL_STORAGE);
+        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE, RequestPermission.WRITE_EXTERNAL_STORAGE);
+        if(permissionGranted){
+            try {
+                if(!audioRecorder.isPaused()){
+                    mSeekBar.setProgress(0);
+                }
+                audioRecorder.replayRecording();
+                //Reset the progress of the SeekBar
+                mSeekBar.setMax(audioRecorder.getMediaPlayer().getDuration());
+                startMediaPlayerListener();
+                disableLeftButton();
+                disableCentreButton();
+                enableRightButton();
+                setupAudioVisualizer();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            audioRecorder.replayRecording();
-            //Reset the progress of the SeekBar
-            mSeekBar.setMax(audioRecorder.getMediaPlayer().getDuration());
-            startMediaPlayerListener();
-            disableLeftButton();
-            disableCentreButton();
-            enableRightButton();
-            setupAudioVisualizer();
-        } catch (IOException e) {
-            e.printStackTrace();
+            Toast.makeText(getContext(),"Playing", Toast.LENGTH_SHORT)
+                    .show();
+
         }
-        Toast.makeText(getContext(),"Playing", Toast.LENGTH_SHORT)
-                .show();
+        else{
+            Toast.makeText(getContext(),"You did not grant the required permission to the app", Toast.LENGTH_SHORT)
+                    .show();
+        }
     }
 
     private void setupAudioVisualizer(){
@@ -415,12 +435,22 @@ public class AudioRecordingFragment extends Fragment implements AudioRecordingBu
     }
 
     private void stopRecording(){
-        audioRecorder.stopRecording();
-        disableRightButton();
-        enableLeftButton();
-        enableCentreButton();
-        Toast.makeText(getContext(),"Recording Stopped", Toast.LENGTH_SHORT)
-                .show();
+        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE, RequestPermission.READ_EXTERNAL_STORAGE);
+        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE, RequestPermission.WRITE_EXTERNAL_STORAGE);
+        if(permissionGranted){
+            audioRecorder.stopRecording();
+            disableRightButton();
+            enableLeftButton();
+            enableCentreButton();
+            Toast.makeText(getContext(),"Recording Stopped", Toast.LENGTH_SHORT)
+                    .show();
+
+        }
+        else{
+            Toast.makeText(getContext(),"You did not grant the required permission to the app", Toast.LENGTH_SHORT)
+                    .show();
+        }
+
     }
 
     private void onReplayFinished(){
@@ -441,19 +471,36 @@ public class AudioRecordingFragment extends Fragment implements AudioRecordingBu
     }
 
     private void stopPlayingRecordedAudio(){
-        //The implementation of this methods needs to be checked again
-        audioRecorder.stopReplay();
-        onReplayFinished();
+        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE, RequestPermission.READ_EXTERNAL_STORAGE);
+        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE, RequestPermission.WRITE_EXTERNAL_STORAGE);
+        if(permissionGranted){
+            //The implementation of this methods needs to be checked again
+            audioRecorder.stopReplay();
+            onReplayFinished();
+        }
+        else{
+            Toast.makeText(getContext(),"You did not grant the required permission to the app", Toast.LENGTH_SHORT)
+                    .show();
+        }
+
     }
 
     private void pausePlayingMedia(){
-        audioRecorder.pausePlaying();
-        mediaPlayerListener.resumeMediaPlayerListener();
-        disableLeftButton();
-        disableRightButton();
-        enableCentreButton();
-        Toast.makeText(getContext(),"Paused", Toast.LENGTH_SHORT)
-                .show();
+        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE, RequestPermission.READ_EXTERNAL_STORAGE);
+        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE, RequestPermission.WRITE_EXTERNAL_STORAGE);
+        if(permissionGranted){
+            audioRecorder.pausePlaying();
+            mediaPlayerListener.resumeMediaPlayerListener();
+            disableLeftButton();
+            disableRightButton();
+            enableCentreButton();
+            Toast.makeText(getContext(),"Paused", Toast.LENGTH_SHORT)
+                    .show();
+        }
+        else{
+            Toast.makeText(getContext(),"You did not grant the required permission to the app", Toast.LENGTH_SHORT)
+                    .show();
+        }
     }
 
     private void startMediaPlayerListener(){
@@ -565,6 +612,19 @@ public class AudioRecordingFragment extends Fragment implements AudioRecordingBu
     public void disablePauseButton() {
         mLeftButton.setClickable(false);
         mLeftButton.setImageResource(R.drawable.ic_pause_circle_grey600_36dp);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        if (grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            this.permissionGranted = true;
+        }
+        else {
+            this.permissionGranted = false;
+        }
+
     }
 
     private class MediaPlayerListener implements Runnable{

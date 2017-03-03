@@ -1,6 +1,7 @@
 package com.head_first.aashi.heartsounds_20.controller.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.head_first.aashi.heartsounds_20.R;
+import com.head_first.aashi.heartsounds_20.controller.activities.UserPatientActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -87,6 +89,9 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //Launch the UserPatientsActivity here
+                Intent heartSoundMainActivityIntent = new Intent(getContext(), UserPatientActivity.class);
+                startActivity(heartSoundMainActivityIntent);
+
             }
         });
         return mRootView;
