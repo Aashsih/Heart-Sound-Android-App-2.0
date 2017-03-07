@@ -4,15 +4,9 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.SeekBar;
-import android.widget.Toast;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by Aashish Indorewala on 21-Feb-17.
@@ -23,7 +17,7 @@ public abstract class AudioRecorder implements AudioRecording {
 
 
     //Note: the output file format if changed, the extension of the file also needs to be chnaged
-    protected static final String OUTPUT_FILE_NAME = Environment.getExternalStorageDirectory().toString()+ "/recording.3gpp";
+    protected static final String OUTPUT_FILE_PATH = Environment.getExternalStorageDirectory().toString()+ "/recording.3gpp";
     protected static final int OUTPUT_FILE_FORMAT = MediaRecorder.OutputFormat.THREE_GPP;
 
     //Media Playback tools
@@ -44,7 +38,7 @@ public abstract class AudioRecorder implements AudioRecording {
         }
         if(resetRequired){
             mediaPlayer.reset();
-            mediaPlayer.setDataSource(OUTPUT_FILE_NAME);
+            mediaPlayer.setDataSource(OUTPUT_FILE_PATH);
         }
     }
 
@@ -56,7 +50,7 @@ public abstract class AudioRecorder implements AudioRecording {
     }
 
     public void deleteRecordedMediaFile(){
-        File file = new File(OUTPUT_FILE_NAME);
+        File file = new File(OUTPUT_FILE_PATH);
         boolean deleted = file.delete();
         if(!deleted){
             //throw exception

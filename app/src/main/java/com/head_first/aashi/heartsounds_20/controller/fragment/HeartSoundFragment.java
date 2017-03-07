@@ -1,6 +1,7 @@
 package com.head_first.aashi.heartsounds_20.controller.fragment;
 
 import android.content.Context;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.utils.AudioRecorder;
+import com.head_first.aashi.heartsounds_20.utils.StethoscopeInteraction;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,6 +39,21 @@ public class HeartSoundFragment extends EditableFragment {
      * 1. Play
      * 2. Record
      *
+     * If a user that has not created this data is viewing this fragment, they should only be able to playback the audio
+     * and not be able to edit anything
+     * meaning the record button will need to be hidden for this user.
+     *
+     * Different Scenarios and app's behaviour:
+     * 1. User wants to record voice comment from phone
+     * - When the user clicks on the record button for the voice comment, the user will be using the phone's microphone to do a recording.
+     *
+     * 2. User wants to playback a recorded voice comment/HeartSound
+     * - When the user clicks on the playback button for the recording, the user will be using the phone's MediaPlayer to playback the recording
+     *
+     * 3. User wishes to upload/download data from the stethoscope
+     * - A new fragment will be created that will provide an interface for the user to communicate with the stethoscope
+     *
+     * Whenever a voice comment or heart sound is uploaded to the DB, make sure you update the Stethoscope id in the heartSound object/fragment
      *
      */
 
@@ -50,7 +67,8 @@ public class HeartSoundFragment extends EditableFragment {
     private ImageButton mPlayVoiceCommentButton;
     private ImageButton mRecordNewVoiceCommentButton;
     private ImageButton mPlayHeartSoundButton;
-    private ImageButton mRecordNewHeartSoundButton;
+    private ImageButton mStethoscopeVoiceCommentInteractionButton;
+    private ImageButton mStethoscopeHeartSoundInteractionButton;
     private TextView mHeartSoundId;
     private TextView mDoctorDetails;
     private TextView mDeviceId;
@@ -107,8 +125,9 @@ public class HeartSoundFragment extends EditableFragment {
         //Buttons
         mRecordNewVoiceCommentButton = (ImageButton) mRootView.findViewById(R.id.voiceCommentNewRecordingButton);
         mPlayVoiceCommentButton = (ImageButton) mRootView.findViewById(R.id.voiceCommentPlayRecordingButton);
-        mRecordNewHeartSoundButton = (ImageButton) mRootView.findViewById(R.id.heartSoundNewRecordingButton);
         mPlayHeartSoundButton = (ImageButton) mRootView.findViewById(R.id.heartSoundPlayRecordingButton);
+        mStethoscopeVoiceCommentInteractionButton = (ImageButton) mRootView.findViewById(R.id.stethoscopeVoiceCommentInteractionButton);
+        mStethoscopeHeartSoundInteractionButton = (ImageButton) mRootView.findViewById(R.id.stethoscopeHeartSoundInteractionButton);
         //TextViews
         mHeartSoundId = (TextView) mRootView.findViewById(R.id.heartSoundId);
         mDoctorDetails = (TextView) mRootView.findViewById(R.id.doctorDetails);
@@ -156,47 +175,6 @@ public class HeartSoundFragment extends EditableFragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
-    }
-
-    private void setupListenersForButtons(){
-        mRecordNewVoiceCommentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchAudioRecordingFragment(true, true);
-            }
-        });
-        mPlayVoiceCommentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchAudioRecordingFragment(false, true);
-            }
-        });
-        mRecordNewHeartSoundButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchAudioRecordingFragment(true, false);
-            }
-        });
-        mPlayHeartSoundButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchAudioRecordingFragment(false, false);
-            }
-        });
-    }
-
-    private void launchAudioRecordingFragment(boolean recordMode, boolean voiceCommentMode){
-        //Pass the state of the fragment eg: play or record
-        AudioRecordingFragment audioRecordingFragment = new AudioRecordingFragment();
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(AudioRecordingFragment.IS_REORD_MODE_TAG, recordMode);
-        bundle.putBoolean(AudioRecordingFragment.IS_VOICE_COMMENT_MODE_TAG, voiceCommentMode);
-        audioRecordingFragment.setArguments(bundle);
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, audioRecordingFragment, AudioRecordingFragment.AUDIO_RECORDING_FRAGMENT_TAG)
-                .addToBackStack(null)
-                .commit();
     }
 
     @Override
@@ -301,5 +279,63 @@ public class HeartSoundFragment extends EditableFragment {
         throw new UnsupportedOperationException();
     }
 
+    private void setupListenersForButtons(){
+        mRecordNewVoiceCommentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchAudioRecordingFragment(true, true);
+            }
+        });
+        mPlayVoiceCommentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchAudioRecordingFragment(false, true);
+            }
+        });
+        mPlayHeartSoundButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchAudioRecordingFragment(false, false);
+            }
+        });
+        mStethoscopeVoiceCommentInteractionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchStethoscopeInteractionFragment(true);
+            }
+        });
+        mStethoscopeHeartSoundInteractionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchStethoscopeInteractionFragment(false);
+            }
+        });
+    }
+
+    private void launchAudioRecordingFragment(boolean recordMode, boolean voiceCommentMode){
+        //Pass the state of the fragment eg: play or record
+        AudioRecordingFragment audioRecordingFragment = new AudioRecordingFragment();
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(AudioRecordingFragment.IS_REORD_MODE_TAG, recordMode);
+        bundle.putBoolean(AudioRecordingFragment.IS_VOICE_COMMENT_MODE_TAG, voiceCommentMode);
+        audioRecordingFragment.setArguments(bundle);
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, audioRecordingFragment, AudioRecordingFragment.AUDIO_RECORDING_FRAGMENT_TAG)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    private void launchStethoscopeInteractionFragment(boolean voiceCommentMode){
+        StethoscopeInteractionFragment stethoscopeInteractionFragment = new StethoscopeInteractionFragment();
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(StethoscopeInteractionFragment.IS_VOICE_COMMENT_MODE_TAG, voiceCommentMode);
+        stethoscopeInteractionFragment.setArguments(bundle);
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, stethoscopeInteractionFragment, StethoscopeInteractionFragment.STETHOSCOPE_INTERACTION_FRAGMENT_TAG)
+                .addToBackStack(null)
+                .commit();
+    }
 
 }

@@ -16,7 +16,9 @@ public class RequestPermission {
     public static final int RECORD_AUDIO = 1;
     public static final int READ_EXTERNAL_STORAGE = 2;
     public static final int WRITE_EXTERNAL_STORAGE = 3;
-    public static final int BLUETOOTH = 4;
+    public static final int BLUETOOTH_ADMIN = 4;
+    public static final int BLUETOOTH = 5;
+
 
     public static final boolean requestUserPermission(Activity activity, final String requestedPermission, final int requestCode){
         if(ContextCompat.checkSelfPermission(activity, requestedPermission) != PackageManager.PERMISSION_GRANTED){

@@ -1,14 +1,6 @@
 package com.head_first.aashi.heartsounds_20.utils;
 
-import android.content.Context;
-import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.speech.RecognitionListener;
-import android.speech.SpeechRecognizer;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +24,7 @@ public class VoiceRecorder extends AudioRecorder{
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(OUTPUT_FILE_FORMAT);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        mediaRecorder.setOutputFile(OUTPUT_FILE_NAME);
+        mediaRecorder.setOutputFile(OUTPUT_FILE_PATH);
     }
 
 
@@ -46,7 +38,7 @@ public class VoiceRecorder extends AudioRecorder{
     @Override
     public void startRecording() throws IOException {
         super.startRecording();
-        File outputFile = new File(OUTPUT_FILE_NAME);
+        File outputFile = new File(OUTPUT_FILE_PATH);
         if(outputFile.exists()){
             outputFile.delete();
         }

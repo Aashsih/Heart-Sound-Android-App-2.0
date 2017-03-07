@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -26,8 +27,13 @@ import com.head_first.aashi.heartsounds_20.utils.AudioRecordingButtonState;
 import com.head_first.aashi.heartsounds_20.utils.HeartSoundRecorder;
 import com.head_first.aashi.heartsounds_20.utils.RequestPermission;
 import com.head_first.aashi.heartsounds_20.utils.VoiceRecorder;
+import com.mmm.healthcare.scope.ConfigurationFactory;
+import com.mmm.healthcare.scope.IBluetoothManager;
+import com.mmm.healthcare.scope.Stethoscope;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.jar.Manifest;
 
@@ -372,8 +378,8 @@ public class AudioRecordingFragment extends Fragment implements AudioRecordingBu
     }
 
     private void startRecording(){
-        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.RECORD_AUDIO, RequestPermission.RECORD_AUDIO);
-        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE, RequestPermission.READ_EXTERNAL_STORAGE);
+        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.RECORD_AUDIO, RequestPermission.RECORD_AUDIO)
+                && RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE, RequestPermission.READ_EXTERNAL_STORAGE);
         if(permissionGranted){
             try {
                 audioRecorder.startRecording();
@@ -393,8 +399,8 @@ public class AudioRecordingFragment extends Fragment implements AudioRecordingBu
     }
 
     private void replayRecordedMedia(){
-        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE, RequestPermission.READ_EXTERNAL_STORAGE);
-        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE, RequestPermission.WRITE_EXTERNAL_STORAGE);
+        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE, RequestPermission.READ_EXTERNAL_STORAGE)
+                && RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE, RequestPermission.WRITE_EXTERNAL_STORAGE);
         if(permissionGranted){
             try {
                 if(!audioRecorder.isPaused()){
@@ -435,8 +441,8 @@ public class AudioRecordingFragment extends Fragment implements AudioRecordingBu
     }
 
     private void stopRecording(){
-        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE, RequestPermission.READ_EXTERNAL_STORAGE);
-        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE, RequestPermission.WRITE_EXTERNAL_STORAGE);
+        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE, RequestPermission.READ_EXTERNAL_STORAGE)
+                && RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE, RequestPermission.WRITE_EXTERNAL_STORAGE);
         if(permissionGranted){
             audioRecorder.stopRecording();
             disableRightButton();
@@ -471,8 +477,8 @@ public class AudioRecordingFragment extends Fragment implements AudioRecordingBu
     }
 
     private void stopPlayingRecordedAudio(){
-        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE, RequestPermission.READ_EXTERNAL_STORAGE);
-        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE, RequestPermission.WRITE_EXTERNAL_STORAGE);
+        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE, RequestPermission.READ_EXTERNAL_STORAGE)
+                && RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE, RequestPermission.WRITE_EXTERNAL_STORAGE);
         if(permissionGranted){
             //The implementation of this methods needs to be checked again
             audioRecorder.stopReplay();
@@ -486,8 +492,8 @@ public class AudioRecordingFragment extends Fragment implements AudioRecordingBu
     }
 
     private void pausePlayingMedia(){
-        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE, RequestPermission.READ_EXTERNAL_STORAGE);
-        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE, RequestPermission.WRITE_EXTERNAL_STORAGE);
+        this.permissionGranted = RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE, RequestPermission.READ_EXTERNAL_STORAGE)
+                && RequestPermission.requestUserPermission(this.getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE, RequestPermission.WRITE_EXTERNAL_STORAGE);
         if(permissionGranted){
             audioRecorder.pausePlaying();
             mediaPlayerListener.resumeMediaPlayerListener();

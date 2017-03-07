@@ -42,14 +42,7 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class PatientFragment extends EditableFragment implements DatePickerDialog.OnDateSetListener{
-    /**
-     * Display share patient option at the top
-     * Number of doctors that can see the patient (Shared with = number of doctors)
-     * Number of Students that have access to this patient.
-     * Display number of heartsounds
-     *
-     * Use the DatePicker (tutorial saved as bookmark) for date of birth
-     */
+
 
     public static final String PATIENT_FRAGMENT_TAG = "PATIENT_FRAGMENT";
 

@@ -16,7 +16,7 @@
         app:av_wave_height="50dp"
         app:av_footer_height="300dp"
         app:av_waves_count="6"
-        app:av_layers_count="2"
+        app:av_layers_count="4"
         app:av_background_color="@color/colorAccent"
         />
 

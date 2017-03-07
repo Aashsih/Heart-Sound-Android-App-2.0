@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">HeartSounds_2.0</string>
     <string name="positiveButton">OK</string>
+    <string name="negativeButton">Cancel</string>
     <string name="defaultSpinnerString">(not set)</string>
     <string name="defaultEmptyString">(empty)</string>
 
@@ -96,6 +97,8 @@
     <!-- Gender Selector Dialog -->
     <string name="genderSelectorDialogTitle">Gender</string>
 
+    <!-- Stethoscope download/upload track selector -->
+    <string name="trackSelectorDialogTitle">Tracks</string>
 
     <!-- FilterDialogFragment -->
     <string name="searchMenu">Search</string>
@@ -107,7 +110,8 @@
     <string name="navigationDrawerOpen">Open Navigation Drawer</string>
     <string name="navigationDrawerClose">Close Navigation Drawer</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
+    <!-- StethoscopeInteractionFragment -->
+    <string name="downloadFromStethoscope">Download</string>
+    <string name="uploadToStethoscope">Upload</string>
+    <string name="connectToStethoscope">Connect To Stethoscope</string>
 </resources>

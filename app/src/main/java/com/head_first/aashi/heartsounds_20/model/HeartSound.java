@@ -18,6 +18,10 @@ import java.util.List;
  * [Make the sure that the VoiceComment and the HeartSound Data are within the defined limits]
  */
 public final class HeartSound {
+    //time specified in milliseconds
+    public static final int VOICE_COMMENT_LENGHT = 10000;
+    public static final int HEART_SOUND_LENGHT = 10000;
+
     private long id;
     private long patientId;
     private long doctorId;

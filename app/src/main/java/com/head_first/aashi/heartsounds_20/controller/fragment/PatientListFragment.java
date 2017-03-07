@@ -22,11 +22,16 @@ import com.head_first.aashi.heartsounds_20.controller.activities.UserPatientActi
 import com.head_first.aashi.heartsounds_20.model.Filter;
 import com.head_first.aashi.heartsounds_20.utils.DynamicSearchFilter;
 import com.head_first.aashi.heartsounds_20.utils.ExpandablePatientListAdapter;
+import com.mmm.healthcare.scope.ConfigurationFactory;
+import com.mmm.healthcare.scope.IBluetoothManager;
+import com.mmm.healthcare.scope.Stethoscope;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -146,7 +151,6 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
             }
         });
         setHasOptionsMenu(true);
-
         return mRootView;
     }
 
@@ -170,7 +174,9 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
 
     @Override
     public void onResume(){
-        ((UserPatientActivity)getActivity()).setTitle(UserPatientActivity.MY_PATIENTS_PAGE_TITLE);
+        if(myPatientClicked){
+            ((UserPatientActivity)getActivity()).setTitle(UserPatientActivity.MY_PATIENTS_PAGE_TITLE);
+        }
         super.onResume();
     }
 
