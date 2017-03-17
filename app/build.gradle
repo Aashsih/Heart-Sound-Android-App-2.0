@@ -5,6 +5,7 @@ repositories {
         url "https://jitpack.io"
     }
 }
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -32,9 +33,10 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    //Volley
+    compile 'com.android.volley:volley:1.0.0'
     //audio visualizer
     //EventBus for MediaPlayer Progress Bar
-    // glide
     compile 'com.cleveroad:audiovisualization:0.9.1'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.android.support:appcompat-v7:25.1.0'

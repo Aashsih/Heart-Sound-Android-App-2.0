@@ -22,23 +22,26 @@ public class BluetoothManager {
     private static BluetoothClass bluetoothClass;
     private static BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-    public static boolean turnBluetoothOn(Activity activity){
-        if(!bluetoothAdapter.isEnabled()){
-            if(RequestPermission.requestUserPermission(activity, Manifest.permission.BLUETOOTH, RequestPermission.BLUETOOTH)
-                    && RequestPermission.requestUserPermission(activity, Manifest.permission.BLUETOOTH_ADMIN, RequestPermission.BLUETOOTH_ADMIN)){
+    public static boolean turnBluetoothOn(Activity activity) {
+        if (!bluetoothAdapter.isEnabled()) {
+            if (RequestPermission.requestUserPermission(activity, Manifest.permission.BLUETOOTH, RequestPermission.BLUETOOTH)
+                    && RequestPermission.requestUserPermission(activity, Manifest.permission.BLUETOOTH_ADMIN, RequestPermission.BLUETOOTH_ADMIN)) {
                 bluetoothAdapter.enable();
-            }
-            else{
+            } else {
                 Toast.makeText(activity.getBaseContext(), "Bluetooth Could not be turned on as permission was denied", Toast.LENGTH_SHORT);
             }
         }
         return bluetoothAdapter.isEnabled();
     }
 
-    public static Set<BluetoothDevice> getPairedBluetoothDevices(){
-        if(bluetoothAdapter != null)
+    public static Set<BluetoothDevice> getPairedBluetoothDevices() {
+        if (bluetoothAdapter != null)
             return bluetoothAdapter.getBondedDevices();
         return null;
+    }
+
+    public static boolean isBluetoothEnabled() {
+        return bluetoothAdapter.isEnabled();
     }
 
 }

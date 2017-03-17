@@ -2,6 +2,7 @@ package com.head_first.aashi.heartsounds_20.utils;
 
 import android.content.Context;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -38,7 +39,6 @@ public class StethoscopeInteraction implements IStethoscopeListener{
 
     private Stethoscope stethoscope;
     private StethoscopeInteractionFragment stethoscopeInteractionFragment;
-    private ByteArray stethoscopeData;
     private boolean stethoscopeInteractionInProgress;
 
     public StethoscopeInteraction(StethoscopeInteractionFragment fragment){
@@ -50,24 +50,17 @@ public class StethoscopeInteraction implements IStethoscopeListener{
      * @param context
      * @return
      */
-    public boolean connectToAvailableStethoscope(Context context){
+    public boolean connectToAvailableStethoscope(Context context)throws IOException{
         // Populate stethoscopeSelector with paired stethoscopes.
         ConfigurationFactory.setContext(context);
         IBluetoothManager bluetoothManager = ConfigurationFactory.getBluetoothManager();
         Vector<Stethoscope> scope = bluetoothManager.getPairedDevices();
         if (scope.size() > 0) {
             stethoscope = scope.get(0);
-            try {
-                stethoscope.connect();
-                Toast.makeText(context, "Connected to " + stethoscope.getSerialNumber(), Toast.LENGTH_SHORT).show();
-            } catch (IOException e) {
-                Toast.makeText(context, "Could not connect to stethoscope", Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
-            }
+            stethoscope.connect();
+            stethoscope.addStethoscopeListener(this);
+
             return stethoscope.isConnected();
-        }
-        else{
-            Toast.makeText(context, "No paired stethoscope found", Toast.LENGTH_SHORT).show();
         }
         return false;
     }
@@ -200,7 +193,11 @@ public class StethoscopeInteraction implements IStethoscopeListener{
         return stethoscopeInteractionInProgress;
     }
 
+    public String getStethoscopeSerialNumber(){
+        return (stethoscope.isConnected())? stethoscope.getSerialNumber(): null;
+    }
 
+    @Nullable
     private List<StethoscopeTrack> getAllAvailableStethoscopeTracks(){
         if(stethoscope == null || !stethoscope.isConnected()){
             return null;
@@ -214,7 +211,8 @@ public class StethoscopeInteraction implements IStethoscopeListener{
             return false;
         }
         else{
-            stethoscopeData = new ByteArray();
+            //Getting the stethoscopeTrack and making sure it is not locked (This is an expensive check and might be chnaged)
+            stethoscope.getStethoscopeTracks().get(trackIndex).setIsLocked(false);
             stethoscope.startDownloadTrack(trackIndex, audioType);
             startStethoscopeInteraction();
             new Thread(new TrackDownloader()).start();
@@ -238,8 +236,14 @@ public class StethoscopeInteraction implements IStethoscopeListener{
             return false;
         }
         else{
-            stethoscopeData = new ByteArray();
+            //Getting the stethoscopeTrack and making sure it is not locked (This is an expensive check and might be chnaged)
+            StethoscopeTrack stethoscopeTrack = stethoscope.getStethoscopeTracks().get(trackIndex);
+            if(stethoscopeTrack.getIsLocked()){
+                stethoscopeTrack.setIsLocked(false);
+            }
             stethoscope.startUploadTrack(trackIndex, audioType);
+            //if you want to play on stethoscope then use next line
+            stethoscope.startAudioOutput();
             startStethoscopeInteraction();
             new Thread(new TrackUploader()).start();
             uploadStarted = true;
@@ -342,12 +346,12 @@ public class StethoscopeInteraction implements IStethoscopeListener{
 
     //The File name used needs to be changed
     private class TrackDownloader implements Runnable{
+        private InputStream stethoscopeInputStream;
+        private FileOutputStream fileOutputStream;
 
         @Override
         public void run() {
             int x = 0;
-            FileOutputStream fileOutputStream = null;
-            InputStream stethoscopeInputStream = null;
             int bytesRead = 1;//any value grater than 0 should be fine
             try {
                 File outputFile = new File(OUTPUT_FILE_PATH);
@@ -362,12 +366,14 @@ public class StethoscopeInteraction implements IStethoscopeListener{
             while(stethoscopeInteractionInProgress){
                 byte[] buffer = new byte[MINIMUM_NUMBER_OF_BYTES_PER_TRANSACTION];
                 try {
-                    bytesRead = stethoscopeInputStream.read(buffer, 0, buffer.length);
+                    bytesRead = stethoscopeInputStream.read(buffer);
                     if(bytesRead <= 0){
                         Thread.sleep(100);
+                        Log.v("Bytes Read", "Bytes Read: " + bytesRead);
                     }
                     else{
-                        fileOutputStream.write(buffer, 0, buffer.length);
+                        Log.v("Bytes Read", "Bytes Read: " + bytesRead);
+                        fileOutputStream.write(buffer);
                         x++;
                     }
                 }
@@ -391,26 +397,24 @@ public class StethoscopeInteraction implements IStethoscopeListener{
 
     //The File name used needs to be changed
     private class TrackUploader implements Runnable{
+        private FileInputStream fileInputStream;
+        private OutputStream stethoscopeOutputStream;
 
         @Override
         public void run() {
             int x = 0;
-            byte[] buffer = new byte[MINIMUM_NUMBER_OF_BYTES_PER_TRANSACTION];
-            FileInputStream fileInputStream = null;
-            OutputStream stethoscopeOutputStream = stethoscope.getAudioOutputStream();
+            //byte[] buffer = new byte[MINIMUM_NUMBER_OF_BYTES_PER_TRANSACTION];
+            byte[] buffer = new byte[80000];
             try {
                 fileInputStream = new FileInputStream(new File(OUTPUT_FILE_PATH));
-                //For now the stethoscopeData byteArray is used, but this might change if the bytes are being read from a file.
-                while(stethoscopeInteractionInProgress &&
-                        (fileInputStream.read(buffer, 0, buffer.length)) > 0){
-                    try {
-                        stethoscopeOutputStream.write(buffer, 0, buffer.length);
-                        Log.v("uploading buffer","buffer = " + buffer.toString());
-                        x++;
-                    } catch (IOException exception) {
-                        exception.printStackTrace();
-                    }
+                while((fileInputStream.read(buffer)) > 0){
+
                 }
+                stethoscopeOutputStream = stethoscope.getAudioOutputStream();
+                //while(stethoscopeInteractionInProgress){// && (fileInputStream.read(buffer)) > 0){
+                    stethoscopeOutputStream.write(buffer);
+                    x++;
+                //}
             }
             catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -419,7 +423,7 @@ public class StethoscopeInteraction implements IStethoscopeListener{
                 exception.printStackTrace();
             }
             Log.v("Tag", "Number of bytes uploaded = " + x*128);
-            stethoscope.stopUploadAndDownloadTrack();
+            //stethoscope.stopUploadAndDownloadTrack();
             stopStethoscopeInteraction();
         }
 

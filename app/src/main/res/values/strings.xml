@@ -114,4 +114,9 @@
     <string name="downloadFromStethoscope">Download</string>
     <string name="uploadToStethoscope">Upload</string>
     <string name="connectToStethoscope">Connect To Stethoscope</string>
+
+    <!-- User Messages -->
+    <string name="connectingToStethoscopeMessage">Connecting to Available Stethoscope</string>
+    <string name="donwloadingFromStethoscopeMessage">Downloading </string>
+    <string name="uploadingToStethoscopeMessage">Uploading </string>
 </resources>

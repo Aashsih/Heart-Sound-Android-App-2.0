@@ -24,6 +24,7 @@ import com.head_first.aashi.heartsounds_20.utils.BluetoothManager;
 import com.head_first.aashi.heartsounds_20.utils.StethoscopeInteraction;
 import com.mmm.healthcare.scope.AudioType;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.RunnableFuture;
 
@@ -53,7 +54,8 @@ public class StethoscopeInteractionFragment extends Fragment{
     private String selectedTrack;
     private boolean voiceCommentMode;
     private Integer clickedButtonId;
-    private boolean bluetoothOn;
+    private String progressDialogMessage;
+    //private boolean bluetoothOn;
 
     private OnFragmentInteractionListener mListener;
 
@@ -93,6 +95,7 @@ public class StethoscopeInteractionFragment extends Fragment{
         mUploadToStethoscope= (Button) mRootView.findViewById(R.id.uploadToStethoscope);
         mConnectToStethoscope = (Button) mRootView.findViewById(R.id.connectToStethoscope);
         setupListenersForButtons();
+        startThreadToConnectToBluetooth();
         if(!stethoscopeInteractor.isStethoscopeConnected()){
             disableStethoscopeInteractionButtons();
         }
@@ -116,12 +119,13 @@ public class StethoscopeInteractionFragment extends Fragment{
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
+        //This method is currently not being used
         if (grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            this.bluetoothOn = true;
+                //this.bluetoothOn = true;
         }
         else {
-            this.bluetoothOn = false;
+            //this.bluetoothOn = false;
         }
 
     }
@@ -182,11 +186,11 @@ public class StethoscopeInteractionFragment extends Fragment{
     }
 
     /**
-     * Entry point for any button click event in this Fragment
+     * Entry point for upload and download event in this Fragment
      */
     public void onStethoscopeInteractionButtonClick(View button){
-        bluetoothOn = BluetoothManager.turnBluetoothOn(getActivity());
-        if(bluetoothOn){
+        //bluetoothOn = BluetoothManager.turnBluetoothOn(getActivity());
+        if(BluetoothManager.isBluetoothEnabled()){
             //show a dialog box to the user to select the track they want to upload or download.
             displayAvailableTracksDialog(button);
             clickedButtonId = button.getId();
@@ -264,14 +268,33 @@ public class StethoscopeInteractionFragment extends Fragment{
     }
 
     private void connectToStethoscope(){
-        boolean connected = stethoscopeInteractor.connectToAvailableStethoscope(getContext());
-        bluetoothOn = BluetoothManager.turnBluetoothOn(getActivity());
-        if(connected && bluetoothOn){
-            enableStethoscopeInteractionButtons();
-        }
-        else{
-            disableStethoscopeInteractionButtons();
-        }
+        //bluetoothOn = BluetoothManager.turnBluetoothOn(getActivity()); -- This functionality is now moved to a Thread
+        showIndefiniteProgressDialog(getResources().getString(R.string.connectingToStethoscopeMessage));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    stethoscopeInteractor.connectToAvailableStethoscope(getContext());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                progressDialog.dismiss();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(stethoscopeInteractor.isStethoscopeConnected() && BluetoothManager.isBluetoothEnabled()){
+                            Toast.makeText(getContext(), "Connected to " + stethoscopeInteractor.getStethoscopeSerialNumber(), Toast.LENGTH_SHORT).show();
+                            enableStethoscopeInteractionButtons();
+                        }
+                        else{
+                            Toast.makeText(getContext(), "No paired stethoscope found", Toast.LENGTH_SHORT).show();
+                            disableStethoscopeInteractionButtons();
+                        }
+                    }
+                });
+
+            }
+        }).start();
     }
 
     private void downloadTrackFromStethoscope(){
@@ -281,15 +304,11 @@ public class StethoscopeInteractionFragment extends Fragment{
                 interactionStarted = stethoscopeInteractor.downloadTrackFromStethoscope(stethoscopeInteractor.getTrackId(selectedTrack), AudioType.VoiceComment);
             }
             else{
+
                 interactionStarted = stethoscopeInteractor.downloadTrackFromStethoscope(stethoscopeInteractor.getTrackId(selectedTrack), AudioType.Body);
             }
             if(interactionStarted){
-                progressDialog = new ProgressDialog(getContext());
-                progressDialog.setMessage("Downloading " + selectedTrack);
-                progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                progressDialog.setCancelable(false);
-                progressDialog.setIndeterminate(true);
-                progressDialog.show();
+                showIndefiniteProgressDialog(getResources().getString(R.string.donwloadingFromStethoscopeMessage) + selectedTrack);
             }
 
         }
@@ -306,12 +325,7 @@ public class StethoscopeInteractionFragment extends Fragment{
                 interactionStarted = stethoscopeInteractor.uploadTrackFromStethoscope(stethoscopeInteractor.getTrackId(selectedTrack), AudioType.Body);
             }
             if(interactionStarted){
-                progressDialog = new ProgressDialog(getContext());
-                progressDialog.setMessage("Uploading " + selectedTrack);
-                progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                progressDialog.setCancelable(false);
-                progressDialog.setIndeterminate(true);
-                progressDialog.show();
+                showIndefiniteProgressDialog(getResources().getString(R.string.uploadingToStethoscopeMessage) + selectedTrack);
             }
         }
     }
@@ -325,4 +339,30 @@ public class StethoscopeInteractionFragment extends Fragment{
         //The above doesnt apply for Voice Comment
     }
 
+    private void startThreadToConnectToBluetooth(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                BluetoothManager.turnBluetoothOn(getActivity());
+            }
+        }).start();
+    }
+
+    private void showIndefiniteProgressDialog(String message){
+        progressDialogMessage = message;
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                progressDialog = new ProgressDialog(getContext());
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                if(progressDialogMessage != null){
+                    progressDialog.setMessage(progressDialogMessage);
+                }
+                progressDialog.setCancelable(false);
+                progressDialog.setIndeterminate(true);
+                progressDialog.show();
+            }
+        });
+
+    }
 }
