@@ -1,5 +1,7 @@
 package com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,8 +10,12 @@ import java.util.Map;
  */
 
 public enum ChangeWithBreathing {
-    NOT_DONE("Not Done"), SOFTER_INSPIRATION("Softer Inspiration"), LOUDER_INSPIRATION("Louder Inspiration"),
-    SOFTER_EXPIRATION("Softer Expiration"), LOUDER_EXPIRATION("Louder Expiration"), NO_CHANGE("No Change");
+    @SerializedName("Not Done")NOT_DONE("Not Done"),
+    @SerializedName("Softer Inspiration")SOFTER_INSPIRATION("Softer Inspiration"),
+    @SerializedName("Louder Inspiration")LOUDER_INSPIRATION("Louder Inspiration"),
+    @SerializedName("Softer Expiration")SOFTER_EXPIRATION("Softer Expiration"),
+    @SerializedName("Louder Expiration")LOUDER_EXPIRATION("Louder Expiration"),
+    @SerializedName("No Change")NO_CHANGE("No Change");
 
     private static Map<String, ChangeWithBreathing> valueToChangeWithBreathing = new HashMap<String, ChangeWithBreathing>();
 

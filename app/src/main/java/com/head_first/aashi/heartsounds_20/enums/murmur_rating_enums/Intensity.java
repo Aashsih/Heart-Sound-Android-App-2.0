@@ -1,5 +1,7 @@
 package com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +10,12 @@ import java.util.Map;
  */
 
 public enum Intensity {
-    I("I"), II("II"), III("III"), IV("IV"), V("V"), VI("VI");
+    @SerializedName("I")I("I"),
+    @SerializedName("II")II("II"),
+    @SerializedName("III")III("III"),
+    @SerializedName("IV")IV("IV"),
+    @SerializedName("V")V("V"),
+    @SerializedName("VI")VI("VI");
 
     private static Map<String, Intensity> valueToIntensity = new HashMap<String, Intensity>();
 

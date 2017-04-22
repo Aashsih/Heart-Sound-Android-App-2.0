@@ -1,5 +1,7 @@
 package com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +10,9 @@ import java.util.Map;
  */
 
 public enum CHARACTER {
-    HIGH_PITCHED("High Pitched"), LOW_PITCHED("Low Pitched"), RUMBLING("Rumbling");
+    @SerializedName("High Pitched")HIGH_PITCHED("High Pitched"),
+    @SerializedName("Low Pitched")LOW_PITCHED("Low Pitched"),
+    @SerializedName("Rumbling")RUMBLING("Rumbling");
 
     private static Map<String, CHARACTER> valueToCharacter = new HashMap<String, CHARACTER>();
 

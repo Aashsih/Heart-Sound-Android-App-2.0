@@ -1,5 +1,7 @@
 package com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +10,9 @@ import java.util.Map;
  */
 
 public enum S1 {
-    NORMAL("Normal"), SOFT("Soft"), LOUD("Loud");
+    @SerializedName("Normal")NORMAL("Normal"),
+    @SerializedName("Soft")SOFT("Soft"),
+    @SerializedName("Loud")LOUD("Loud");
 
     private static Map<String, S1> valueToSOne = new HashMap<String, S1>();
 

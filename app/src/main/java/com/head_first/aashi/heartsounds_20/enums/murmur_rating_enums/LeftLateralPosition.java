@@ -1,5 +1,7 @@
 package com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +10,10 @@ import java.util.Map;
  */
 
 public enum LeftLateralPosition {
-    NOT_DONE("Not Done"), LOUDER("Louder"), SOFTER("Softer"), NO_CHANGE("No Change");
+    @SerializedName("Not Done")NOT_DONE("Not Done"),
+    @SerializedName("Louder")LOUDER("Louder"),
+    @SerializedName("Softer")SOFTER("Softer"),
+    @SerializedName("No Change")NO_CHANGE("No Change");
 
     private static Map<String, LeftLateralPosition> valueToLeftLateralPosition = new HashMap<String, LeftLateralPosition>();
 

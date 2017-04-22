@@ -1,5 +1,7 @@
 package com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +10,11 @@ import java.util.Map;
  */
 
 public enum S2 {
-    NORMAL("Normal"), SPLIT("Split"), FIXED_SPLIT("Fixed Split"), REVERSED_SPLIT("Reserved Split"), SINGLE("Single");
+    @SerializedName("Normal")NORMAL("Normal"),
+    @SerializedName("Split")SPLIT("Split"),
+    @SerializedName("Fixed Split")FIXED_SPLIT("Fixed Split"),
+    @SerializedName("Reserved Split")REVERSED_SPLIT("Reserved Split"),
+    @SerializedName("Single")SINGLE("Single");
 
     private static Map<String, S2> valueToSTwo = new HashMap<String, S2>();
 

@@ -1,5 +1,7 @@
 package com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +10,10 @@ import java.util.Map;
  */
 
 public enum MostIntenseLocation {
-    MITRAL("Mitral"), TRICUSPID("Tricuspid"), PULMONARY("Pulmonary"), AORTIC("Aortic");
+    @SerializedName("Mitral")MITRAL("Mitral"),
+    @SerializedName("Tricuspid")TRICUSPID("Tricuspid"),
+    @SerializedName("Pulmonary")PULMONARY("Pulmonary"),
+    @SerializedName("Aortic")AORTIC("Aortic");
 
     private static Map<String, MostIntenseLocation> valueToLeftMostIntenseLocation = new HashMap<String, MostIntenseLocation>();
 

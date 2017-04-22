@@ -1,5 +1,7 @@
 package com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +10,11 @@ import java.util.Map;
  */
 
 public enum AddedSounds {
-    NIL("nil"), S3("S3"), S4("S4"), EJECTION_CLICK("Ejection Click"), SYSTOLIC_CLICK("Systolic Click");
+    @SerializedName("nil")NIL("nil"),
+    @SerializedName("S3")S3("S3"),
+    @SerializedName("S4")S4("S4"),
+    @SerializedName("Ejection Click")EJECTION_CLICK("Ejection Click"),
+    @SerializedName("Systolic Click")SYSTOLIC_CLICK("Systolic Click");
 
     private static Map<String, AddedSounds> valueToAddedSounds = new HashMap<String, AddedSounds>();
 

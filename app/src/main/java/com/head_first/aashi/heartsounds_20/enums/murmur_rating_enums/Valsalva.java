@@ -1,5 +1,7 @@
 package com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +10,9 @@ import java.util.Map;
  */
 
 public enum Valsalva {
-    NOT_DONE("Not Done"), SOFTER_INSPIRATION("Softer Inspiration"), LOUDER_INSPIRATION("Louder Inspiration");
+    @SerializedName("Not Done")NOT_DONE("Not Done"),
+    @SerializedName("Softer Inspiration")SOFTER_INSPIRATION("Softer Inspiration"),
+    @SerializedName("Louder Inspiration")LOUDER_INSPIRATION("Louder Inspiration");
 
     private static Map<String, Valsalva> valueToValsalva = new HashMap<String, Valsalva>();
 

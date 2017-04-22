@@ -1,5 +1,7 @@
 package com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,7 +10,9 @@ import java.util.Map;
  */
 
 public enum CardiacPhase {
-    SYSTOLIC("Systolic"), DIASTOLIC("Diastolic"), CONTINUOUS("Continuous");
+    @SerializedName("Systolic")SYSTOLIC("Systolic"),
+    @SerializedName("Diastolic")DIASTOLIC("Diastolic"),
+    @SerializedName("Continuous")CONTINUOUS("Continuous");
 
     private static Map<String, CardiacPhase> valueToCardiacPhase = new HashMap<String, CardiacPhase>();
 

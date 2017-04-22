@@ -1,5 +1,7 @@
 package com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,8 +10,12 @@ import java.util.Map;
  */
 
 public enum MurmurDuration {
-    EJECTION_SYSTOLIC("Ejection Systolic"), MID_SYSTOLIC("Mid Systolic"), LATE_SYSTOLIC("Late Systolic"), HOLOSYSTOLIC("Holosystolic"),
-    EARLY_DIASYSTOLIC("Early Diasystolic"), MID_DIASYSTOLIC("Mid Diasystolic");
+    @SerializedName("Ejection Systolic")EJECTION_SYSTOLIC("Ejection Systolic"),
+    @SerializedName("Mid Systolic")MID_SYSTOLIC("Mid Systolic"),
+    @SerializedName("Late Systolic")LATE_SYSTOLIC("Late Systolic"),
+    @SerializedName("Holosystolic")HOLOSYSTOLIC("Holosystolic"),
+    @SerializedName("Early Diasystolic")EARLY_DIASYSTOLIC("Early Diasystolic"),
+    @SerializedName("Mid Diasystolic")MID_DIASYSTOLIC("Mid Diasystolic");
 
     private static Map<String, MurmurDuration> valueToMurmurDuration = new HashMap<String, MurmurDuration>();
 

@@ -1,5 +1,7 @@
 package com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,8 +10,14 @@ import java.util.Map;
  */
 
 public enum Radiation {
-    AXILLA("Axilla"), LLSE("Llse"), ULSE("Ulse"), URSE("Urse"), CAROTID("Carotid"), BACK("Back"), PULMONARY("Pulmonary"),
-    EPIGASTRIUM("Epigastrium");
+    @SerializedName("Axilla")AXILLA("Axilla"),
+    @SerializedName("Llse")LLSE("Llse"),
+    @SerializedName("Ulse")ULSE("Ulse"),
+    @SerializedName("Urse")URSE("Urse"),
+    @SerializedName("Carotid")CAROTID("Carotid"),
+    @SerializedName("Back")BACK("Back"),
+    @SerializedName("Pulmonary")PULMONARY("Pulmonary"),
+    @SerializedName("Epigastrium")EPIGASTRIUM("Epigastrium");
 
     private static Map<String, Radiation> valueToRadiation = new HashMap<String, Radiation>();
 
