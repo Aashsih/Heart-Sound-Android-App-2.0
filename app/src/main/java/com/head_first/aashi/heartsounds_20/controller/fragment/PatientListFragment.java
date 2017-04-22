@@ -14,24 +14,41 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ListView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.controller.activities.PatientHeartSoundActivity;
 import com.head_first.aashi.heartsounds_20.controller.activities.UserPatientActivity;
+import com.head_first.aashi.heartsounds_20.enums.web_api_enums.ResponseStatusCode;
 import com.head_first.aashi.heartsounds_20.model.Filter;
+import com.head_first.aashi.heartsounds_20.model.Patient;
+import com.head_first.aashi.heartsounds_20.model.User;
+import com.head_first.aashi.heartsounds_20.utils.DialogBoxDisplayHandler;
 import com.head_first.aashi.heartsounds_20.utils.DynamicSearchFilter;
 import com.head_first.aashi.heartsounds_20.utils.ExpandablePatientListAdapter;
-import com.mmm.healthcare.scope.ConfigurationFactory;
-import com.mmm.healthcare.scope.IBluetoothManager;
-import com.mmm.healthcare.scope.Stethoscope;
+import com.head_first.aashi.heartsounds_20.utils.SharedPreferencesManager;
+import com.head_first.aashi.heartsounds_20.web_api.RequestQueueSingleton;
+import com.head_first.aashi.heartsounds_20.web_api.WebAPI;
+import com.head_first.aashi.heartsounds_20.web_api.WebAPIResponse;
+import com.head_first.aashi.heartsounds_20.utils.JsonObjectParser;
 
-import java.io.IOException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,19 +60,30 @@ import java.util.Vector;
  */
 public class PatientListFragment extends Fragment implements SearchView.OnQueryTextListener, SearchView.OnCloseListener{
     public static final String PATIENT_LIST_FRAGMENT_TAG = "PATIENT_LIST_FRAGMENT";
-
+    public static final String MY_PATIENT_SELECTED = "MY_PATIENT_SELECTED";
+    private enum DISPLAY_STATE {
+        LIST_VIEW (1), EXPANDABLE_LIST_VIEW (2);
+        private int value;
+        private DISPLAY_STATE(int value){
+            this.value = value;
+        }
+    };
     private static final String MY_PATIENTS_PAGE_TITLE = "My Patients";
     private static final String SHARED_PATIENTS_PAGE_TITLE = "Shared Patients";
     private static final String DEFAULT_SEARCH_STRING = "";
 
-
+    //Views and Layouts
     private DialogFragment filterFragment;
     private View mRootView;
     private SearchView mSearchView;
+    private ListView mListView;
+    private ArrayAdapter<Patient> patientListAdapter;
     private ExpandableListView mExpandableListView;
     private ExpandablePatientListAdapter expandablePatientListAdapter;
 
     //Data for the fragment
+    private List<Patient> patientList;
+    private DISPLAY_STATE displayState;
     private Filter filter;
     private String oldFilterString; //this is made equal to the filter String from filter.getSearchString() before the view of this fragment is destroyed
     //There will be a few more data structures here that will store the information from the Database, more specifically
@@ -71,49 +99,33 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
     private LinkedHashMap<String, List<String>> searchContentMap;
     private boolean myPatientClicked;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    //Web API
+    WebAPIResponse webAPIResponse = new WebAPIResponse();
 
     private OnFragmentInteractionListener mListener;
 
     public PatientListFragment() {
         filter = new Filter(DEFAULT_SEARCH_STRING);
-        myPatientClicked = true;
     }
 
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+
      * @return A new instance of fragment PatientListFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static PatientListFragment newInstance(String param1, String param2) {
+    public static PatientListFragment newInstance() {
         PatientListFragment fragment = new PatientListFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
         setHasOptionsMenu(true);
         oldFilterString = "null";
+        displayState = DISPLAY_STATE.LIST_VIEW;
+        myPatientClicked = true;
     }
 
     @Override
@@ -122,16 +134,18 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
         if(!oldFilterString.equals(filter.getSearchString())){
             setUpDataForViews();
         }
+        if(getArguments() != null){
+            myPatientClicked = getArguments().getBoolean(MY_PATIENT_SELECTED);
+        }
+
         // Inflate the layout for this fragment
         mRootView = inflater.inflate(R.layout.fragment_patients_list, container, false);
-
         if(myPatientClicked){
 
         }
         else{
 
         }
-
         //SearchView Setup
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
         mSearchView = (SearchView) mRootView.findViewById(R.id.patientSearchView);
@@ -139,45 +153,22 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
         mSearchView.setOnQueryTextListener(this);
         mSearchView.setOnCloseListener(this);
 
-        //Setup ExpandableListView
-        expandablePatientListAdapter = new ExpandablePatientListAdapter(getContext(), searchContentMap);
-        mExpandableListView = (ExpandableListView) mRootView.findViewById(R.id.expandableListView);
-        mExpandableListView.setAdapter(expandablePatientListAdapter);
-        mExpandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                onPatientSelected(parent, v, groupPosition, childPosition, id);
-                return false;
-            }
-        });
         setHasOptionsMenu(true);
         return mRootView;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
     }
 
     @Override
     public void onResume(){
+        super.onResume();
         if(myPatientClicked){
             ((UserPatientActivity)getActivity()).setTitle(UserPatientActivity.MY_PATIENTS_PAGE_TITLE);
         }
-        super.onResume();
+        requestUserDetails();
     }
 
     @Override
@@ -203,7 +194,6 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -217,7 +207,8 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
         menu.findItem(R.id.editItem).setVisible(false);
         menu.findItem(R.id.saveChangesItem).setVisible(false);
         menu.findItem(R.id.cancelChangesItem).setVisible(false);
-
+        menu.findItem(R.id.logoutItem).setVisible(false);
+        menu.findItem(R.id.filterPatientsItem).setVisible(false);
     }
 
     @Override
@@ -230,6 +221,7 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
                 launchFilterFragment();
                 break;
             case R.id.refreshViewItem:
+                requestPatients();
                 break;
         }
         return true;
@@ -244,17 +236,67 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
         return this.myPatientClicked;
     }
 
+    private void setupExpandableListView(){
+        //This is not in use at the moment
+        //Setup ExpandableListView
+        expandablePatientListAdapter = new ExpandablePatientListAdapter(getContext(), searchContentMap);
+        mExpandableListView = (ExpandableListView) mRootView.findViewById(R.id.expandableListView);
+        mExpandableListView.setAdapter(expandablePatientListAdapter);
+        mExpandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                onPatientSelected(parent, v, groupPosition, childPosition, id);
+                return false;
+            }
+        });
+    }
+
+    private void setupListView(){
+        if(myPatientClicked){
+            patientListAdapter = new ArrayAdapter<Patient>(getContext(), android.R.layout.simple_list_item_1, getMyPatientList());
+        }
+        else{
+            patientListAdapter = new ArrayAdapter<Patient>(getContext(), android.R.layout.simple_list_item_1, getSharedPatientList());
+        }
+        mListView = (ListView) mRootView.findViewById(R.id.listView);
+        mListView.setAdapter(patientListAdapter);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                onPatientSelected(parent, view, position, id);
+            }
+        });
+    }
+
+    private List<Patient> getMyPatientList(){
+        List<Patient> myPatientList = new ArrayList<>();
+        String userId = SharedPreferencesManager.getActiveUserId(getActivity());
+        for(Patient aPatient : patientList){
+            if(aPatient.getPrimaryDoctorId().equalsIgnoreCase(userId)){
+                myPatientList.add(aPatient);
+            }
+        }
+        return myPatientList;
+    }
+
+    private List<Patient> getSharedPatientList(){
+        List<Patient> sharedPatientList = new ArrayList<>();
+        String userId = SharedPreferencesManager.getActiveUserId(getActivity());
+        for(Patient aPatient : patientList){
+            if(!aPatient.getPrimaryDoctorId().equalsIgnoreCase(userId)){
+                sharedPatientList.add(aPatient);
+            }
+        }
+        return sharedPatientList;
+    }
+
     private void setUpDataForViews(){
         //Load all the models over here based on myPatientClicked
         if(myPatientClicked){
             //Load models for MyPatients
-            int x = 0;
-            x++;
         }
         else{
             //Load models for SharedPatients
-            int x = 0;
-            x++;
         }
         //after the models are loaded, load the filterContent in the Filter Model
         filter.populateFilterContent(myPatientClicked);//Pass in the required models as parameters
@@ -268,7 +310,7 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
     private void launchFilterFragment(){
         oldFilterString = filter.getSearchString();
         if(filterFragment == null){
-            filterFragment = new FilterDialogFragment();
+            filterFragment = FilterDialogFragment.newInstance();
         }
         Bundle bundle = new Bundle();
         bundle.putSerializable(FilterDialogFragment.FILTER_CONTENT_MAP_TAG, filter);
@@ -309,6 +351,23 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
         startActivity(patientHeartSoundActivityIntent);
     }
 
+    private void onPatientSelected(AdapterView<?> parent, View view, int position, long id){
+        Intent patientHeartSoundActivityIntent = new Intent(getActivity(), PatientHeartSoundActivity.class);
+        patientHeartSoundActivityIntent.putExtra(PatientHeartSoundActivity.PATIENT, JsonObjectParser.getJsonStringFromPatient(patientList.get(position)));
+        startActivity(patientHeartSoundActivityIntent);
+    }
+
+    private void launchWebAPIErrorFragment(){
+        Bundle bundle = new Bundle();
+        bundle.putString(WebAPIErrorFragment.WEB_API_ERROR_MESSAGE_TAG, webAPIResponse.getMessage());
+        WebAPIErrorFragment webAPIErrorFragment = WebAPIErrorFragment.newInstance();
+        webAPIErrorFragment.setArguments(bundle);
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.fragmentContainer, webAPIErrorFragment, WebAPIErrorFragment.WEB_API_ERROR_FRAGMENT_TAG)
+                .commit();
+    }
+
     //To display the search button on the toolbar
 //    @Override
 //    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -318,15 +377,36 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
     //SearchView.OnQueryTextListener Implementation
     @Override
     public boolean onQueryTextSubmit(String query) {
-        DynamicSearchFilter.onQueryTextSubmit(query, filterContentMap, searchContentMap);
-        expandablePatientListAdapter.notifyDataSetChanged();
+        if(displayState == DISPLAY_STATE.LIST_VIEW){
+            if(mListView == null || patientListAdapter == null){
+                setupListView();
+            }
+        }
+        else if(displayState == DISPLAY_STATE.EXPANDABLE_LIST_VIEW){
+            if(mExpandableListView == null || expandablePatientListAdapter == null){
+                setupExpandableListView();
+            }
+            DynamicSearchFilter.onQueryTextSubmit(query, filterContentMap, searchContentMap);
+            expandablePatientListAdapter.notifyDataSetChanged();
+        }
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        DynamicSearchFilter.onQueryTextChange(newText , filterContentMap, searchContentMap);
-        expandablePatientListAdapter.notifyDataSetChanged();
+        if(displayState == DISPLAY_STATE.LIST_VIEW){
+            if(mListView == null || patientListAdapter == null){
+                setupListView();
+            }
+
+        }
+        else if(displayState == DISPLAY_STATE.EXPANDABLE_LIST_VIEW){
+            if(mExpandableListView == null || expandablePatientListAdapter == null){
+                setupExpandableListView();
+            }
+            DynamicSearchFilter.onQueryTextChange(newText , filterContentMap, searchContentMap);
+            expandablePatientListAdapter.notifyDataSetChanged();
+        }
         return false;
     }
 
@@ -334,5 +414,141 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
     @Override
     public boolean onClose() {
         return false;
+    }
+
+    public void requestPatients() {
+        DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity());
+        StringRequest request = new StringRequest(Request.Method.GET, WebAPI.PATIENT_BASE_URL,
+                new Response.Listener<String>(){
+                    @Override
+                    public void onResponse(String response) {
+                        //update UI accordingly
+                        Collection<Patient> parsedResponse = JsonObjectParser.getPatientListFromJsonString(response.toString());
+                        if(parsedResponse != null){
+                            patientList = new ArrayList<>(parsedResponse);
+                            if(displayState == DISPLAY_STATE.LIST_VIEW){
+                                setupListView();
+                            }
+                            else{
+                                setupExpandableListView();
+                            }
+                        }
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                        //dismiss the progress dialog box
+                        DialogBoxDisplayHandler.dismissProgressDialog();
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //dismiss the progress dialog box
+                DialogBoxDisplayHandler.dismissProgressDialog();
+                //use the webAPIResponse to get message from server
+                if(webAPIResponse.getStatusCode().equals(ResponseStatusCode.UNAUTHORIZED)){
+                    SharedPreferencesManager.invalidateUserAccessToken(getActivity());
+                }
+                else{
+                    //Launch Web API Error Fragment
+                    launchWebAPIErrorFragment();
+                }
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareAccessTokenHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
+
+    //Request user details
+    private void requestUserDetails() {
+        DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity());
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, WebAPI.GET_USER_INFO_URL, null,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //update UI accordingly
+                        DialogBoxDisplayHandler.dismissProgressDialog();
+                        //1. get user object
+                        User loggedInUser = JsonObjectParser.getUserFromJsonString(response.toString());
+                        SharedPreferencesManager.addUserIdToSharedPreferences(getActivity(), loggedInUser.getUsername(), loggedInUser.getId());
+                        requestPatients();
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+                DialogBoxDisplayHandler.dismissProgressDialog();
+                //use the webAPIResponse to get message from server
+                if(webAPIResponse.getStatusCode().equals(ResponseStatusCode.UNAUTHORIZED)){
+                    SharedPreferencesManager.invalidateUserAccessToken(getActivity());;
+                }
+                else{
+                    //Launch Web API Error Fragment
+                    launchWebAPIErrorFragment();
+                }
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareAccessTokenHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+        RequestQueueSingleton.getInstance(getActivity()).addToRequestQueue(request);
     }
 }

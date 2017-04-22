@@ -6,14 +6,12 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -22,20 +20,15 @@ import com.cleveroad.audiovisualization.AudioVisualization;
 import com.cleveroad.audiovisualization.DbmHandler;
 import com.cleveroad.audiovisualization.VisualizerDbmHandler;
 import com.head_first.aashi.heartsounds_20.R;
+import com.head_first.aashi.heartsounds_20.interfaces.util_interfaces.NavgigationDrawerUtils;
 import com.head_first.aashi.heartsounds_20.utils.AudioRecorder;
-import com.head_first.aashi.heartsounds_20.utils.AudioRecordingButtonState;
+import com.head_first.aashi.heartsounds_20.interfaces.util_interfaces.AudioRecordingButtonState;
 import com.head_first.aashi.heartsounds_20.utils.HeartSoundRecorder;
 import com.head_first.aashi.heartsounds_20.utils.RequestPermission;
 import com.head_first.aashi.heartsounds_20.utils.VoiceRecorder;
-import com.mmm.healthcare.scope.ConfigurationFactory;
-import com.mmm.healthcare.scope.IBluetoothManager;
-import com.mmm.healthcare.scope.Stethoscope;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.jar.Manifest;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -99,15 +92,6 @@ public class AudioRecordingFragment extends Fragment implements AudioRecordingBu
     private boolean voiceCommentMode;
     private boolean permissionGranted;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     private OnFragmentInteractionListener mListener;
 
     public AudioRecordingFragment() {
@@ -117,29 +101,19 @@ public class AudioRecordingFragment extends Fragment implements AudioRecordingBu
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+
      * @return A new instance of fragment AudioRecordingFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static AudioRecordingFragment newInstance(String param1, String param2) {
+    public static AudioRecordingFragment newInstance() {
         AudioRecordingFragment fragment = new AudioRecordingFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
         setHasOptionsMenu(true);
+        //Check for Information passed to the fragment
         Bundle bundle = getArguments();
         if(bundle != null){
             recordMode = (boolean) bundle.getBoolean(AudioRecordingFragment.IS_REORD_MODE_TAG);
@@ -171,26 +145,15 @@ public class AudioRecordingFragment extends Fragment implements AudioRecordingBu
             setupPlayModeButtons();
         }
         audioRecorder.resetAudioRecorder();
+        ((NavgigationDrawerUtils)getActivity()).disableNavigationMenu();
         return mRootView;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
     }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -217,6 +180,7 @@ public class AudioRecordingFragment extends Fragment implements AudioRecordingBu
 
     @Override
     public void onDetach() {
+        ((NavgigationDrawerUtils)getActivity()).enableNavigationMenu();
         super.onDetach();
         mListener = null;
     }
@@ -232,7 +196,6 @@ public class AudioRecordingFragment extends Fragment implements AudioRecordingBu
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 

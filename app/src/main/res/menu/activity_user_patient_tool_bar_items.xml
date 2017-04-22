@@ -11,6 +11,14 @@
     </item>
 
     <item
+        android:id="@+id/logoutItem"
+        android:icon="@drawable/ic_logout_grey600_24dp"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="1"
+        android:title="@string/logoutItemText">
+    </item>
+
+    <item
         android:id="@+id/addPatientItem"
         app:showAsAction="ifRoom"
         android:orderInCategory="2"

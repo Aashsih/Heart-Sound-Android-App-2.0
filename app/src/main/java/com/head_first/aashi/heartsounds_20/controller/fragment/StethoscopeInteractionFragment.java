@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,13 +19,14 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.head_first.aashi.heartsounds_20.R;
+import com.head_first.aashi.heartsounds_20.interfaces.util_interfaces.NavgigationDrawerUtils;
 import com.head_first.aashi.heartsounds_20.utils.BluetoothManager;
+import com.head_first.aashi.heartsounds_20.utils.DialogBoxDisplayHandler;
 import com.head_first.aashi.heartsounds_20.utils.StethoscopeInteraction;
 import com.mmm.healthcare.scope.AudioType;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.RunnableFuture;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -69,7 +69,6 @@ public class StethoscopeInteractionFragment extends Fragment{
      *
      * @return A new instance of fragment StethoscopeInteractionFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static StethoscopeInteractionFragment newInstance() {
         StethoscopeInteractionFragment fragment = new StethoscopeInteractionFragment();
         return fragment;
@@ -102,6 +101,7 @@ public class StethoscopeInteractionFragment extends Fragment{
         else{
             enableStethoscopeInteractionButtons();
         }
+        ((NavgigationDrawerUtils)getActivity()).disableNavigationMenu();
         return mRootView;
     }
 
@@ -112,6 +112,7 @@ public class StethoscopeInteractionFragment extends Fragment{
 
     @Override
     public void onDetach() {
+        ((NavgigationDrawerUtils)getActivity()).enableNavigationMenu();
         super.onDetach();
         mListener = null;
     }
@@ -141,7 +142,6 @@ public class StethoscopeInteractionFragment extends Fragment{
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -228,7 +228,7 @@ public class StethoscopeInteractionFragment extends Fragment{
                 .setTitle(R.string.trackSelectorDialogTitle)
                 .setCancelable(true)
                 .setView(tracksSelectorDialog)
-                .setPositiveButton(R.string.positiveButton, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.positiveButtonOk, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         RadioButton selectedRadioButton = (RadioButton) mTracksAvailableInStethoscope.findViewById(mTracksAvailableInStethoscope.getCheckedRadioButtonId());
@@ -241,7 +241,7 @@ public class StethoscopeInteractionFragment extends Fragment{
                         }
                     }
                 })
-                .setNegativeButton(R.string.negativeButton, new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.negativeButtonCancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         selectedTrack = null;
@@ -269,7 +269,7 @@ public class StethoscopeInteractionFragment extends Fragment{
 
     private void connectToStethoscope(){
         //bluetoothOn = BluetoothManager.turnBluetoothOn(getActivity()); -- This functionality is now moved to a Thread
-        showIndefiniteProgressDialog(getResources().getString(R.string.connectingToStethoscopeMessage));
+        DialogBoxDisplayHandler.showIndefiniteProgressDialog( getActivity(), getResources().getString(R.string.connectingToStethoscopeMessage));
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -278,7 +278,7 @@ public class StethoscopeInteractionFragment extends Fragment{
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                progressDialog.dismiss();
+                DialogBoxDisplayHandler.dismissProgressDialog();
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -308,7 +308,7 @@ public class StethoscopeInteractionFragment extends Fragment{
                 interactionStarted = stethoscopeInteractor.downloadTrackFromStethoscope(stethoscopeInteractor.getTrackId(selectedTrack), AudioType.Body);
             }
             if(interactionStarted){
-                showIndefiniteProgressDialog(getResources().getString(R.string.donwloadingFromStethoscopeMessage) + selectedTrack);
+                DialogBoxDisplayHandler.showIndefiniteProgressDialog( getActivity(), getResources().getString(R.string.downloadingFromStethoscopeMessage) + selectedTrack);
             }
 
         }
@@ -325,14 +325,14 @@ public class StethoscopeInteractionFragment extends Fragment{
                 interactionStarted = stethoscopeInteractor.uploadTrackFromStethoscope(stethoscopeInteractor.getTrackId(selectedTrack), AudioType.Body);
             }
             if(interactionStarted){
-                showIndefiniteProgressDialog(getResources().getString(R.string.uploadingToStethoscopeMessage) + selectedTrack);
+                DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity(), getResources().getString(R.string.uploadingToStethoscopeMessage) + selectedTrack);
             }
         }
     }
 
     public void finishStethoscopeInteraction(){
         if(!stethoscopeInteractor.isStethoscopeInteractionInProgress()){
-            progressDialog.dismiss();
+            DialogBoxDisplayHandler.dismissProgressDialog();
         }
         //Also change the stethoscope id of the heartsound
         //Note, the stethoscope id should change only if a the heart sound that was recorded was from another stethoscope
@@ -348,21 +348,4 @@ public class StethoscopeInteractionFragment extends Fragment{
         }).start();
     }
 
-    private void showIndefiniteProgressDialog(String message){
-        progressDialogMessage = message;
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                progressDialog = new ProgressDialog(getContext());
-                progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                if(progressDialogMessage != null){
-                    progressDialog.setMessage(progressDialogMessage);
-                }
-                progressDialog.setCancelable(false);
-                progressDialog.setIndeterminate(true);
-                progressDialog.show();
-            }
-        });
-
-    }
 }

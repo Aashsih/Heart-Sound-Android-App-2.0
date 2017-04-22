@@ -12,9 +12,11 @@ import java.util.Map;
 
 public class DynamicSearchFilter {
 
+    //Used for list of lists
     public static final <K,V> void onQueryTextChange(String query, Map<K, List<V>> allContentMap, Map<K, List<V>> searchContentMap){
         if(query == null || query == ""){
             if(searchContentMap != null){
+                searchContentMap.clear();
                 searchContentMap.putAll(allContentMap);
             }
             return;
@@ -26,6 +28,19 @@ public class DynamicSearchFilter {
             List<V> allGroupItems = allContentMap.get(groupHeader);
             filterGroupItemsOnQueryChange(query, allGroupItems, filteredGroupItems);
         }
+    }
+
+    //used for lists
+    public static final <T> void onQueryTextChange(String query, List<T> allContent, List<T> searchContent){
+        if(query == null || query.isEmpty()){
+            if(searchContent != null){
+                searchContent.clear();
+                searchContent.addAll(allContent);
+            }
+            return;
+        }
+        searchContent.clear();
+        filterGroupItemsOnQueryChange(query, allContent, searchContent);
     }
 
     private static <V> void filterGroupItemsOnQueryChange(String query, List<V> allGroupItems, List<V> filteredGroupItems){
@@ -45,9 +60,11 @@ public class DynamicSearchFilter {
         }
     }
 
+    //used for list of lists
     public static final <K, V> void onQueryTextSubmit(String query, Map<K, List<V>> allContentMap, Map<K, List<V>> searchContentMap){
         if(query == null || query == ""){
             if(searchContentMap != null){
+                searchContentMap.clear();
                 searchContentMap.putAll(allContentMap);
             }
             return;
@@ -60,6 +77,18 @@ public class DynamicSearchFilter {
             filterGroupItemsOnQuerySubmit(query, allGroupItems, filteredGroupItems);
 
         }
+    }
+
+    public static final <K> void onQueryTextSubmit(String query, List<K> allContent, List<K> searchContent){
+        if(query == null || query == ""){
+            if(searchContent != null){
+                searchContent.clear();
+                searchContent.addAll(allContent);
+            }
+            return;
+        }
+        searchContent.clear();
+        filterGroupItemsOnQuerySubmit(query, allContent, searchContent);
     }
 
     private static <T> void filterGroupItemsOnQuerySubmit(String query, List<T> allGroupItems, List<T> filteredGroupItems){

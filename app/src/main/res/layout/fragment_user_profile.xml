@@ -82,12 +82,12 @@
         android:layout_height="wrap_content"
         android:hint="@string/userNameHint"
         android:layout_below="@id/userNameLabel"/>
-
+    <!--
     <Button
         android:id="@+id/logoutButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/logoutButtonText"
         android:layout_alignParentBottom="true"/>
-
+    -->
 </RelativeLayout>

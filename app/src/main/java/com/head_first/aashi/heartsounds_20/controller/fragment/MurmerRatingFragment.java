@@ -16,27 +16,47 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.head_first.aashi.heartsounds_20.R;
-import com.head_first.aashi.heartsounds_20.enums.AddedSounds;
-import com.head_first.aashi.heartsounds_20.enums.CardiacPhase;
-import com.head_first.aashi.heartsounds_20.enums.ChangeWithBreathing;
-import com.head_first.aashi.heartsounds_20.enums.CHARACTER;
-import com.head_first.aashi.heartsounds_20.enums.FinalDiagnosis;
-import com.head_first.aashi.heartsounds_20.enums.Intensity;
-import com.head_first.aashi.heartsounds_20.enums.LeftLateralPosition;
-import com.head_first.aashi.heartsounds_20.enums.MostIntenseLocation;
-import com.head_first.aashi.heartsounds_20.enums.MurmurDuration;
-import com.head_first.aashi.heartsounds_20.enums.Radiation;
-import com.head_first.aashi.heartsounds_20.enums.S1;
-import com.head_first.aashi.heartsounds_20.enums.S2;
-import com.head_first.aashi.heartsounds_20.enums.SittingForward;
-import com.head_first.aashi.heartsounds_20.enums.Valsalva;
+import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.AddedSounds;
+import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.CardiacPhase;
+import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.ChangeWithBreathing;
+import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.CHARACTER;
+import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.FinalDiagnosis;
+import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.Intensity;
+import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.LeftLateralPosition;
+import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.MostIntenseLocation;
+import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.MurmurDuration;
+import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.Radiation;
+import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.S1;
+import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.S2;
+import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.SittingForward;
+import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.Valsalva;
+import com.head_first.aashi.heartsounds_20.enums.web_api_enums.ResponseStatusCode;
+import com.head_first.aashi.heartsounds_20.interfaces.web_api_interfaces.MurmurRatingAPI;
+import com.head_first.aashi.heartsounds_20.model.MurmurRating;
 import com.head_first.aashi.heartsounds_20.utils.MultiSelectorListAdapter;
+import com.head_first.aashi.heartsounds_20.utils.DialogBoxDisplayHandler;
+import com.head_first.aashi.heartsounds_20.utils.SharedPreferencesManager;
+import com.head_first.aashi.heartsounds_20.web_api.RequestQueueSingleton;
+import com.head_first.aashi.heartsounds_20.web_api.WebAPI;
+import com.head_first.aashi.heartsounds_20.web_api.WebAPIResponse;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -46,7 +66,7 @@ import java.util.List;
  * Use the {@link MurmerRatingFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MurmerRatingFragment extends EditableFragment {
+public class MurmerRatingFragment extends EditableFragment implements MurmurRatingAPI{
     /**
      * Highlight the selected MurmerRating in the navigation menu
      */
@@ -113,14 +133,8 @@ public class MurmerRatingFragment extends EditableFragment {
     private int selectedMurmerRatingPosition;
     private List<CHARACTER> selectedCharacters; //this will be deleted. Instead of this the List<CHARACTER> from the MurmerRating object will be used
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    //Web API
+    WebAPIResponse webAPIResponse = new WebAPIResponse();
 
     private OnFragmentInteractionListener mListener;
 
@@ -131,28 +145,17 @@ public class MurmerRatingFragment extends EditableFragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+
      * @return A new instance of fragment MurmerRatingFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static MurmerRatingFragment newInstance(String param1, String param2) {
+    public static MurmerRatingFragment newInstance() {
         MurmerRatingFragment fragment = new MurmerRatingFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
         setHasOptionsMenu(true);
         selectedCharacters = new ArrayList<>();//delete this later
     }
@@ -177,22 +180,9 @@ public class MurmerRatingFragment extends EditableFragment {
         return mRootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
     }
 
     @Override
@@ -212,7 +202,6 @@ public class MurmerRatingFragment extends EditableFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -257,7 +246,7 @@ public class MurmerRatingFragment extends EditableFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         // handling item selection
         switch (item.getItemId()) {
-            case R.id.deletePatientItem:
+            case R.id.deleteItem:
                 break;
             case R.id.editItem:
                 editUserProfile();
@@ -587,7 +576,7 @@ public class MurmerRatingFragment extends EditableFragment {
                 .setTitle(R.string.multipleCharacterSelectorDialogTitle)
                 .setCancelable(false)
                 .setView(characterSelectorDialog)
-                .setPositiveButton(R.string.positiveButton, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.positiveButtonOk, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if(selectedCharacters.isEmpty()){
@@ -607,4 +596,296 @@ public class MurmerRatingFragment extends EditableFragment {
     public boolean editModeEnabled(){
         return editMode;
     }
+
+    //------------------------------------------------------
+    //MurmurRatingAPI implementation
+    @Override
+    public void requestMurmurRatingsForHeartSound(int heartSoundId) {
+        Toast.makeText(getContext(), getResources().getString(R.string.retrievingMurmurRating), Toast.LENGTH_SHORT).show();
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, WebAPI.GET_MURMUR_RATING_FOR_HEART_SOUND_URL + heartSoundId, null,
+                new Response.Listener<JSONArray>(){
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        //update UI accordingly
+
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //use the webAPIResponse to get message from server
+
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareAccessTokenHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Response<JSONArray> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+
+    }
+
+    @Override
+    public void requestMurmurRating(int murmurRatingId) {
+        DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity(), getResources().getString(R.string.retrievingMurmurRating));
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, WebAPI.MURMUR_RATING_BASE_URL + murmurRatingId, null,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //update UI accordingly
+
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                        //dismiss the progress dialog box
+                        DialogBoxDisplayHandler.dismissProgressDialog();
+
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //use the webAPIResponse to get message from server
+
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+                //dismiss the progress dialog box
+                DialogBoxDisplayHandler.dismissProgressDialog();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareAccessTokenHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
+
+    @Override
+    public void createMurmurRating(MurmurRating murmurRating) {
+        Toast.makeText(getContext(), getResources().getString(R.string.creatingMurmurRating), Toast.LENGTH_SHORT).show();
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.POST, WebAPI.MURMUR_RATING_BASE_URL, null,
+                new Response.Listener<JSONArray>(){
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        //update UI accordingly
+
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //use the webAPIResponse to get message from server
+
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Map<String, String> getParams() {
+                return WebAPI.addCreateMurmurRatingParams(null);//this fragment will have a HeartSound object which will then be passed
+            }
+            @Override
+            protected Response<JSONArray> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+
+    }
+
+    @Override
+    public void updateMurmurRating(MurmurRating murmurRating) {
+        DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity(), getResources().getString(R.string.updatingMurmurRating));
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, WebAPI.MURMUR_RATING_BASE_URL, null,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //update UI accordingly
+
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                        //dismiss the progress dialog box
+                        DialogBoxDisplayHandler.dismissProgressDialog();
+
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //use the webAPIResponse to get message from server
+
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+                //dismiss the progress dialog box
+                DialogBoxDisplayHandler.dismissProgressDialog();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Map<String, String> getParams() {
+                return WebAPI.addUpdateMurmurRatingParams(null);//this fragment will have a HeartSound object which will then be passed
+            }
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
+
+    @Override
+    public void deleteMurmurRating(int murmurRatingId) {
+        Toast.makeText(getContext(), getResources().getString(R.string.deletingMurmurRating), Toast.LENGTH_SHORT).show();
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.DELETE, WebAPI.MURMUR_RATING_BASE_URL + murmurRatingId, null,
+                new Response.Listener<JSONArray>(){
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        //update UI accordingly
+
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //use the webAPIResponse to get message from server
+
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareAccessTokenHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Response<JSONArray> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+
+    }
+    //------------------------------------------------------
 }

@@ -35,6 +35,8 @@ dependencies {
     })
     //Volley
     compile 'com.android.volley:volley:1.0.0'
+    //GSon
+    compile 'com.google.code.gson:gson:2.3.1'
     //audio visualizer
     //EventBus for MediaPlayer Progress Bar
     compile 'com.cleveroad:audiovisualization:0.9.1'

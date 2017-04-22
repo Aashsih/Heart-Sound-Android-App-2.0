@@ -5,6 +5,8 @@ import android.media.MediaRecorder;
 import android.os.Environment;
 import android.util.Log;
 
+import com.head_first.aashi.heartsounds_20.interfaces.util_interfaces.AudioRecording;
+
 import java.io.File;
 import java.io.IOException;
 

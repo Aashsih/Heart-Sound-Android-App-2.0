@@ -20,18 +20,36 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.controller.activities.PatientHeartSoundActivity;
-import com.head_first.aashi.heartsounds_20.controller.activities.UserPatientActivity;
 import com.head_first.aashi.heartsounds_20.enums.Gender;
+import com.head_first.aashi.heartsounds_20.enums.web_api_enums.ResponseStatusCode;
+import com.head_first.aashi.heartsounds_20.interfaces.util_interfaces.NavgigationDrawerUtils;
+import com.head_first.aashi.heartsounds_20.interfaces.web_api_interfaces.PatientAPI;
+import com.head_first.aashi.heartsounds_20.model.Patient;
 import com.head_first.aashi.heartsounds_20.utils.MultiSelectorListAdapter;
+import com.head_first.aashi.heartsounds_20.utils.DialogBoxDisplayHandler;
+import com.head_first.aashi.heartsounds_20.utils.SharedPreferencesManager;
+import com.head_first.aashi.heartsounds_20.web_api.RequestQueueSingleton;
+import com.head_first.aashi.heartsounds_20.web_api.WebAPI;
+import com.head_first.aashi.heartsounds_20.web_api.WebAPIResponse;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,8 +59,18 @@ import java.util.List;
  * Use the {@link PatientFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PatientFragment extends EditableFragment implements DatePickerDialog.OnDateSetListener{
-
+public class PatientFragment extends EditableFragment implements DatePickerDialog.OnDateSetListener, PatientAPI {
+    /**
+     * if the Patient object in the parent activity is null -> launch the fragment in edit mode
+     *
+     * if save changes is clicked and the patient object (or even the id) in the parent activity is null
+     *      -> Use the POST HTTP method and create a Patient
+     * else -> Use the PUT HTTP method to update the Patient
+     *
+     * if cancel changes is clicked and the patient object (or even the id) in the parent activity is null
+     *      -> Pop off the fragment/finish the activity
+     * else -> Normal flow of not saving changes
+     */
 
     public static final String PATIENT_FRAGMENT_TAG = "PATIENT_FRAGMENT";
 
@@ -70,14 +98,8 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
     //Adapter
     private MultiSelectorListAdapter mMultiStudySelectorListAdapter;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    //Web API
+    WebAPIResponse webAPIResponse = new WebAPIResponse();
 
     private OnFragmentInteractionListener mListener;
 
@@ -88,28 +110,17 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+
      * @return A new instance of fragment PatientFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static PatientFragment newInstance(String param1, String param2) {
+    public static PatientFragment newInstance() {
         PatientFragment fragment = new PatientFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
         setHasOptionsMenu(true);
         selectedStudy = new ArrayList<>();//delete this later
     }
@@ -158,27 +169,14 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
         return mRootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
     }
 
     @Override
     public void onResume(){
-        ((PatientHeartSoundActivity)getActivity()).setActionBarTitle(PatientHeartSoundActivity.PATIENT_PAGE_TITLE);
+        ((PatientHeartSoundActivity)getActivity()).setActionBarTitle(PatientHeartSoundActivity.PATIENT);
         super.onResume();
     }
 
@@ -187,6 +185,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
         super.onDetach();
         mListener = null;
     }
+
 
     /**
      * This interface must be implemented by activities that contain this
@@ -199,7 +198,6 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -246,7 +244,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
         switch (item.getItemId()) {
             case R.id.sharePatientItem:
                 break;
-            case R.id.deletePatientItem:
+            case R.id.deleteItem:
                 break;
             case R.id.editItem:
                 editUserProfile();
@@ -268,6 +266,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
         editMode = true;
         makeViewsEditable();
         showActionBarMenuItems();
+        ((NavgigationDrawerUtils)getActivity()).disableNavigationMenu();
     }
 
     @Override
@@ -277,6 +276,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
 
         makeViewsUneditable();
         showActionBarMenuItems();
+        ((NavgigationDrawerUtils)getActivity()).enableNavigationMenu();
     }
 
     @Override
@@ -286,6 +286,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
 
         makeViewsUneditable();
         showActionBarMenuItems();
+        ((NavgigationDrawerUtils)getActivity()).enableNavigationMenu();
     }
 
     @Override
@@ -314,6 +315,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
             mGender.setClickable(true);
             mStudyList.setClickable(true);
             mVisibleToStudents.setClickable(true);
+            mDateOfBirth.setClickable(true);
         }
     }
 
@@ -323,6 +325,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
             mGender.setClickable(false);
             mStudyList.setClickable(false);
             mVisibleToStudents.setClickable(false);
+            mDateOfBirth.setClickable(false);
         }
     }
 
@@ -377,7 +380,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 .setTitle(R.string.multipleStudySelectorDialogTitle)
                 .setCancelable(false)
                 .setView(studySelectorDialog)
-                .setPositiveButton(R.string.positiveButton, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.positiveButtonOk, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if(selectedStudy.isEmpty()){
@@ -402,7 +405,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 .setTitle(R.string.genderSelectorDialogTitle)
                 .setCancelable(false)
                 .setView(genderSelectorDialog)
-                .setPositiveButton(R.string.positiveButton, new DialogInterface.OnClickListener() {
+                .setPositiveButton(R.string.positiveButtonOk, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         RadioButton selectedGender = (RadioButton) mGenderRadioGroup.findViewById(mGenderRadioGroup.getCheckedRadioButtonId());
@@ -444,4 +447,352 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
     public boolean editModeEnabled(){
         return this.editMode;
     }
+
+    //--------------------------------------------------------------
+    //Implementation for PatientAPI
+    @Override
+    public void sharePatient(String doctorId) {
+        Toast.makeText(getContext(), getResources().getString(R.string.sharingPatient), Toast.LENGTH_SHORT).show();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, WebAPI.ADD_DOCTOR_TO_PATIENT_URL, null,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //update UI accordingly
+
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //use the webAPIResponse to get message from server
+
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Map<String, String> getParams() {
+                return WebAPI.addShareUnsharePatientParams(mPatientId.getText().toString(), mDoctorDetails.getText().toString());
+            }
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
+
+    @Override
+    public void unSharePatient(String doctorId) {
+        Toast.makeText(getContext(), getResources().getString(R.string.unsharingPatient), Toast.LENGTH_SHORT).show();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, WebAPI.REMOVE_DOCTOR_FROM_PATIENT_URL , null,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //update UI accordingly
+
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //use the webAPIResponse to get message from server
+
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Map<String, String> getParams() {
+                return WebAPI.addShareUnsharePatientParams(mPatientId.getText().toString(), mDoctorDetails.getText().toString());
+            }
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
+
+    @Override
+    public void requestPatient(int patientId) {
+        DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity(), getResources().getString(R.string.retrievingPatientDetails));
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, WebAPI.PATIENT_BASE_URL + "{Place Patient id here}" , null,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //update UI accordingly
+
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                        //dismiss the progress dialog box
+                        DialogBoxDisplayHandler.dismissProgressDialog();
+
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //use the webAPIResponse to get message from server
+
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+                //dismiss the progress dialog box
+                DialogBoxDisplayHandler.dismissProgressDialog();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
+
+    @Override
+    public void requestPatients() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void createPatient(Patient patient) {
+        Toast.makeText(getContext(), getResources().getString(R.string.creatingPatient), Toast.LENGTH_SHORT).show();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, WebAPI.PATIENT_BASE_URL , null,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //update UI accordingly
+
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //use the webAPIResponse to get message from server
+
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Map<String, String> getParams() {
+                return WebAPI.addCreatePatientParams(null);//this fragment will contain a patient object which will then be passed
+            }
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
+
+    @Override
+    public void updatePatient(Patient patient) {
+        Toast.makeText(getContext(), getResources().getString(R.string.updatingPatient), Toast.LENGTH_SHORT).show();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, WebAPI.PATIENT_BASE_URL , null,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //update UI accordingly
+
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //use the webAPIResponse to get message from server
+
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Map<String, String> getParams() {
+                return WebAPI.addUpdatePatientParams(null);//this fragment should contain a patient object which will be passed
+            }
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
+
+    @Override
+    public void deletePatient(int patientId) {
+        Toast.makeText(getContext(), getResources().getString(R.string.deletingPatient), Toast.LENGTH_SHORT).show();
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, WebAPI.PATIENT_BASE_URL + "{Place Patient id here}" , null,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //update UI accordingly
+
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //use the webAPIResponse to get message from server
+
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareAccessTokenHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
+
+    //--------------------------------------------------------------
 }

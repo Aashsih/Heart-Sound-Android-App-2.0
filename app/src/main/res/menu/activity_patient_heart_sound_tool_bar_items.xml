@@ -18,7 +18,7 @@
     </item>
 
     <item
-        android:id="@+id/deletePatientItem"
+        android:id="@+id/deleteItem"
         android:icon="@drawable/ic_delete_grey600_24dp"
         app:showAsAction="ifRoom"
         android:orderInCategory="3"

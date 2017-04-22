@@ -9,7 +9,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import com.head_first.aashi.heartsounds_20.R;
-import com.head_first.aashi.heartsounds_20.enums.CHARACTER;
+import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.CHARACTER;
 
 import java.util.List;
 

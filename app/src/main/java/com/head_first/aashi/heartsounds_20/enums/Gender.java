@@ -5,7 +5,7 @@ package com.head_first.aashi.heartsounds_20.enums;
  */
 
 public enum Gender {
-    MALE("Male"), FEMALE("Female"), OTHER("Other"); // confirm
+    MALE("M"), FEMALE("F"), OTHER("Other"); // confirm
 
     private String value;
 

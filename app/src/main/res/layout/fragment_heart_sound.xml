@@ -35,7 +35,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_account_grey600_24dp"
+                    android:src="@drawable/ic_stethoscope_grey600_24dp"
                     style="@style/roundShapeView"/>
                 <ImageButton
                     android:id="@+id/voiceCommentPlayRecordingButton"
@@ -80,7 +80,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_account_grey600_24dp"
+                    android:src="@drawable/ic_stethoscope_grey600_24dp"
                     style="@style/roundShapeView"/>
                 <ImageButton
                     android:id="@+id/heartSoundPlayRecordingButton"

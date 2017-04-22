@@ -1,20 +1,41 @@
 package com.head_first.aashi.heartsounds_20.controller.fragment;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.head_first.aashi.heartsounds_20.R;
+import com.head_first.aashi.heartsounds_20.enums.web_api_enums.ResponseStatusCode;
+import com.head_first.aashi.heartsounds_20.interfaces.web_api_interfaces.UserAPI;
+import com.head_first.aashi.heartsounds_20.model.Doctor;
+import com.head_first.aashi.heartsounds_20.model.User;
+import com.head_first.aashi.heartsounds_20.utils.DialogBoxDisplayHandler;
+import com.head_first.aashi.heartsounds_20.utils.SharedPreferencesManager;
+import com.head_first.aashi.heartsounds_20.web_api.RequestQueueSingleton;
+import com.head_first.aashi.heartsounds_20.web_api.WebAPI;
+import com.head_first.aashi.heartsounds_20.web_api.WebAPIResponse;
+import com.head_first.aashi.heartsounds_20.utils.JsonObjectParser;
+
+import org.json.JSONObject;
+
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,7 +45,7 @@ import com.head_first.aashi.heartsounds_20.R;
  * Use the {@link UserProfileFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class UserProfileFragment extends EditableFragment {
+public class UserProfileFragment extends EditableFragment implements UserAPI{
     public static final String USER_PROFILE_FRAGMENT_TAG = "USER_PROFILE_FRAGMENT";
     private static final String PROFILE_PAGE_TITLE = "User Profile";
 
@@ -39,15 +60,10 @@ public class UserProfileFragment extends EditableFragment {
     private EditText mEditableLastName;
 
     //Data
+    private User loggedInUser;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    //Web API
+    private WebAPIResponse webAPIResponse = new WebAPIResponse();
 
     private OnFragmentInteractionListener mListener;
 
@@ -58,28 +74,17 @@ public class UserProfileFragment extends EditableFragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+
      * @return A new instance of fragment UserProfileFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static UserProfileFragment newInstance(String param1, String param2) {
+    public static UserProfileFragment newInstance() {
         UserProfileFragment fragment = new UserProfileFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
         setHasOptionsMenu(true);
     }
 
@@ -88,32 +93,50 @@ public class UserProfileFragment extends EditableFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mRootView = inflater.inflate(R.layout.fragment_user_profile, container, false);
+        initializeViews();
+        //requestUserDetails();
+        return mRootView;
+    }
+
+    private void initializeViews(){
         mFirstNameText = (TextView) mRootView.findViewById(R.id.firstNameText);
         mLastNameText = (TextView) mRootView.findViewById(R.id.lastNameText);
         mUserNameText = (TextView) mRootView.findViewById(R.id.userNameText);
         mEditableFirstName = (EditText) mRootView.findViewById(R.id.editableFirstName);
         mEditableLastName = (EditText) mRootView.findViewById(R.id.editableLastName);
-        mLogoutButtonText = (Button) mRootView.findViewById(R.id.logoutButton);
-
-        return mRootView;
+        //mLogoutButtonText = (Button) mRootView.findViewById(R.id.logoutButton);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+    private void logoutUser(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(getContext().getResources().getString(R.string.logoutTitle));
+        builder.setMessage(getContext().getResources().getString(R.string.confirmationMesage));
+        builder.setPositiveButton(getContext().getResources().getString(R.string.positiveButtonYes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                SharedPreferencesManager.invalidateUserAccessToken(getActivity());
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(getContext().getResources().getString(R.string.negativeButtonNo), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    @Override
+    public void onResume(){
+        requestUserDetails();
+        super.onResume();
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
     }
 
     @Override
@@ -133,9 +156,33 @@ public class UserProfileFragment extends EditableFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+    private void copyDataFromTextViewToEditText(){
+        mEditableFirstName.setText(mFirstNameText.getText().toString());
+        mEditableLastName.setText(mLastNameText.getText().toString());
+    }
+
+
+    private void saveChangesFromEditText(){
+        //Save the changes made to the EditText in the models
+        //after that copy the same to the TextViews
+        mFirstNameText.setText(mEditableFirstName.getText().toString());
+        mLastNameText.setText(mEditableLastName.getText().toString());
+    }
+
+    private void launchWebAPIErrorFragment(){
+        Bundle bundle = new Bundle();
+        bundle.putString(WebAPIErrorFragment.WEB_API_ERROR_MESSAGE_TAG, webAPIResponse.getMessage());
+        WebAPIErrorFragment webAPIErrorFragment = WebAPIErrorFragment.newInstance();
+        webAPIErrorFragment.setArguments(bundle);
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.fragmentContainer, webAPIErrorFragment, WebAPIErrorFragment.WEB_API_ERROR_FRAGMENT_TAG)
+                .commit();
+    }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -151,10 +198,15 @@ public class UserProfileFragment extends EditableFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         // handling item selection
         switch (item.getItemId()) {
+            case R.id.refreshViewItem:
+                requestUserDetails();
+                break;
+            case R.id.logoutItem:
+                logoutUser();
+                break;
+
             case R.id.editItem:
                 editUserProfile();
-                break;
-            case R.id.refreshViewItem:
                 break;
             case R.id.saveChangesItem:
                 saveChanges();
@@ -166,6 +218,7 @@ public class UserProfileFragment extends EditableFragment {
         return true;
     }
 
+    //Editable Fragment Method Implementations
     @Override
     protected void editUserProfile(){
         editMode = true;
@@ -226,19 +279,6 @@ public class UserProfileFragment extends EditableFragment {
         }
     }
 
-    private void copyDataFromTextViewToEditText(){
-        mEditableFirstName.setText(mFirstNameText.getText().toString());
-        mEditableLastName.setText(mLastNameText.getText().toString());
-    }
-
-
-    private void saveChangesFromEditText(){
-        //Save the changes made to the EditText in the models
-        //after that copy the same to the TextViews
-        mFirstNameText.setText(mEditableFirstName.getText().toString());
-        mLastNameText.setText(mEditableLastName.getText().toString());
-    }
-
     @Override
     protected void showActionBarMenuItems(){
         for(int i = 0; i < mActionBarMenu.size(); i++){
@@ -255,8 +295,9 @@ public class UserProfileFragment extends EditableFragment {
             }
             else{
                 //if menu item is edit or refresh
-                if(menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.editItemText)) ||
-                        menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.refreshViewItemText))){
+                //if(menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.editItemText)) ||
+                if(menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.refreshViewItemText))
+                        || menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.logoutItemText))){
                     menuItem.setVisible(true);
                 }
                 else{
@@ -280,4 +321,144 @@ public class UserProfileFragment extends EditableFragment {
     protected void makeViewsUneditable(){
         throw new UnsupportedOperationException();
     }
+
+    //---------------------------------------------------------------------
+    //User API Implementation and helper methods
+    @Override
+    public void requestUserDetails() {
+        DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity());
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, WebAPI.GET_USER_INFO_URL, null,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //update UI accordingly
+                        //1. get user object
+                        loggedInUser = JsonObjectParser.getUserFromJsonString(response.toString());
+                        //2. update UI
+                        mUserNameText.setText(loggedInUser.getUsername());
+                        mFirstNameText.setText(loggedInUser.getFirstName());
+                        mLastNameText.setText(loggedInUser.getLastName());
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                        //dismiss the progress dialog box
+                        DialogBoxDisplayHandler.dismissProgressDialog();
+
+                    }
+                }, new Response.ErrorListener(){
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //update UI accordingly
+
+                        //dismiss the progress dialog box
+                        DialogBoxDisplayHandler.dismissProgressDialog();
+                        //use the webAPIResponse to get message from server
+                        if(webAPIResponse.getStatusCode().equals(ResponseStatusCode.UNAUTHORIZED)){
+                            SharedPreferencesManager.invalidateUserAccessToken(getActivity());
+                        }
+                        else{
+                            //Launch Web API Error Fragment
+                            launchWebAPIErrorFragment();
+                        }
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+
+                    }
+            }){
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    return WebAPI.prepareAccessTokenHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+                }
+                @Override
+                protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                    return super.parseNetworkResponse(response);
+                }
+                @Override
+                protected VolleyError parseNetworkError(VolleyError volleyError){
+                    if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                        webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                        String errorMessage = new String(volleyError.networkResponse.data);
+                        VolleyError error = new VolleyError(errorMessage);
+                        volleyError = error;
+                        webAPIResponse.setMessage(errorMessage);
+                        return volleyError;
+                    }
+                    webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                    webAPIResponse.setMessage("");
+                    return volleyError;
+                }
+            };
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
+
+    @Override
+    public void changeUserPassword(String oldPassword, String newPassword) {
+        DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity(), getResources().getString(R.string.retrievingUserDetails));
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, WebAPI.CHANGE_USER_PASSWORD_URL, null,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //update UI accordingly
+
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                        //dismiss the progress dialog box
+                        DialogBoxDisplayHandler.dismissProgressDialog();
+
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //use the webAPIResponse to get message from server
+
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+                //dismiss the progress dialog box
+                DialogBoxDisplayHandler.dismissProgressDialog();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Map<String, String> getParams() {
+                return WebAPI.addChangePasswordParams(null, null, null);
+            }
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
+
+    @Override
+    public void registerUser(Doctor doctor) {
+
+    }
+    //---------------------------------------------------------------------
 }

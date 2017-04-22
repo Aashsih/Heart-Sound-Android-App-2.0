@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">HeartSounds_2.0</string>
-    <string name="positiveButton">OK</string>
-    <string name="negativeButton">Cancel</string>
+    <string name="logoutTitle">Logout</string>
+    <string name="positiveButtonOk">OK</string>
+    <string name="negativeButtonCancel">Cancel</string>
+    <string name="positiveButtonYes">Yes</string>
+    <string name="negativeButtonNo">No</string>
     <string name="defaultSpinnerString">(not set)</string>
     <string name="defaultEmptyString">(empty)</string>
 
@@ -16,6 +19,7 @@
 
 
     <!-- User Patient activity Toolbar items -->
+    <string name="logoutItemText">Logout</string>
     <string name="filterPatientsItemText">Filter</string>
     <string name="addPatientItemText">New Patient</string>
 
@@ -116,7 +120,30 @@
     <string name="connectToStethoscope">Connect To Stethoscope</string>
 
     <!-- User Messages -->
+    <string name="confirmationMesage">Are you sure?</string>
+    <string name="loggingIn">Logging in</string>
+    <string name="errorMessage">An Error Occurred</string>
+    <string name="errorTitle">Error</string>
+    <string name="deletingPatient">Deleting Patient</string>
+    <string name="sharingPatient">Sharing Patient</string>
+    <string name="unsharingPatient">Unsharing Patient</string>
+    <string name="retrievingPatientDetails">Retrieving Patient Details</string>
+    <string name="retrievingHeartSound">Retrieving Heart Sound</string>
+    <string name="retrievingUserDetails">Retrieving User Details</string>
+    <string name="retrievingPatientHeartSounds">Retrieving Patient Heart Sounds</string>
+    <string name="retrievingMurmurRating">Retrieving Murmur Rating for Heart Sound</string>
+    <string name="creatingPatient">Creating Patient</string>
+    <string name="creatingHeartSound">Creating Patient</string>
+    <string name="creatingMurmurRating">Creating Murmur Rating</string>
+    <string name="updatingPatient">Updating Patient</string>
+    <string name="updatingHeartSound">Updating Heart Sound</string>
+    <string name="updatingMurmurRating">Updating Murmur Rating</string>
+    <string name="deletingHeartSound">Updating Heart Sound</string>
+    <string name="deletingMurmurRating">Deleting Murmur Rating</string>
     <string name="connectingToStethoscopeMessage">Connecting to Available Stethoscope</string>
-    <string name="donwloadingFromStethoscopeMessage">Downloading </string>
+    <string name="downloadingFromStethoscopeMessage">Downloading </string>
     <string name="uploadingToStethoscopeMessage">Uploading </string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

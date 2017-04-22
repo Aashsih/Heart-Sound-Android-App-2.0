@@ -7,11 +7,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.controller.fragment.PatientListFragment;
 import com.head_first.aashi.heartsounds_20.controller.fragment.UserProfileFragment;
-import com.head_first.aashi.heartsounds_20.model.User;
+import com.head_first.aashi.heartsounds_20.controller.fragment.WebAPIErrorFragment;
+import com.head_first.aashi.heartsounds_20.web_api.RequestQueueSingleton;
+import com.head_first.aashi.heartsounds_20.web_api.WebAPIResponse;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
 
 public class UserPatientActivity extends AppCompatActivity {
     /**
@@ -29,13 +40,13 @@ public class UserPatientActivity extends AppCompatActivity {
     private static final String SHARED_PATIENTS_PAGE_TITLE = "Shared Patients";
     private static final String OTHER_PATIENTS_PAGE_TITLE = "";
 
-    //Data
-    private User user; //User could be a Doctor, Student or a
-
     //Views
     private Toolbar mToolbar;
     private Fragment activeMenuItemFragment;
     private BottomNavigationView mBottomNavigationView;
+
+    //Web APi
+    WebAPIResponse webAPIResponse = new WebAPIResponse();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +65,6 @@ public class UserPatientActivity extends AppCompatActivity {
         });
         mBottomNavigationView.inflateMenu(R.menu.activity_user_patient_bottom_navigation_bar_menu_items);
         mBottomNavigationView.getMenu().findItem(DEFAULT_MENU_ITEM).setChecked(true);
-
         launchSelectedMenuFragment(mBottomNavigationView.getMenu().findItem(DEFAULT_MENU_ITEM));
     }
 
@@ -89,27 +99,33 @@ public class UserPatientActivity extends AppCompatActivity {
 
 
     private void launchSelectedMenuFragment(MenuItem item){
+        Bundle bundle = null;
         switch(item.getItemId()){
             case R.id.userProfile:
 
-                activeMenuItemFragment = new UserProfileFragment();
+                activeMenuItemFragment = UserProfileFragment.newInstance();
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragmentContainer, activeMenuItemFragment, UserProfileFragment.USER_PROFILE_FRAGMENT_TAG)
                         .commit();
                 break;
             case R.id.myPatients:
 
-                activeMenuItemFragment = new PatientListFragment();
-                ((PatientListFragment) activeMenuItemFragment).setMyPatientClicked(true);
+                activeMenuItemFragment = PatientListFragment.newInstance();
+                bundle = new Bundle();
+                bundle.putBoolean(PatientListFragment.MY_PATIENT_SELECTED, true);
+                activeMenuItemFragment.setArguments(bundle);
+                //((PatientListFragment) activeMenuItemFragment).setMyPatientClicked(true);
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragmentContainer, activeMenuItemFragment, PatientListFragment.PATIENT_LIST_FRAGMENT_TAG)
                         .commit();
                 break;
             case R.id.otherPatients:
 //                When the student user is implemented, change this to Other patients
-
-                activeMenuItemFragment = new PatientListFragment();
-                ((PatientListFragment) activeMenuItemFragment).setMyPatientClicked(false);
+                bundle = new Bundle();
+                bundle.putBoolean(PatientListFragment.MY_PATIENT_SELECTED, false);
+                activeMenuItemFragment = PatientListFragment.newInstance();
+                activeMenuItemFragment.setArguments(bundle);
+                //((PatientListFragment) activeMenuItemFragment).setMyPatientClicked(false);
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragmentContainer, activeMenuItemFragment, PatientListFragment.PATIENT_LIST_FRAGMENT_TAG)
                         .commit();
@@ -117,7 +133,7 @@ public class UserPatientActivity extends AppCompatActivity {
 
             default:
                 mToolbar.setTitle(MY_PATIENTS_PAGE_TITLE);
-                activeMenuItemFragment = new PatientListFragment();
+                activeMenuItemFragment = PatientListFragment.newInstance();
                 ((PatientListFragment) activeMenuItemFragment).setMyPatientClicked(true);
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragmentContainer, activeMenuItemFragment, PatientListFragment.PATIENT_LIST_FRAGMENT_TAG)
@@ -134,6 +150,44 @@ public class UserPatientActivity extends AppCompatActivity {
         if(title != null && !title.isEmpty()) {
             mToolbar.setTitle(title);
         }
+    }
+
+    private void launchWebAPIErrorFragment(){
+        Bundle bundle = new Bundle();
+        bundle.putString(WebAPIErrorFragment.WEB_API_ERROR_MESSAGE_TAG, webAPIResponse.getMessage());
+        WebAPIErrorFragment webAPIErrorFragment = WebAPIErrorFragment.newInstance();
+        webAPIErrorFragment.setArguments(bundle);
+        this.getSupportFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.fragmentContainer, webAPIErrorFragment, WebAPIErrorFragment.WEB_API_ERROR_FRAGMENT_TAG)
+                .commit();
+    }
+
+    //Test Method, delete before releasing the Production Code
+    private void testRequest() {
+        String url = "https://skyhawk.aut.ac.nz/HeartSounds/";
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("FirstName", "TestDoctorFirstName");
+        params.put("LastName", "TestDoctorLastName");
+        params.put("Email", "testDoctorAndroid1@gmail.com");
+        params.put("Password", "testDoctorAndroid1@gmail.com");
+        params.put("ConfirmPassword", "testDoctorAndroid1@gmail.com");
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url + "api/Doctor/Register", new JSONObject(params),
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Toast.makeText(UserPatientActivity.this, "got a successfull response", Toast.LENGTH_SHORT).show();
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(UserPatientActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        RequestQueueSingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
     }
 
 }

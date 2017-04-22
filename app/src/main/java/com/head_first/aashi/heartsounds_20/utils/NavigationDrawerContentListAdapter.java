@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.head_first.aashi.heartsounds_20.R;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -33,7 +35,6 @@ public class NavigationDrawerContentListAdapter<T> extends BaseAdapter{
         this.context = context;
         this.objects = objects;
     }
-
 
     @Override
     public int getCount() {

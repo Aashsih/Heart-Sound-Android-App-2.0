@@ -6,7 +6,6 @@
     android:orientation="vertical"
     tools:context="com.head_first.aashi.heartsounds_20.controller.fragment.PatientListFragment">
 
-
     <android.support.v7.widget.SearchView
         android:id="@+id/patientSearchView"
         android:layout_width="match_parent"
@@ -22,13 +21,42 @@
         android:layout_below="@id/patientSearchView"
         android:background="?android:attr/dividerHorizontal">
     </View>
+
+    <!-- Incase the user needs to be given an option to choose from list view or expandable list view
+    <LinearLayout
+        android:id="@+id/patientListViewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/separator">
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_lock_grey600_24dp"/>
+        <ImageButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_stethoscope_grey600_24dp"/>
+
+    </LinearLayout>
+    -->
     <!-- To make the dividers disappear set the the childDivider to color transparent -->
     <ExpandableListView
         android:id="@+id/expandableListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/separator">
+        android:layout_below="@id/separator"
+        android:visibility="gone">
     </ExpandableListView>
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/separator"
+        >
+    </ListView>
 
 
 </RelativeLayout>

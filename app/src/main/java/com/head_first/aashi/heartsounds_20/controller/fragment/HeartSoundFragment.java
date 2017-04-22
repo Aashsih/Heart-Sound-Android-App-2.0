@@ -1,7 +1,6 @@
 package com.head_first.aashi.heartsounds_20.controller.fragment;
 
 import android.content.Context;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,13 +11,33 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.head_first.aashi.heartsounds_20.R;
-import com.head_first.aashi.heartsounds_20.utils.AudioRecorder;
-import com.head_first.aashi.heartsounds_20.utils.StethoscopeInteraction;
+import com.head_first.aashi.heartsounds_20.controller.activities.PatientHeartSoundActivity;
+import com.head_first.aashi.heartsounds_20.enums.web_api_enums.ResponseStatusCode;
+import com.head_first.aashi.heartsounds_20.interfaces.web_api_interfaces.HeartSoundAPI;
+import com.head_first.aashi.heartsounds_20.model.HeartSound;
+import com.head_first.aashi.heartsounds_20.utils.DialogBoxDisplayHandler;
+import com.head_first.aashi.heartsounds_20.utils.JsonObjectParser;
+import com.head_first.aashi.heartsounds_20.utils.SharedPreferencesManager;
+import com.head_first.aashi.heartsounds_20.web_api.RequestQueueSingleton;
+import com.head_first.aashi.heartsounds_20.web_api.WebAPI;
+import com.head_first.aashi.heartsounds_20.web_api.WebAPIResponse;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,7 +47,7 @@ import com.head_first.aashi.heartsounds_20.utils.StethoscopeInteraction;
  * Use the {@link HeartSoundFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HeartSoundFragment extends EditableFragment {
+public class HeartSoundFragment extends Fragment implements HeartSoundAPI {
     /**
      * This fragment will display the following:
      * 1. HeartSoundId (if not already displayed in the navigation view)
@@ -58,8 +77,10 @@ public class HeartSoundFragment extends EditableFragment {
      */
 
     public static final String HEART_SOUND_FRAGMENT_TAG = "HEART_SOUND_FRAGMENT";
+    public static final String HEART_SOUND_ID_TAG = "HEART_SOUND_ID_TAG";
 
     //Data
+    private HeartSound heartSound;
 
     //Layout and View
     private Menu mActionBarMenu;
@@ -73,15 +94,8 @@ public class HeartSoundFragment extends EditableFragment {
     private TextView mDoctorDetails;
     private TextView mDeviceId;
 
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    //Web API
+    private WebAPIResponse webAPIResponse = new WebAPIResponse();
 
     private OnFragmentInteractionListener mListener;
 
@@ -92,28 +106,17 @@ public class HeartSoundFragment extends EditableFragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+
      * @return A new instance of fragment HeartSoundFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static HeartSoundFragment newInstance(String param1, String param2) {
+    public static HeartSoundFragment newInstance() {
         HeartSoundFragment fragment = new HeartSoundFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
         setHasOptionsMenu(true);
     }
 
@@ -138,22 +141,18 @@ public class HeartSoundFragment extends EditableFragment {
         return mRootView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    @Override
+    public void onResume(){
+        super.onResume();
+        if(getArguments() != null){
+            long heartSoundId = getArguments().getLong(HEART_SOUND_ID_TAG);
+            requestHeartSound((int)heartSoundId);
         }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
     }
 
     @Override
@@ -173,7 +172,6 @@ public class HeartSoundFragment extends EditableFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -186,66 +184,19 @@ public class HeartSoundFragment extends EditableFragment {
         showActionBarMenuItems();
     }
 
-    @Override
-    protected void editUserProfile() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected void saveChanges() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void cancelChanges() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected void showEditableViews() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected void showNonEditableViews() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected void hideNonEditableViews() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected void hideEditableViews() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     protected void showActionBarMenuItems(){
         for(int i = 0; i < mActionBarMenu.size(); i++){
             MenuItem menuItem = mActionBarMenu.getItem(i);
-            if(editMode){
-                //if menu item is save or cancel
-                if(menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.saveChangesItemText)) ||
-                        menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.cancelChangesItemText))){
-                    menuItem.setVisible(true);
-                }
-                else{
-                    menuItem.setVisible(false);
-                }
+            if(!(menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.saveChangesItemText)) ||
+                    menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.editItemText)) ||
+                    menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.cancelChangesItemText)) ||
+                    menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.sharePatientItemText)))){
+                //if() user id matches the CreatedBy user id then display the edit button
+                //mActionBarMenu.findItem(R.id.editItem).setVisible(false);
+                menuItem.setVisible(true);
             }
             else{
-                if(!(menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.saveChangesItemText)) ||
-                        menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.cancelChangesItemText)) ||
-                        menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.sharePatientItemText)))){
-                    //if() user id matches the CreatedBy user id then display the edit button
-                    //mActionBarMenu.findItem(R.id.editItem).setVisible(false);
-                    menuItem.setVisible(true);
-                }
-                else{
-                    menuItem.setVisible(false);
-                }
+                menuItem.setVisible(false);
             }
         }
     }
@@ -254,29 +205,12 @@ public class HeartSoundFragment extends EditableFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         // handling item selection
         switch (item.getItemId()) {
-            case R.id.deletePatientItem:
-                break;
-            case R.id.editItem:
+            case R.id.deleteItem:
                 break;
             case R.id.refreshViewItem:
                 break;
         }
         return true;
-    }
-
-    @Override
-    public boolean editModeEnabled(){
-        return editMode;
-    }
-
-    @Override
-    protected void makeViewsEditable() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected void makeViewsUneditable() {
-        throw new UnsupportedOperationException();
     }
 
     private void setupListenersForButtons(){
@@ -314,7 +248,7 @@ public class HeartSoundFragment extends EditableFragment {
 
     private void launchAudioRecordingFragment(boolean recordMode, boolean voiceCommentMode){
         //Pass the state of the fragment eg: play or record
-        AudioRecordingFragment audioRecordingFragment = new AudioRecordingFragment();
+        AudioRecordingFragment audioRecordingFragment = AudioRecordingFragment.newInstance();
         Bundle bundle = new Bundle();
         bundle.putBoolean(AudioRecordingFragment.IS_REORD_MODE_TAG, recordMode);
         bundle.putBoolean(AudioRecordingFragment.IS_VOICE_COMMENT_MODE_TAG, voiceCommentMode);
@@ -327,7 +261,7 @@ public class HeartSoundFragment extends EditableFragment {
     }
 
     private void launchStethoscopeInteractionFragment(boolean voiceCommentMode){
-        StethoscopeInteractionFragment stethoscopeInteractionFragment = new StethoscopeInteractionFragment();
+        StethoscopeInteractionFragment stethoscopeInteractionFragment = StethoscopeInteractionFragment.newInstance();
         Bundle bundle = new Bundle();
         bundle.putBoolean(StethoscopeInteractionFragment.IS_VOICE_COMMENT_MODE_TAG, voiceCommentMode);
         stethoscopeInteractionFragment.setArguments(bundle);
@@ -338,4 +272,250 @@ public class HeartSoundFragment extends EditableFragment {
                 .commit();
     }
 
+    //-------------------------------------------------------------
+    //Implementation for HearSound API
+    @Override
+    public void requestPatientHeartSounds(int patientId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void requestHeartSound(final int heartSoundId) {
+        DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity());
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, WebAPI.HEART_SOUND_BASE_URL + heartSoundId, null,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //update UI accordingly
+                        heartSound = JsonObjectParser.getHeartSoundFromJsonString(response.toString());
+                        mHeartSoundId.setText(heartSound.getHeartSoundID() + "");
+                        mDeviceId.setText(heartSound.getDeviceID());
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                        //dismiss the progress dialog box
+                        DialogBoxDisplayHandler.dismissProgressDialog();
+
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+                DialogBoxDisplayHandler.dismissProgressDialog();
+                //use the webAPIResponse to get message from server
+                if(webAPIResponse.getStatusCode().equals(ResponseStatusCode.UNAUTHORIZED)){
+                    SharedPreferencesManager.invalidateUserAccessToken(getActivity());
+                }
+                else{
+                    //Launch Web API Error Fragment
+                    ((PatientHeartSoundActivity)getActivity()).launchWebAPIErrorFragment();
+                }
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareAccessTokenHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
+
+    @Override
+    public void createHeartSound(HeartSound heartSound) {
+        Toast.makeText(getContext(), getResources().getString(R.string.creatingHeartSound), Toast.LENGTH_SHORT).show();
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.POST, WebAPI.HEART_SOUND_BASE_URL, null,
+                new Response.Listener<JSONArray>(){
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        //update UI accordingly
+
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //use the webAPIResponse to get message from server
+
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Map<String, String> getParams() {
+                return WebAPI.addCreateHeartSoundParams(null, 0);//this fragment will have a HeartSound object which will then be passed along with the PatientId
+            }
+            @Override
+            protected Response<JSONArray> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+
+    }
+
+    @Override
+    public void updateHeartSound(HeartSound heartSound) {
+        DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity(), getResources().getString(R.string.updatingHeartSound));
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, WebAPI.HEART_SOUND_BASE_URL, null,
+                new Response.Listener<JSONObject>(){
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //update UI accordingly
+
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                        //dismiss the progress dialog box
+                        DialogBoxDisplayHandler.dismissProgressDialog();
+
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //use the webAPIResponse to get message from server
+
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+                //dismiss the progress dialog box
+                DialogBoxDisplayHandler.dismissProgressDialog();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Map<String, String> getParams() {
+                return WebAPI.addUpdateHeartSoundParams(null);//this fragment will have a HeartSound object which will then be passed
+            }
+            @Override
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
+
+    @Override
+    public void deleteHeartSound(int heartSoundId) {
+        Toast.makeText(getContext(), getResources().getString(R.string.deletingHeartSound), Toast.LENGTH_SHORT).show();
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.DELETE, WebAPI.HEART_SOUND_BASE_URL + heartSoundId, null,
+                new Response.Listener<JSONArray>(){
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        //update UI accordingly
+
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //use the webAPIResponse to get message from server
+
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareAccessTokenHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Response<JSONArray> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+
+    }
+    //-------------------------------------------------------------
 }

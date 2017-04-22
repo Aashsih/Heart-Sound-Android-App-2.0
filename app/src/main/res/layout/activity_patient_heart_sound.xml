@@ -20,7 +20,8 @@
         <FrameLayout
             android:id="@+id/fragmentContainer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+        </FrameLayout>
     </LinearLayout>
     <!-- Add a header layout which Contains a TextView displaying the title -->
     <android.support.design.widget.NavigationView

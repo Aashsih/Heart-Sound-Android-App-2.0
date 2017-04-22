@@ -6,7 +6,7 @@ package com.head_first.aashi.heartsounds_20.model;
 
 public class Student extends PatientUser {
 
-    public Student(String username, String password, String firstName, String lastName) {
-        super(username, password, firstName, lastName);
+    public Student(String id, String username, String firstName, String lastName, String email) {
+        super(id, username, firstName, lastName, email);
     }
 }

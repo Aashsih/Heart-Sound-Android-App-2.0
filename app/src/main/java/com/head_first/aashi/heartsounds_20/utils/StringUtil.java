@@ -1,5 +1,10 @@
 package com.head_first.aashi.heartsounds_20.utils;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Created by Aashish Indorewala on 11-Jan-17.
  */
@@ -20,5 +25,13 @@ public class StringUtil {
             }
         }
         return array;
+    }
+
+    public static <T> List<String> convertListToListOfString(List<T> collection){
+        List<String> stringCollection = new ArrayList<>();
+        for(Object anObject : collection){
+            stringCollection.add(anObject.toString());
+        }
+        return stringCollection;
     }
 }

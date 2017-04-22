@@ -8,12 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
@@ -51,14 +46,6 @@ public class FilterDialogFragment extends DialogFragment implements SearchView.O
     //Data for the Fragment
     private Filter filter;
     private Map<String, List<Filter.GroupItem>> searchFilterContent;
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
@@ -69,29 +56,19 @@ public class FilterDialogFragment extends DialogFragment implements SearchView.O
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+
      * @return A new instance of fragment FilterDialogFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static FilterDialogFragment newInstance(String param1, String param2) {
+    public static FilterDialogFragment newInstance() {
         FilterDialogFragment fragment = new FilterDialogFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
         setRetainInstance(true);
+        //Get information passed to the fragment
         Bundle bundle = getArguments();
         if (bundle != null) {
             //Get the filter object from the Fragment that launched this
@@ -107,47 +84,6 @@ public class FilterDialogFragment extends DialogFragment implements SearchView.O
             //Throw an exception here
         }
     }
-
-//    @Override
-//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//                             Bundle savedInstanceState) {
-//        if(filterDialog == null){
-//            // Inflate the layout for this fragment
-//            filterDialog = inflater.inflate(R.layout.heart_sound_ui_experiments_fragment_filter_layout, container, false);
-//        }
-//        //SearchView Setup
-//        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-//        mSearchView = (SearchView) filterDialog.findViewById(R.id.filterItems);
-//        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
-//        mSearchView.setOnQueryTextListener(this);
-//        mSearchView.setOnCloseListener(this);
-//        //Search bar
-//        mSearchStringView = (TextView) filterDialog.findViewById(R.id.filterString);
-//        mSearchStringView.setText(filter.getSearchString());
-//        mSearchButton = (Button) filterDialog.findViewById(R.id.searchButton);
-//        mSearchButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //use the information stored in the filter object to get all the related data from the database
-//                //then finish this fragment
-//            }
-//        });
-//
-//        //Expandable Filter
-//        mExpandableListFilter = (ExpandableListView) filterDialog.findViewById(R.id.expandableFilterView);
-//        expandableFilterAdapter = new ExpandableFilterListAdapter(getContext(), searchFilterContent);
-//        mExpandableListFilter.setAdapter(expandableFilterAdapter);
-//        mExpandableListFilter.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-//            @Override
-//            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-//                FilterDialogFragment.this.onFilterClick(parent, v, groupPosition, childPosition, id);
-//                return false;
-//            }
-//        });
-//        expandableFilterAdapter.notifyDataSetChanged();
-//
-//        return filterDialog;
-//    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
@@ -197,22 +133,9 @@ public class FilterDialogFragment extends DialogFragment implements SearchView.O
         outState.putSerializable(this.FILTER_CONTENT_MAP_TAG, filter);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
     }
 
     @Override
@@ -232,7 +155,6 @@ public class FilterDialogFragment extends DialogFragment implements SearchView.O
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -242,7 +164,7 @@ public class FilterDialogFragment extends DialogFragment implements SearchView.O
         mSearchStringView.setText(filter.getSearchString());
     }
 
-    //To display the search button on the toolbar
+//    To display the search button on the toolbar
 //    @Override
 //    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 //        inflater.inflate(R.menu.search_view_menu, menu);
