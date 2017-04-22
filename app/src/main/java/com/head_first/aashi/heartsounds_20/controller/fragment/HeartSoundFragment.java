@@ -148,6 +148,7 @@ public class HeartSoundFragment extends Fragment implements HeartSoundAPI {
             long heartSoundId = getArguments().getLong(HEART_SOUND_ID_TAG);
             requestHeartSound((int)heartSoundId);
         }
+        ((PatientHeartSoundActivity)getActivity()).setupNavigationDrawerContent();
     }
 
     @Override

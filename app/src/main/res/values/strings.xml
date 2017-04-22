@@ -120,24 +120,28 @@
     <string name="connectToStethoscope">Connect To Stethoscope</string>
 
     <!-- User Messages -->
+    retrievingUsers
     <string name="confirmationMesage">Are you sure?</string>
     <string name="loggingIn">Logging in</string>
     <string name="errorMessage">An Error Occurred</string>
     <string name="errorTitle">Error</string>
-    <string name="deletingPatient">Deleting Patient</string>
     <string name="sharingPatient">Sharing Patient</string>
     <string name="unsharingPatient">Unsharing Patient</string>
     <string name="retrievingPatientDetails">Retrieving Patient Details</string>
     <string name="retrievingHeartSound">Retrieving Heart Sound</string>
     <string name="retrievingUserDetails">Retrieving User Details</string>
+    <string name="retrievingUsers">Retrieving Users</string>
     <string name="retrievingPatientHeartSounds">Retrieving Patient Heart Sounds</string>
     <string name="retrievingMurmurRating">Retrieving Murmur Rating for Heart Sound</string>
     <string name="creatingPatient">Creating Patient</string>
     <string name="creatingHeartSound">Creating Patient</string>
     <string name="creatingMurmurRating">Creating Murmur Rating</string>
     <string name="updatingPatient">Updating Patient</string>
+    <string name="patientUpdated">Patient Updated</string>
     <string name="updatingHeartSound">Updating Heart Sound</string>
     <string name="updatingMurmurRating">Updating Murmur Rating</string>
+    <string name="deletingPatient">Deleting Patient</string>
+    <string name="patientDeleted">Patient Deleted</string>
     <string name="deletingHeartSound">Updating Heart Sound</string>
     <string name="deletingMurmurRating">Deleting Murmur Rating</string>
     <string name="connectingToStethoscopeMessage">Connecting to Available Stethoscope</string>

@@ -1,5 +1,9 @@
 package com.head_first.aashi.heartsounds_20.model;
 
+import com.head_first.aashi.heartsounds_20.exception.InvalidDateOfBirthException;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -7,7 +11,7 @@ import java.util.Date;
  */
 
 public final class Patient {
-    //private static DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+    private static String DATE_FORMAT = "yyyy-MM-dd'T'hh:mm:ss.SSS";
 
     private long patientId;
     private String primaryDoctorId;
@@ -20,7 +24,6 @@ public final class Patient {
     private boolean isActive;
 
     //Getters
-
     public long getPatientId() {
         return patientId;
     }
@@ -57,8 +60,30 @@ public final class Patient {
         return isActive;
     }
 
-    //To String
+    public String getDateOfBirthInLocalDateTimeFormat(){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT);
+        return simpleDateFormat.format(dateOfBirth);
+    }
 
+    //Setters
+    public void setDateOfBirth(Date dateOfBirth) throws ParseException {
+        if(dateOfBirth == null){
+            throw new InvalidDateOfBirthException("Please provide a valid Date Of Birth");
+        }
+        else{
+            this.dateOfBirth = dateOfBirth;
+        }
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    //To String
     @Override
     public String toString(){
         if(!(lastName == null || lastName.isEmpty())){

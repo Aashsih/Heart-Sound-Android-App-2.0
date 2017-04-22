@@ -1,6 +1,7 @@
 package com.head_first.aashi.heartsounds_20.controller.activities;
 
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -19,6 +21,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.controller.fragment.AudioRecordingFragment;
 import com.head_first.aashi.heartsounds_20.controller.fragment.HeartSoundFragment;
@@ -28,7 +31,9 @@ import com.head_first.aashi.heartsounds_20.controller.fragment.WebAPIErrorFragme
 import com.head_first.aashi.heartsounds_20.enums.web_api_enums.ResponseStatusCode;
 import com.head_first.aashi.heartsounds_20.interfaces.util_interfaces.NavgigationDrawerUtils;
 import com.head_first.aashi.heartsounds_20.model.HeartSound;
+import com.head_first.aashi.heartsounds_20.model.MurmurRating;
 import com.head_first.aashi.heartsounds_20.model.Patient;
+import com.head_first.aashi.heartsounds_20.model.User;
 import com.head_first.aashi.heartsounds_20.utils.DialogBoxDisplayHandler;
 import com.head_first.aashi.heartsounds_20.utils.NavigationDrawerContentListAdapter;
 import com.head_first.aashi.heartsounds_20.utils.JsonObjectParser;
@@ -41,6 +46,7 @@ import com.head_first.aashi.heartsounds_20.web_api.WebAPIResponse;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,14 +76,16 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
     //Adapters
     NavigationDrawerContentListAdapter<String> navigationDrawerContentListAdapter;
 
-    //Data
+
     //The user object will be used here, the user object will be passed
     // to this activity from the previous one and will contain all the
     //required data.
     //For now, a List of String will be used to replicate the List of HeartSounds
     //that the patient has and a HashMap<HearSound, List<MurmerRating>> to represent
     //the murmer rating for each HeartSound
+    //Data
     private Patient patient;
+    private Map<String, User> userIdToUserMap;
     private List<String> heartSounds;
     private Map<Long, List<String>> heartSoundToMurmurRating;
     private Long selectedHeartSound; //Stores the id of the selected heart sound
@@ -90,6 +98,9 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         super.onCreate(savedInstanceState);
         if(getIntent() != null){
             patient = JsonObjectParser.getPatientFromJsonString(getIntent().getStringExtra(PATIENT));
+            if(patient == null){
+                finish();
+            }
         }
         setContentView(R.layout.activity_patient_heart_sound);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -134,6 +145,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
     public void onResume(){
         super.onResume();
         setupNavigationDrawerContent();
+        getAllUsers();
     }
 
     @Override
@@ -176,6 +188,19 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         super.onBackPressed();
     }
 
+    public Patient getPatient(){
+        return patient;
+    }
+
+    public String getUserName(String userId){
+        if(userIdToUserMap == null){
+            return null;
+        }
+        else{
+            return userIdToUserMap.get(userId).getUserName();
+        }
+    }
+
     //Later on this method will return HeartSound
     public Long getSelectedHeartSound(){
         return selectedHeartSound;
@@ -195,12 +220,23 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         }
     }
 
-    private void setupNavigationDrawerContent(){
+    public void setupNavigationDrawerContent(){
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         if(patient != null){
             if(fragment instanceof HeartSoundFragment || fragment instanceof MurmerRatingFragment){
                 //Store a local copy of the active heart sound and then use that to fetch
                 //the murmur rating associated with it
+                if(heartSoundToMurmurRating.containsKey(selectedHeartSound)){//this condition should never be false
+                    List<String> murmurRatings = heartSoundToMurmurRating.get(selectedHeartSound);
+                    if(murmurRatings == null || murmurRatings.isEmpty()){
+                        requestMurmurRatingsForHeartSound(selectedHeartSound.intValue());
+                    }
+                    navigationDrawerContentListAdapter = new NavigationDrawerContentListAdapter<>(getApplicationContext(), heartSoundToMurmurRating.get(selectedHeartSound));
+                    mNavigationViewListContent.setAdapter(navigationDrawerContentListAdapter);
+                }
+                else{
+                    finish();
+                }
             }
             else{
                 //use the patient id to make a call and get all the Heart Sounds associated with the patient
@@ -364,14 +400,19 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
     }
 
     private void requestPatientHeartSounds(int patientId) {
+        DialogBoxDisplayHandler.dismissProgressDialog();
         DialogBoxDisplayHandler.showIndefiniteProgressDialog(this);
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, WebAPI.GET_PATIENT_HEART_SOUNDS_URL + patientId, null,
-                new Response.Listener<JSONArray>(){
+        StringRequest request = new StringRequest(Request.Method.GET, WebAPI.GET_PATIENT_HEART_SOUNDS_URL + patientId,
+                new Response.Listener<String>(){
                     @Override
-                    public void onResponse(JSONArray response) {
+                    public void onResponse(String response) {
                         //update UI accordingly
                         DialogBoxDisplayHandler.dismissProgressDialog();
-                        List<HeartSound> heartSoundList = new ArrayList<>(JsonObjectParser.getHeartSoundListFromJsonString(response.toString()));
+                        Collection<HeartSound> heartSoundCollection = JsonObjectParser.getHeartSoundListFromJsonString(response.toString());
+                        List<HeartSound> heartSoundList = null;
+                        if(heartSoundCollection != null){
+                            heartSoundList = new ArrayList<>(heartSoundCollection);
+                        }
                         heartSounds = StringUtil.convertListToListOfString(heartSoundList);
                         setUpData();
                         navigationDrawerContentListAdapter = new NavigationDrawerContentListAdapter<>(getApplicationContext(), heartSounds);
@@ -386,6 +427,151 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
             @Override
             public void onErrorResponse(VolleyError error) {
                 //update UI accordingly
+                DialogBoxDisplayHandler.dismissProgressDialog();
+                //use the webAPIResponse to get message from server
+                if(webAPIResponse.getStatusCode().equals(ResponseStatusCode.UNAUTHORIZED)){
+                    SharedPreferencesManager.invalidateUserAccessToken(PatientHeartSoundActivity.this);
+                }
+                else{
+                    //Launch Web API Error Fragment
+                    launchWebAPIErrorFragment();
+                }
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareAccessTokenHeader(SharedPreferencesManager.getUserAccessToken(PatientHeartSoundActivity.this));
+            }
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+
+        RequestQueueSingleton.getInstance(this).addToRequestQueue(request);
+
+    }
+
+    public void getAllUsers() {
+        DialogBoxDisplayHandler.dismissProgressDialog();
+        DialogBoxDisplayHandler.showIndefiniteProgressDialog(this);
+        StringRequest request = new StringRequest(Request.Method.GET, WebAPI.GET_ALL_USERS_URL,
+                new Response.Listener<String>(){
+                    @Override
+                    public void onResponse(String response) {
+                        //update UI accordingly
+                        Collection<User> parsedResponse = JsonObjectParser.getUserListFromJsonString(response.toString());
+                        if(parsedResponse != null){
+                            userIdToUserMap = new HashMap<>();
+                            for(User aUser : parsedResponse){
+                                userIdToUserMap.put(aUser.getId(), aUser);
+                            }
+                            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+                            if(fragment instanceof PatientFragment){
+                                ((PatientFragment)fragment).setupViewsWithPatientData();
+                            }
+
+                        }
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                        //dismiss the progress dialog box
+                        DialogBoxDisplayHandler.dismissProgressDialog();
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //dismiss the progress dialog box
+                DialogBoxDisplayHandler.dismissProgressDialog();
+                //use the webAPIResponse to get message from server
+                if(webAPIResponse.getStatusCode().equals(ResponseStatusCode.UNAUTHORIZED)){
+                    SharedPreferencesManager.invalidateUserAccessToken(PatientHeartSoundActivity.this);
+                }
+                else{
+                    //Launch Web API Error Fragment
+                    launchWebAPIErrorFragment();
+                }
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareAccessTokenHeader(SharedPreferencesManager.getUserAccessToken(PatientHeartSoundActivity.this));
+            }
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+
+        RequestQueueSingleton.getInstance(PatientHeartSoundActivity.this).addToRequestQueue(request);
+    }
+
+    public void requestMurmurRatingsForHeartSound(int heartSoundId) {
+        DialogBoxDisplayHandler.dismissProgressDialog();
+        DialogBoxDisplayHandler.showIndefiniteProgressDialog(this);
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, WebAPI.GET_MURMUR_RATING_FOR_HEART_SOUND_URL + heartSoundId, null,
+                new Response.Listener<JSONArray>(){
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        //update UI accordingly
+                        DialogBoxDisplayHandler.dismissProgressDialog();
+                        Collection<MurmurRating> murmurRatingCollection = JsonObjectParser.getMurmurRatingListFromJsonString(response.toString());
+                        List<MurmurRating> murmurRatingList = null;
+                        if(murmurRatingCollection != null){
+                            murmurRatingList = new ArrayList<>(murmurRatingCollection);
+                        }
+                        heartSoundToMurmurRating.put(selectedHeartSound, StringUtil.convertListToListOfString(murmurRatingList));
+                        setupNavigationDrawerContent();
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //dismiss the progress dialog box
                 DialogBoxDisplayHandler.dismissProgressDialog();
                 //use the webAPIResponse to get message from server
                 if(webAPIResponse.getStatusCode().equals(ResponseStatusCode.UNAUTHORIZED)){
@@ -424,8 +610,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
             }
         };
 
-        RequestQueueSingleton.getInstance(this).addToRequestQueue(request);
+        RequestQueueSingleton.getInstance(PatientHeartSoundActivity.this).addToRequestQueue(request);
 
     }
-
 }

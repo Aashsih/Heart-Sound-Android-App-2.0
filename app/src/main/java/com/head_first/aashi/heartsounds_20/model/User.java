@@ -67,6 +67,14 @@ public abstract class User implements IUser{
         return userPermissionId;
     }
 
+    public String getUserName(){
+        if(!(lastName == null || lastName.isEmpty())){
+            return lastName.toUpperCase().charAt(0) + ". " + firstName;
+        }
+        else{
+            return firstName;
+        }
+    }
 
 //    Setters
 //

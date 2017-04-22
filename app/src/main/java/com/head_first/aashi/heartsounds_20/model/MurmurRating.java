@@ -24,87 +24,87 @@ import java.util.List;
 
 public final class MurmurRating {
 
-    private long id;
-    private String doctorId;
-    private long heartSoundId;
+    private long MurmurRatingID;
+    private String DoctorID;
+    private long HeartSoundID;
     //enums
-    private CardiacPhase cardiacPhase;
-    private AddedSounds addedSounds;
-    private ChangeWithBreathing changeWithBreathing;
-    private LeftLateralPosition leftLateralPosition;
-    private MostIntenseLocation mostIntenseLocation;
-    private MurmurDuration murmurDuration;
-    private Radiation radiation;
-    private S1 s1;
-    private S2 s2;
-    private SittingForward sittingForward;
-    private Valsalva valsalva;
+    private CardiacPhase CardiacPhase;
+    private AddedSounds AddedSounds;
+    private ChangeWithBreathing ChangeWithBreathing;
+    private LeftLateralPosition LeftLateralPosition;
+    private MostIntenseLocation LocationMostIntense;
+    private MurmurDuration DurationOfMurmur;
+    private Radiation Radiation;
+    private S1 S1;
+    private S2 S2;
+    private SittingForward SittingForward;
+    private Valsalva Valsalva;
 
     //check these ones
     private FinalDiagnosis finalDiagnosis;
-    private Intensity intensity;
-    private String ratingInfo;
+    private Intensity Intensity;
+    private String RatingInfo;
 
-    private List<CHARACTER> character;//this has 3 checkboxes..can the user select multiple checkboxes. If so we will use an array
-    private Date createdOn;
-    private boolean isActive;
+    private CHARACTER Character;//this has 3 checkboxes..can the user select multiple checkboxes. If so we will use an array
+    private Date CreatedOn;
+    private boolean IsActive;
 
     //Getters
 
-    public long getId() {
-        return id;
+    public long getMurmurRatingID() {
+        return MurmurRatingID;
     }
 
-    public String getDoctorId() {
-        return doctorId;
+    public String getDoctorID() {
+        return DoctorID;
     }
 
-    public long getHeartSoundId() {
-        return heartSoundId;
+    public long getHeartSoundID() {
+        return HeartSoundID;
     }
 
     public CardiacPhase getCardiacPhase() {
-        return cardiacPhase;
+        return CardiacPhase;
     }
 
     public AddedSounds getAddedSounds() {
-        return addedSounds;
+        return AddedSounds;
     }
 
     public ChangeWithBreathing getChangeWithBreathing() {
-        return changeWithBreathing;
+        return ChangeWithBreathing;
     }
 
     public LeftLateralPosition getLeftLateralPosition() {
-        return leftLateralPosition;
+        return LeftLateralPosition;
     }
 
-    public MostIntenseLocation getMostIntenseLocation() {
-        return mostIntenseLocation;
+    public MostIntenseLocation getLocationMostIntense() {
+        return LocationMostIntense;
     }
 
-    public MurmurDuration getMurmurDuration() {
-        return murmurDuration;
+    public MurmurDuration getDurationOfMurmur() {
+        return DurationOfMurmur;
     }
 
     public Radiation getRadiation() {
-        return radiation;
+        return Radiation;
     }
 
     public S1 getS1() {
-        return s1;
+        return S1;
     }
 
     public S2 getS2() {
-        return s2;
+        return S2;
     }
 
     public SittingForward getSittingForward() {
-        return sittingForward;
+        return SittingForward;
     }
 
     public Valsalva getValsalva() {
-        return valsalva;
+        return Valsalva;
     }
 
     public FinalDiagnosis getFinalDiagnosis() {
@@ -112,120 +112,124 @@ public final class MurmurRating {
     }
 
     public Intensity getIntensity() {
-        return intensity;
+        return Intensity;
     }
 
     public String getRatingInfo() {
-        return ratingInfo;
+        return RatingInfo;
     }
 
-    public List<CHARACTER> getCharacter() {
-        return character;
+    public CHARACTER getCharacter() {
+        return Character;
     }
 
     public Date getCreatedOn() {
-        return createdOn;
+        return CreatedOn;
     }
 
     public boolean isActive() {
-        return isActive;
+        return IsActive;
     }
 
+    @Override
+    public String toString(){
+        return "Murmur Rating " + (getHeartSoundID() + 1);
+    }
 
     /**
      *This constructor should be used when gettin data from the database
      */
-//    public MurmurRating(long doctorId, long heartSoundId, CardiacPhase cardiacPhase, AddedSounds addedSounds, ChangeWithBreathing changeWithBreathing,
-//                        LeftLateralPosition leftLateralPosition, MostIntenseLocation mostIntenseLocation, MurmurDuration murmurDuration, Radiation radiation,
-//                        S1 s1, S2 s2, SittingForward sittingForward, Valsalva valsalva, FinalDiagnosis finalDiagnosis, Intensity intensity, String ratingInfo,
-//                        List<CHARACTER> character) {
-//        //The id will be received from the data base/
-//        // /this.id = (ID.add(BigInteger.ONE)).toString();
-//        this.doctorId = doctorId;
-//        this.heartSoundId = heartSoundId;
-//        this.setCardiacPhase(cardiacPhase);
-//        this.setAddedSounds(addedSounds);
-//        this.setChangeWithBreathing(changeWithBreathing);
-//        this.setLeftLateralPosition(leftLateralPosition);
-//        this.setMostIntenseLocation(mostIntenseLocation);
-//        this.setMurmurDuration(murmurDuration);
-//        this.setRadiation(radiation);
-//        this.setS1(s1);
-//        this.setS2(s2);
-//        this.setSittingForward(sittingForward);
-//        this.setValsalva(valsalva);
+//    public MurmurRating(long DoctorID, long HeartSoundID, CardiacPhase CardiacPhase, AddedSounds AddedSounds, ChangeWithBreathing ChangeWithBreathing,
+//                        LeftLateralPosition LeftLateralPosition, MostIntenseLocation LocationMostIntense, MurmurDuration DurationOfMurmur, Radiation Radiation,
+//                        S1 S1, S2 S2, SittingForward SittingForward, Valsalva Valsalva, FinalDiagnosis finalDiagnosis, Intensity Intensity, String RatingInfo,
+//                        List<CHARACTER> Character) {
+//        //The MurmurRatingID will be received from the data base/
+//        // /this.MurmurRatingID = (ID.add(BigInteger.ONE)).toString();
+//        this.DoctorID = DoctorID;
+//        this.HeartSoundID = HeartSoundID;
+//        this.setCardiacPhase(CardiacPhase);
+//        this.setAddedSounds(AddedSounds);
+//        this.setChangeWithBreathing(ChangeWithBreathing);
+//        this.setLeftLateralPosition(LeftLateralPosition);
+//        this.setMostIntenseLocation(LocationMostIntense);
+//        this.setMurmurDuration(DurationOfMurmur);
+//        this.setRadiation(Radiation);
+//        this.setS1(S1);
+//        this.setS2(S2);
+//        this.setSittingForward(SittingForward);
+//        this.setValsalva(Valsalva);
 //        this.setFinalDiagnosis(finalDiagnosis);
-//        this.setIntensity(intensity);
-//        this.setRatingInfo(ratingInfo);
-//        this.setCharacter(character);
+//        this.setIntensity(Intensity);
+//        this.setRatingInfo(RatingInfo);
+//        this.setCharacter(Character);
 //    }
 
 
     /**
      * This constructor should only be called when the MurmurRating is created for the first time
      */
-//    public MurmurRating(User user, HeartSound heartSound, CardiacPhase cardiacPhase, AddedSounds addedSounds, ChangeWithBreathing changeWithBreathing,
-//                        LeftLateralPosition leftLateralPosition, MostIntenseLocation mostIntenseLocation, MurmurDuration murmurDuration, Radiation radiation,
-//                        S1 s1, S2 s2, SittingForward sittingForward, Valsalva valsalva, FinalDiagnosis finalDiagnosis, Intensity intensity, String ratingInfo,
-//                        List<CHARACTER> character) {
+//    public MurmurRating(User user, HeartSound heartSound, CardiacPhase CardiacPhase, AddedSounds AddedSounds, ChangeWithBreathing ChangeWithBreathing,
+//                        LeftLateralPosition LeftLateralPosition, MostIntenseLocation LocationMostIntense, MurmurDuration DurationOfMurmur, Radiation Radiation,
+//                        S1 S1, S2 S2, SittingForward SittingForward, Valsalva Valsalva, FinalDiagnosis finalDiagnosis, Intensity Intensity, String RatingInfo,
+//                        List<CHARACTER> Character) {
 //        //deviceId can also be checked for but is skipped for now
 //
 //        //The first argument needs to be obtained from the current logged in user.
 //        //How to validate if the correct heart sound object (to whom the murmur rating belongs) is passed?
-////        this(user.getPatientID(), heartSound.getPatientID(), cardiacPhase, addedSounds, changeWithBreathing, leftLateralPosition, mostIntenseLocation, murmurDuration,
-////                radiation, s1, s2, sittingForward, valsalva, finalDiagnosis, intensity, ratingInfo, character);
+////        this(user.getPatientID(), heartSound.getPatientID(), CardiacPhase, AddedSounds, ChangeWithBreathing, LeftLateralPosition, LocationMostIntense, DurationOfMurmur,
+////                Radiation, S1, S2, SittingForward, Valsalva, finalDiagnosis, Intensity, RatingInfo, Character);
 //    }
 
 //    //Setters
-//    public final void setRatingInfo(String ratingInfo) {
-//        this.ratingInfo = ratingInfo;
+//    public final void setRatingInfo(String RatingInfo) {
+//        this.RatingInfo = RatingInfo;
 //    }
 //
-//    public final void setIntensity(Intensity intensity) {
-//        this.intensity = intensity;
+//    public final void setIntensity(Intensity Intensity) {
+//        this.Intensity = Intensity;
 //    }
 //
 //    public final void setFinalDiagnosis(FinalDiagnosis finalDiagnosis) {
 //        this.finalDiagnosis = finalDiagnosis;
 //    }
 //
-//    public final void setValsalva(Valsalva valsalva) {
-//        this.valsalva = valsalva;
+//    public final void setValsalva(Valsalva Valsalva) {
+//        this.Valsalva = Valsalva;
 //    }
 //
-//    public final void setSittingForward(SittingForward sittingForward) {
-//        this.sittingForward = sittingForward;
+//    public final void setSittingForward(SittingForward SittingForward) {
+//        this.SittingForward = SittingForward;
 //    }
-//    public final void setS2(S2 s2) {
-//        this.s2 = s2;
-//    }
-//
-//    public final void setS1(S1 s1) {
-//        this.s1 = s1;
+//    public final void setS2(S2 S2) {
+//        this.S2 = S2;
 //    }
 //
-//    public final void setRadiation(Radiation radiation) {
-//        this.radiation = radiation;
+//    public final void setS1(S1 S1) {
+//        this.S1 = S1;
 //    }
 //
-//    public final void setMurmurDuration(MurmurDuration murmurDuration) {
-//        this.murmurDuration = murmurDuration;
-//    }
-//    public final void setMostIntenseLocation(MostIntenseLocation mostIntenseLocation) {
-//        this.mostIntenseLocation = mostIntenseLocation;
-//    }
-//    public final void setLeftLateralPosition(LeftLateralPosition leftLateralPosition) {
-//        this.leftLateralPosition = leftLateralPosition;
-//    }
-//    public final void setChangeWithBreathing(ChangeWithBreathing changeWithBreathing) {
-//        this.changeWithBreathing = changeWithBreathing;
-//    }
-//    public final void setAddedSounds(AddedSounds addedSounds) {
-//        this.addedSounds = addedSounds;
+//    public final void setRadiation(Radiation Radiation) {
+//        this.Radiation = Radiation;
 //    }
 //
-//    public final void setCardiacPhase(CardiacPhase cardiacPhase) {
-//        this.cardiacPhase = cardiacPhase;
+//    public final void setMurmurDuration(MurmurDuration DurationOfMurmur) {
+//        this.DurationOfMurmur = DurationOfMurmur;
+//    }
+//    public final void setMostIntenseLocation(MostIntenseLocation LocationMostIntense) {
+//        this.LocationMostIntense = LocationMostIntense;
+//    }
+//    public final void setLeftLateralPosition(LeftLateralPosition LeftLateralPosition) {
+//        this.LeftLateralPosition = LeftLateralPosition;
+//    }
+//    public final void setChangeWithBreathing(ChangeWithBreathing ChangeWithBreathing) {
+//        this.ChangeWithBreathing = ChangeWithBreathing;
+//    }
+//    public final void setAddedSounds(AddedSounds AddedSounds) {
+//        this.AddedSounds = AddedSounds;
+//    }
+//
+//    public final void setCardiacPhase(CardiacPhase CardiacPhase) {
+//        this.CardiacPhase = CardiacPhase;
 //    }
 
 

@@ -4,6 +4,9 @@ import com.head_first.aashi.heartsounds_20.model.HeartSound;
 import com.head_first.aashi.heartsounds_20.model.MurmurRating;
 import com.head_first.aashi.heartsounds_20.model.Patient;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 
 /**
@@ -27,6 +30,7 @@ public class WebAPI {
     public static final String GET_USER_INFO_URL = USER_BASE_URL + "/get";
     public static final String CHANGE_USER_PASSWORD_URL = USER_BASE_URL + "/ChangePassword";
     public static final String REGISTER_USER_URL = USER_BASE_URL + "/Register";
+    public static final String GET_ALL_USERS_URL = USER_BASE_URL + "/all";
 
     //Murmur Rating API
     public static final String MURMUR_RATING_BASE_URL = HEART_SOUND_BASE_API_URL + "/api/MurmurRating/";
@@ -127,7 +131,7 @@ public class WebAPI {
     public static final HashMap<String, String> prepareJsonRequestHeader(String accessToken){
         //Get access token
         HashMap<String, String> header = prepareAccessTokenHeader(accessToken);
-        header.put(CONTENT_TYPE_KEY, CONTENT_TYPE_JSON_VALUE);
+        //header.put(CONTENT_TYPE_KEY, CONTENT_TYPE_JSON_VALUE);
         return header;
     }
 
@@ -155,24 +159,21 @@ public class WebAPI {
         return params;
     }
 
-    //--------------Change all the following to take in a Patient, Heart Sound or a MurmurRating object instead of taking so many parameters
-
-    public static final HashMap<String, String> addCreatePatientParams(Patient patient){
-        HashMap<String, String> params = new HashMap<>();
+    public static final JSONObject addCreatePatientParams(Patient patient) throws JSONException {
+        JSONObject params = new JSONObject();
         params.put(FIRST_NAME_LOWER_CASE, patient.getFirstName());
         params.put(LAST_NAME_LOWER_CASE, patient.getLastName());
-        params.put(DATE_OF_BIRTH, patient.getDateOfBirth().toString());
-        params.put(GENDER, patient.getGender().toString());
+        params.put(DATE_OF_BIRTH, patient.getDateOfBirthInLocalDateTimeFormat());
+        params.put(GENDER, patient.getGender());
         params.put(PATIENT_PRIMARY_DOCTOR_ID, patient.getPrimaryDoctorId());
-        params.put(IS_PUBLIC, new String("" + patient.isPublic()));
+        params.put(IS_PUBLIC, patient.isPublic());
         return params;
     }
 
-    public static final HashMap<String, String> addUpdatePatientParams(Patient patient){
-        HashMap<String, String> params = new HashMap<>();
-        params.put(PATIENT_ID_LOWER_CASE, new String("" + patient.getPatientId()));
-        params.putAll(addCreatePatientParams(patient));
-        params.put(IS_ACTIVE, "true");//This should not be editable in this request
+    public static final JSONObject addUpdatePatientParams(Patient patient) throws JSONException {
+        JSONObject params = addCreatePatientParams(patient);
+        params.put(PATIENT_ID_LOWER_CASE, patient.getPatientId());
+        params.put(IS_ACTIVE_LOWER_CASE, true);//This should not be editable in this request
         return params;
     }
 
@@ -201,11 +202,11 @@ public class WebAPI {
 
     public static final HashMap<String, String> addCreateMurmurRatingParams(MurmurRating murmurRating){
         HashMap<String, String> params = new HashMap<>();
-        params.put(DOCTOR_ID, murmurRating.getDoctorId());
-        params.put(HEARTSOUND_ID, new String("" + murmurRating.getHeartSoundId()));
+        params.put(DOCTOR_ID, murmurRating.getDoctorID());
+        params.put(HEARTSOUND_ID, new String("" + murmurRating.getHeartSoundID()));
         params.put(CARDIAC_PHASE, murmurRating.getCardiacPhase().toString());
-        params.put(DURATION_OF_MURMUR, murmurRating.getMurmurDuration().toString());
-        params.put(LOCATION_MOST_INTENSE, murmurRating.getMostIntenseLocation().toString());
+        params.put(DURATION_OF_MURMUR, murmurRating.getDurationOfMurmur().toString());
+        params.put(LOCATION_MOST_INTENSE, murmurRating.getLocationMostIntense().toString());
         params.put(RADIATION, murmurRating.getRadiation().toString());
         params.put(CHARACTER, murmurRating.getCharacter().toString());
         params.put(ADDED_SOUNDS, murmurRating.getAddedSounds().toString());
@@ -221,7 +222,7 @@ public class WebAPI {
 
     public static final HashMap<String, String> addUpdateMurmurRatingParams(MurmurRating murmurRating){
         HashMap<String, String> params = new HashMap<>();
-        params.put(MURMUR_RATING_ID, new String("" + murmurRating.getId()));
+        params.put(MURMUR_RATING_ID, new String("" + murmurRating.getMurmurRatingID()));
         params.putAll(addCreateMurmurRatingParams(murmurRating));
         params.put(CREATED_ON, murmurRating.getCreatedOn().toString());
         params.put(IS_ACTIVE, new String("" + murmurRating.isActive()));

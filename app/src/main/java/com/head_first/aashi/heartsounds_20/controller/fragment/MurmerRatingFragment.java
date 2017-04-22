@@ -26,6 +26,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.head_first.aashi.heartsounds_20.R;
+import com.head_first.aashi.heartsounds_20.controller.activities.PatientHeartSoundActivity;
 import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.AddedSounds;
 import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.CardiacPhase;
 import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.ChangeWithBreathing;
@@ -183,6 +184,12 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        ((PatientHeartSoundActivity)getActivity()).setupNavigationDrawerContent();
     }
 
     @Override

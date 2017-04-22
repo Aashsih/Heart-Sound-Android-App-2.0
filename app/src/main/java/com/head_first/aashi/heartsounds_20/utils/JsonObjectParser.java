@@ -9,6 +9,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.head_first.aashi.heartsounds_20.model.Doctor;
 import com.head_first.aashi.heartsounds_20.model.HeartSound;
+import com.head_first.aashi.heartsounds_20.model.MurmurRating;
 import com.head_first.aashi.heartsounds_20.model.Patient;
 import com.head_first.aashi.heartsounds_20.model.User;
 import com.head_first.aashi.heartsounds_20.web_api.WebAPI;
@@ -42,6 +43,20 @@ public class JsonObjectParser {
     //static methods
 
     //User parsing
+    public static List<User> getUserListFromJsonString(String jsonString){
+        if(jsonString == null || jsonString.isEmpty()){
+            return null;
+        }
+        Type type = new TypeToken<List<Map<String, String>>>(){}.getType();
+        Collection<Map<String, String>> objectList = gson.fromJson(jsonString, type);
+        List<User> userList = new ArrayList<>();
+        for(Map<String, String> anObject : objectList){
+            userList.add(getUserFromUserStringMap(anObject));
+        }
+        return userList;
+    }
+
+
     public static User getUserFromJsonString(String jsonString){
         if(jsonString == null || jsonString.isEmpty()){
             return null;
@@ -49,6 +64,11 @@ public class JsonObjectParser {
         User user = null;
         Type type = new TypeToken<Map<String, String>>(){}.getType();
         Map<String, String> userMap = gson.fromJson(jsonString, type);
+        return getUserFromUserStringMap(userMap);
+    }
+
+    private static User getUserFromUserStringMap(Map<String, String> userMap){
+        User user = null;
         if(userMap == null){
             user = null;
         }
@@ -65,6 +85,7 @@ public class JsonObjectParser {
                 user = new Doctor(userId, userName, firstName, lastName, email);
             }
         }
+
         return user;
     }
 
@@ -128,7 +149,14 @@ public class JsonObjectParser {
         return gson.toJson(heartSound);
     }
 
-
+    //Murmur Rating parsing
+    public static Collection<MurmurRating> getMurmurRatingListFromJsonString(String jsonString){
+        if(jsonString == null || jsonString.isEmpty()){
+            return null;
+        }
+        Type type = new TypeToken<List<MurmurRating>>(){}.getType();
+        return gson.fromJson(jsonString, type);
+    }
     //Date Serializer
     private static class DateDeserializer implements JsonDeserializer<Date> {
 

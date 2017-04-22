@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,10 +25,14 @@ import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.google.gson.JsonObject;
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.controller.activities.PatientHeartSoundActivity;
 import com.head_first.aashi.heartsounds_20.enums.Gender;
@@ -42,8 +47,12 @@ import com.head_first.aashi.heartsounds_20.web_api.RequestQueueSingleton;
 import com.head_first.aashi.heartsounds_20.web_api.WebAPI;
 import com.head_first.aashi.heartsounds_20.web_api.WebAPIResponse;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -73,9 +82,9 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
      */
 
     public static final String PATIENT_FRAGMENT_TAG = "PATIENT_FRAGMENT";
+    private static final String DATE_FORMAT = "dd/MM/yyyy";
 
     //Data
-    private String dateOfBirthString;
     private List<String> selectedStudy; //this will be deleted. Instead of this the List<CHARACTER> from the MurmerRating object will be used
 
     //View
@@ -142,7 +151,6 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
 
         //if dateOfBirth has been set for the patient then initialize dateOfBirthString with that value
         //else
-        dateOfBirthString = getResources().getString(R.string.dateOfBirth);
         mDateOfBirth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -164,7 +172,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
         });
         mMultiStudySelectorListAdapter = new MultiSelectorListAdapter(getContext(), Arrays.asList(new String[]{"Study1","Study2","Study3","Study4","Study5"}),selectedStudy);
         //If Patient object is not null copy data from the Patient object into the views
-
+        setupViewsWithPatientData();
         makeViewsUneditable();
         return mRootView;
     }
@@ -177,6 +185,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
     @Override
     public void onResume(){
         ((PatientHeartSoundActivity)getActivity()).setActionBarTitle(PatientHeartSoundActivity.PATIENT);
+        ((PatientHeartSoundActivity)getActivity()).setupNavigationDrawerContent();
         super.onResume();
     }
 
@@ -245,6 +254,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
             case R.id.sharePatientItem:
                 break;
             case R.id.deleteItem:
+                deletePatient((int)((PatientHeartSoundActivity)getActivity()).getPatient().getPatientId());
                 break;
             case R.id.editItem:
                 editUserProfile();
@@ -271,19 +281,30 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
 
     @Override
     protected void saveChanges(){
-        editMode = false;
-        //Copy the data from the views into the models
-
-        makeViewsUneditable();
-        showActionBarMenuItems();
-        ((NavgigationDrawerUtils)getActivity()).enableNavigationMenu();
+        try {
+            //Copy the data from the views into the models
+            Patient patient = ((PatientHeartSoundActivity)getActivity()).getPatient();
+            patient.setDateOfBirth((new SimpleDateFormat(DATE_FORMAT)).parse(mDateOfBirth.getText().toString()));
+            patient.setGender(mGender.getText().toString());
+            editMode = false;
+            makeViewsUneditable();
+            showActionBarMenuItems();
+            ((NavgigationDrawerUtils)getActivity()).enableNavigationMenu();
+            updatePatient(patient);
+        } catch (ParseException e) {
+            //Incorrect date was entered show error and dont save
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void cancelChanges(){
         editMode = false;
         //Copy the data from the models into the Views
-
+        setupViewsWithPatientData();
+        setupViewsWithPatientData();
         makeViewsUneditable();
         showActionBarMenuItems();
         ((NavgigationDrawerUtils)getActivity()).enableNavigationMenu();
@@ -353,6 +374,18 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
         else{
             mDateOfBirth.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
         }
+    }
+
+    public void setupViewsWithPatientData(){
+        Patient patient = ((PatientHeartSoundActivity)getActivity()).getPatient();
+        if(patient == null){
+            getActivity().getSupportFragmentManager().popBackStack();
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        mPatientId.setText(patient.getPatientId() + "");
+        mDoctorDetails.setText(((PatientHeartSoundActivity)getActivity()).getUserName(patient.getPrimaryDoctorId()));
+        mDateOfBirth.setText(dateFormat.format(patient.getDateOfBirth()).toString());
+        mGender.setText(Gender.getGender(patient.getGender()).toString());
     }
 
     private void displayDatePickerDialogFragment(){
@@ -441,6 +474,17 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 mGenderRadioGroup.addView(radioButton);
             }
         }
+    }
+
+    private void launchWebAPIErrorFragment(){
+        Bundle bundle = new Bundle();
+        bundle.putString(WebAPIErrorFragment.WEB_API_ERROR_MESSAGE_TAG, webAPIResponse.getMessage());
+        WebAPIErrorFragment webAPIErrorFragment = WebAPIErrorFragment.newInstance();
+        webAPIErrorFragment.setArguments(bundle);
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.fragmentContainer, webAPIErrorFragment, WebAPIErrorFragment.WEB_API_ERROR_FRAGMENT_TAG)
+                .commit();
     }
 
     @Override
@@ -628,9 +672,10 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
     }
 
     @Override
-    public void createPatient(Patient patient) {
+    public void createPatient(Patient patient) throws JSONException {
         Toast.makeText(getContext(), getResources().getString(R.string.creatingPatient), Toast.LENGTH_SHORT).show();
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, WebAPI.PATIENT_BASE_URL , null,
+        JSONObject bodyParams = WebAPI.addCreatePatientParams(patient);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, WebAPI.PATIENT_BASE_URL , bodyParams,
                 new Response.Listener<JSONObject>(){
                     @Override
                     public void onResponse(JSONObject response) {
@@ -657,10 +702,10 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
             public Map<String, String> getHeaders() throws AuthFailureError {
                 return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
             }
-            @Override
-            protected Map<String, String> getParams() {
-                return WebAPI.addCreatePatientParams(null);//this fragment will contain a patient object which will then be passed
-            }
+//            @Override
+//            protected Map<String, String> getParams() {
+//                return WebAPI.addCreatePatientParams(null);//this fragment will contain a patient object which will then be passed
+//            }
             @Override
             protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
                 webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
@@ -685,9 +730,10 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
     }
 
     @Override
-    public void updatePatient(Patient patient) {
+    public void updatePatient(final Patient patient) throws JSONException {
         Toast.makeText(getContext(), getResources().getString(R.string.updatingPatient), Toast.LENGTH_SHORT).show();
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, WebAPI.PATIENT_BASE_URL , null,
+        JSONObject bodyParams = WebAPI.addUpdatePatientParams(patient);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, WebAPI.PATIENT_BASE_URL , bodyParams,
                 new Response.Listener<JSONObject>(){
                     @Override
                     public void onResponse(JSONObject response) {
@@ -697,6 +743,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
 
                         //recreate the webAPIResponse object with default values
                         webAPIResponse = new WebAPIResponse();
+                        Toast.makeText(getContext(), getResources().getString(R.string.patientUpdated), Toast.LENGTH_SHORT).show();
                     }
                 }, new Response.ErrorListener(){
 
@@ -704,8 +751,16 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
             public void onErrorResponse(VolleyError error) {
                 //update UI accordingly
 
+                //dismiss the progress dialog box
+                DialogBoxDisplayHandler.dismissProgressDialog();
                 //use the webAPIResponse to get message from server
-
+                if(webAPIResponse.getStatusCode().equals(ResponseStatusCode.UNAUTHORIZED)){
+                    SharedPreferencesManager.invalidateUserAccessToken(getActivity());
+                }
+                else{
+                    //Launch Web API Error Fragment
+                    launchWebAPIErrorFragment();
+                }
                 //recreate the webAPIResponse object with default values
                 webAPIResponse = new WebAPIResponse();
             }
@@ -715,13 +770,23 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
             }
             @Override
-            protected Map<String, String> getParams() {
-                return WebAPI.addUpdatePatientParams(null);//this fragment should contain a patient object which will be passed
-            }
-            @Override
             protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
-                return super.parseNetworkResponse(response);
+                try {
+                    String jsonString = new String(response.data,
+                            HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+
+                    JSONObject result = null;
+
+                    if (jsonString != null && jsonString.length() > 0)
+                        result = new JSONObject(jsonString);
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                    return Response.success(result,
+                            HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException e) {
+                    return Response.error(new ParseError(e));
+                } catch (JSONException je) {
+                    return Response.error(new ParseError(je));
+                }
             }
             @Override
             protected VolleyError parseNetworkError(VolleyError volleyError){
@@ -744,12 +809,13 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
     @Override
     public void deletePatient(int patientId) {
         Toast.makeText(getContext(), getResources().getString(R.string.deletingPatient), Toast.LENGTH_SHORT).show();
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, WebAPI.PATIENT_BASE_URL + "{Place Patient id here}" , null,
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, WebAPI.PATIENT_BASE_URL + patientId , null,
                 new Response.Listener<JSONObject>(){
                     @Override
                     public void onResponse(JSONObject response) {
                         //update UI accordingly
-
+                        Toast.makeText(getContext(), getResources().getString(R.string.patientDeleted), Toast.LENGTH_SHORT).show();
+                        getActivity().finish();
                         //use the webAPIResponse to get message from server
 
                         //recreate the webAPIResponse object with default values
@@ -762,7 +828,13 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 //update UI accordingly
 
                 //use the webAPIResponse to get message from server
-
+                if(webAPIResponse.getStatusCode().equals(ResponseStatusCode.UNAUTHORIZED)){
+                    SharedPreferencesManager.invalidateUserAccessToken(getActivity());
+                }
+                else{
+                    //Launch Web API Error Fragment
+                    launchWebAPIErrorFragment();
+                }
                 //recreate the webAPIResponse object with default values
                 webAPIResponse = new WebAPIResponse();
             }
@@ -773,8 +845,22 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
             }
             @Override
             protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
-                return super.parseNetworkResponse(response);
+                try {
+                    String jsonString = new String(response.data,
+                            HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+
+                    JSONObject result = null;
+
+                    if (jsonString != null && jsonString.length() > 0)
+                        result = new JSONObject(jsonString);
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                    return Response.success(result,
+                            HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException e) {
+                    return Response.error(new ParseError(e));
+                } catch (JSONException je) {
+                    return Response.error(new ParseError(je));
+                }
             }
             @Override
             protected VolleyError parseNetworkError(VolleyError volleyError){
@@ -794,5 +880,77 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
         RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
     }
 
+    @Override
+    public void getAllUsers() {
+        DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity());
+        StringRequest request = new StringRequest(Request.Method.GET, WebAPI.GET_ALL_USERS_URL,
+                new Response.Listener<String>(){
+                    @Override
+                    public void onResponse(String response) {
+                        //update UI accordingly
+//                        Collection<Patient> parsedResponse = JsonObjectParser.getPatientListFromJsonString(response.toString());
+//                        if(parsedResponse != null){
+//                            patientList = new ArrayList<>(parsedResponse);
+//                            if(displayState == PatientListFragment.DISPLAY_STATE.LIST_VIEW){
+//                                setupListView();
+//                            }
+//                            else{
+//                                setupExpandableListView();
+//                            }
+//                        }
+                        //use the webAPIResponse to get message from server
+
+                        //recreate the webAPIResponse object with default values
+                        webAPIResponse = new WebAPIResponse();
+                        //dismiss the progress dialog box
+                        DialogBoxDisplayHandler.dismissProgressDialog();
+                    }
+                }, new Response.ErrorListener(){
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //update UI accordingly
+
+                //dismiss the progress dialog box
+                DialogBoxDisplayHandler.dismissProgressDialog();
+                //use the webAPIResponse to get message from server
+                if(webAPIResponse.getStatusCode().equals(ResponseStatusCode.UNAUTHORIZED)){
+                    SharedPreferencesManager.invalidateUserAccessToken(getActivity());
+                }
+                else{
+                    //Launch Web API Error Fragment
+                    launchWebAPIErrorFragment();
+                }
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                return WebAPI.prepareAccessTokenHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
+            }
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                return super.parseNetworkResponse(response);
+            }
+            @Override
+            protected VolleyError parseNetworkError(VolleyError volleyError){
+                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
+                    String errorMessage = new String(volleyError.networkResponse.data);
+                    VolleyError error = new VolleyError(errorMessage);
+                    volleyError = error;
+                    webAPIResponse.setMessage(errorMessage);
+                    return volleyError;
+                }
+                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
+                webAPIResponse.setMessage("");
+                return volleyError;
+            }
+        };
+
+        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
+    }
     //--------------------------------------------------------------
 }

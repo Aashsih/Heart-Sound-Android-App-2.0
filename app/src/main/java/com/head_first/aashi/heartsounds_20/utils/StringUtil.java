@@ -29,6 +29,9 @@ public class StringUtil {
 
     public static <T> List<String> convertListToListOfString(List<T> collection){
         List<String> stringCollection = new ArrayList<>();
+        if(collection == null){
+            return stringCollection;
+        }
         for(Object anObject : collection){
             stringCollection.add(anObject.toString());
         }
