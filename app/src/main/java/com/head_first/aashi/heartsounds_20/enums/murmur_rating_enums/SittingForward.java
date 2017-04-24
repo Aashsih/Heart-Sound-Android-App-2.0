@@ -10,7 +10,7 @@ import java.util.Map;
  */
 
 public enum SittingForward {
-    @SerializedName("Not Done")NOT_DONE("Not done"),
+    @SerializedName("Not Done")NOT_DONE("Not Done"),
     @SerializedName("Louder")LOUDER("Louder"),
     @SerializedName("Softer")SOFTER("Softer"),
     @SerializedName("No Change")NO_CHANGE("No Change");

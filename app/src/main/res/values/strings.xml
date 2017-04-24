@@ -60,7 +60,7 @@
     <string name="createdByLabel">Created By</string>
     <string name="genderLabel">Gender</string>
     <string name="gender">(not set)</string>
-    <string name="dateOfBirthLabel">Date Of Birth</string>
+    <string name="dateOfBirthLabel">Date Of Birth*</string>
     <string name="dateOfBirth">(not set)</string>
     <string name="visibleToStudentsLabel">Visible to Students</string>
     <string name="visibleToUsersLabel">Visible to</string>
@@ -147,7 +147,7 @@
     <string name="connectingToStethoscopeMessage">Connecting to Available Stethoscope</string>
     <string name="downloadingFromStethoscopeMessage">Downloading </string>
     <string name="uploadingToStethoscopeMessage">Uploading </string>
-
+    <string name="incorrectDateOfBirthMessage">Please select a Date of Birth</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

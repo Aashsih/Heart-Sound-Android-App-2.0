@@ -12,6 +12,10 @@ import java.util.Date;
 
 public final class Patient {
     private static String DATE_FORMAT = "yyyy-MM-dd'T'hh:mm:ss.SSS";
+    private static final int PRIMARY_DCOTOR_ID_LENGTH = 36;
+    private static final int PRIMARY_DCOTOR_ID_PARTS = 5;
+    private static final String PRIMARY_DCOTOR_ID_SEPARATOR = "-";
+
 
     private long patientId;
     private String primaryDoctorId;
@@ -22,6 +26,14 @@ public final class Patient {
     private boolean isPublic; //Public students are visible to Students
     private Date createdOn;
     private boolean isActive;
+
+    public Patient(String primaryDoctorId, String firstName, String lastName, Date dateOfBirth, String gender) throws ParseException {
+        this.setPrimaryDoctorId(primaryDoctorId);
+        this.setFirstName(firstName);
+        this.setLastName(lastName);
+        this.setDateOfBirth(dateOfBirth);
+        this.setGender(gender);
+    }
 
     //Getters
     public long getPatientId() {
@@ -61,18 +73,31 @@ public final class Patient {
     }
 
     public String getDateOfBirthInLocalDateTimeFormat(){
+        if(dateOfBirth == null){
+            return null;
+        }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT);
         return simpleDateFormat.format(dateOfBirth);
     }
 
     //Setters
+    public void setPrimaryDoctorId(String primaryDoctorId) {
+        boolean validPrimaryDoctorId = primaryDoctorId.length() == PRIMARY_DCOTOR_ID_LENGTH && (primaryDoctorId.split(PRIMARY_DCOTOR_ID_SEPARATOR).length == PRIMARY_DCOTOR_ID_PARTS);
+        if(validPrimaryDoctorId){
+            this.primaryDoctorId = primaryDoctorId;
+        }
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
     public void setDateOfBirth(Date dateOfBirth) throws ParseException {
-        if(dateOfBirth == null){
-            throw new InvalidDateOfBirthException("Please provide a valid Date Of Birth");
-        }
-        else{
-            this.dateOfBirth = dateOfBirth;
-        }
+        this.dateOfBirth = dateOfBirth;
     }
 
     public void setGender(String gender) {
@@ -86,11 +111,14 @@ public final class Patient {
     //To String
     @Override
     public String toString(){
-        if(!(lastName == null || lastName.isEmpty())){
+        if(lastName != null && !lastName.isEmpty()){
             return lastName.toUpperCase().charAt(0) + ". " + firstName;
         }
-        else{
+        else if((firstName != null && !firstName.isEmpty())){
             return firstName;
+        }
+        else{
+            return "Patient id: " + patientId;
         }
     }
 

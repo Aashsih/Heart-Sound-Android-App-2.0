@@ -216,6 +216,7 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
         // handling item selection
         switch (item.getItemId()) {
             case R.id.addPatientItem:
+                launchPatientHeartSoundActivityForNewPatient();
                 break;
             case R.id.filterPatientsItem:
                 launchFilterFragment();
@@ -357,6 +358,11 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
         startActivity(patientHeartSoundActivityIntent);
     }
 
+    private void launchPatientHeartSoundActivityForNewPatient(){
+        Intent patientHeartSoundActivityIntent = new Intent(getActivity(), PatientHeartSoundActivity.class);
+        startActivity(patientHeartSoundActivityIntent);
+    }
+
     private void launchWebAPIErrorFragment(){
         Bundle bundle = new Bundle();
         bundle.putString(WebAPIErrorFragment.WEB_API_ERROR_MESSAGE_TAG, webAPIResponse.getMessage());
@@ -490,6 +496,7 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
 
     //Request user details
     private void requestUserDetails() {
+        DialogBoxDisplayHandler.dismissProgressDialog();
         DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity());
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, WebAPI.GET_USER_INFO_URL, null,
                 new Response.Listener<JSONObject>(){

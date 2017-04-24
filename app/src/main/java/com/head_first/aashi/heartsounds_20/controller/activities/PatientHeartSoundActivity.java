@@ -55,11 +55,11 @@ import java.util.Map;
 //The edit option should only be visible if the user viewing is the one that created the data
 //When edit button is clicked the fields that can not be edited should be greyed out and
 //the ones that can be edited should be highlighted.
-//The save button for all the fragments in this activity should only be shown when the eidt button is clicked
+//The save button for all the fragments in this activity should only be shown when the edit button is clicked
 
 public class PatientHeartSoundActivity extends AppCompatActivity implements NavgigationDrawerUtils {
     //the PATIENT is made public because Android has some limitation right now
-    //and it doesnt change the actionbar title for the first attached fragment
+    //and it does not change the actionbar title for the first attached fragment
     public static final String PATIENT = "Patient";
     private static final String HEART_SOUND_PAGE_TITLE = "Heart Sound";
     private static final String MURMER_RATING_PAGE_TITLE = "Murmer Rating";
@@ -76,13 +76,6 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
     //Adapters
     NavigationDrawerContentListAdapter<String> navigationDrawerContentListAdapter;
 
-
-    //The user object will be used here, the user object will be passed
-    // to this activity from the previous one and will contain all the
-    //required data.
-    //For now, a List of String will be used to replicate the List of HeartSounds
-    //that the patient has and a HashMap<HearSound, List<MurmerRating>> to represent
-    //the murmer rating for each HeartSound
     //Data
     private Patient patient;
     private Map<String, User> userIdToUserMap;
@@ -98,9 +91,6 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         super.onCreate(savedInstanceState);
         if(getIntent() != null){
             patient = JsonObjectParser.getPatientFromJsonString(getIntent().getStringExtra(PATIENT));
-            if(patient == null){
-                finish();
-            }
         }
         setContentView(R.layout.activity_patient_heart_sound);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -115,7 +105,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         mAddNewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //do stuff here
+                onAddNewButtonClicked();
             }
         });
         //Launch the default Fragment
@@ -144,8 +134,12 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
     @Override
     public void onResume(){
         super.onResume();
-        setupNavigationDrawerContent();
-        getAllUsers();
+        if(patient == null){
+            disableNavigationMenu();
+        }
+        else{
+            getAllUsers();
+        }
     }
 
     @Override
@@ -192,6 +186,10 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         return patient;
     }
 
+    public void setPatient(Patient patient){
+        this.patient = patient;
+    }
+
     public String getUserName(String userId){
         if(userIdToUserMap == null){
             return null;
@@ -235,7 +233,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
                     mNavigationViewListContent.setAdapter(navigationDrawerContentListAdapter);
                 }
                 else{
-                    finish();
+                    //lock the navigation bar as a new HeartSound is being created
                 }
             }
             else{
@@ -388,7 +386,18 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
                 .commit();
     }
 
-    // Implementation for NavgigationDrawerUtils interface
+    private void onAddNewButtonClicked(){
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+        if(fragment instanceof PatientFragment){
+            //add new heart sound by launching the HeartSoundFragment
+
+        }
+        else{
+            //add new MurmurRating by launching the MurmurRating Fragment
+        }
+    }
+
+    // Implementation for NavigationDrawerUtils interface
     @Override
     public void disableNavigationMenu(){
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);

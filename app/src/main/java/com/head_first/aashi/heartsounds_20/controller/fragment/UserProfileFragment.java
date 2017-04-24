@@ -326,6 +326,7 @@ public class UserProfileFragment extends EditableFragment implements UserAPI{
     //User API Implementation and helper methods
     @Override
     public void requestUserDetails() {
+        DialogBoxDisplayHandler.dismissProgressDialog();
         DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity());
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, WebAPI.GET_USER_INFO_URL, null,
                 new Response.Listener<JSONObject>(){

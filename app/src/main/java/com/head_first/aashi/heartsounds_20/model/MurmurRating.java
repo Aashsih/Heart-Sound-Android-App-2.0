@@ -45,12 +45,21 @@ public final class MurmurRating {
     private Intensity Intensity;
     private String RatingInfo;
 
-    private CHARACTER Character;//this has 3 checkboxes..can the user select multiple checkboxes. If so we will use an array
+    private String Character;//this has 3 checkboxes..can the user select multiple checkboxes. If so we will use an array
     private Date CreatedOn;
     private boolean IsActive;
 
-    //Getters
+    public static Long getIdFromString(String murmurRatingString){
+        if(murmurRatingString == null){
+            return null;
+        }
+        else if(murmurRatingString.matches("Murmur Rating [0-9]+")){
+            return Long.parseLong(murmurRatingString.split(" ")[2]) - 1;
+        }
+        return null;
+    }
 
+    //Getters
     public long getMurmurRatingID() {
         return MurmurRatingID;
     }
@@ -119,7 +128,7 @@ public final class MurmurRating {
         return RatingInfo;
     }
 
-    public CHARACTER getCharacter() {
+    public String getCharacter() {
         return Character;
     }
 
@@ -131,9 +140,74 @@ public final class MurmurRating {
         return IsActive;
     }
 
+    //Setters
+    public void setCardiacPhase(com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.CardiacPhase cardiacPhase) {
+        CardiacPhase = cardiacPhase;
+    }
+
+    public void setAddedSounds(com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.AddedSounds addedSounds) {
+        AddedSounds = addedSounds;
+    }
+
+    public void setChangeWithBreathing(com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.ChangeWithBreathing changeWithBreathing) {
+        ChangeWithBreathing = changeWithBreathing;
+    }
+
+    public void setLeftLateralPosition(com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.LeftLateralPosition leftLateralPosition) {
+        LeftLateralPosition = leftLateralPosition;
+    }
+
+    public void setLocationMostIntense(MostIntenseLocation locationMostIntense) {
+        LocationMostIntense = locationMostIntense;
+    }
+
+    public void setDurationOfMurmur(MurmurDuration durationOfMurmur) {
+        DurationOfMurmur = durationOfMurmur;
+    }
+
+    public void setRadiation(com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.Radiation radiation) {
+        Radiation = radiation;
+    }
+
+    public void setS1(com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.S1 s1) {
+        S1 = s1;
+    }
+
+    public void setS2(com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.S2 s2) {
+        S2 = s2;
+    }
+
+    public void setSittingForward(com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.SittingForward sittingForward) {
+        SittingForward = sittingForward;
+    }
+
+    public void setValsalva(com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.Valsalva valsalva) {
+        Valsalva = valsalva;
+    }
+
+    public void setFinalDiagnosis(FinalDiagnosis finalDiagnosis) {
+        this.finalDiagnosis = finalDiagnosis;
+    }
+
+    public void setIntensity(com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.Intensity intensity) {
+        Intensity = intensity;
+    }
+
+    public void setRatingInfo(String ratingInfo) {
+        RatingInfo = ratingInfo;
+    }
+
+    public void setCharacter(String character) {
+        Character = character;
+    }
+
+    public void setActive(boolean active) {
+        IsActive = active;
+    }
+
     @Override
     public String toString(){
-        return "Murmur Rating " + (getHeartSoundID() + 1);
+        return "Murmur Rating " + (getMurmurRatingID() + 1);
     }
 
     /**

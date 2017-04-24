@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -40,6 +41,7 @@ import com.head_first.aashi.heartsounds_20.enums.web_api_enums.ResponseStatusCod
 import com.head_first.aashi.heartsounds_20.interfaces.util_interfaces.NavgigationDrawerUtils;
 import com.head_first.aashi.heartsounds_20.interfaces.web_api_interfaces.PatientAPI;
 import com.head_first.aashi.heartsounds_20.model.Patient;
+import com.head_first.aashi.heartsounds_20.utils.JsonObjectParser;
 import com.head_first.aashi.heartsounds_20.utils.MultiSelectorListAdapter;
 import com.head_first.aashi.heartsounds_20.utils.DialogBoxDisplayHandler;
 import com.head_first.aashi.heartsounds_20.utils.SharedPreferencesManager;
@@ -92,6 +94,8 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
     private View mRootView;
     private TextView mPatientId;
     private TextView mDoctorDetails;
+    private TextView mFirstName;
+    private TextView mLastName;
     private TextView mDateOfBirth;
     private TextView mGender;
     private TextView mStudyList;
@@ -141,6 +145,8 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
         mRootView = inflater.inflate(R.layout.fragment_patient, container, false);
         mPatientId = (TextView) mRootView.findViewById(R.id.patientId);
         mDoctorDetails = (TextView) mRootView.findViewById(R.id.doctorDetails);
+        mFirstName = (TextView) mRootView.findViewById(R.id.firstName);
+        mLastName = (TextView) mRootView.findViewById(R.id.lastName);
         mDateOfBirth = (TextView) mRootView.findViewById(R.id.dateOfBirth);
         //mDateOfBirth.setClickable(false);
         mGender = (TextView) mRootView.findViewById(R.id.genderText);
@@ -157,7 +163,18 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 displayDatePickerDialogFragment();
             }
         });
-
+        mFirstName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onFirstNameClicked();
+            }
+        });
+        mLastName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onLastNameClicked();
+            }
+        });
         mGender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -284,15 +301,29 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
         try {
             //Copy the data from the views into the models
             Patient patient = ((PatientHeartSoundActivity)getActivity()).getPatient();
-            patient.setDateOfBirth((new SimpleDateFormat(DATE_FORMAT)).parse(mDateOfBirth.getText().toString()));
-            patient.setGender(mGender.getText().toString());
+            String firstName = mFirstName.getText().toString();
+            String lastName = mLastName.getText().toString();
+            String dateOfBirthString = mDateOfBirth.getText().toString();
+            Date patientDateOfBirth = (new SimpleDateFormat(DATE_FORMAT)).parse(mDateOfBirth.getText().toString());
+            String patientGender = mGender.getText().toString();
             editMode = false;
             makeViewsUneditable();
             showActionBarMenuItems();
             ((NavgigationDrawerUtils)getActivity()).enableNavigationMenu();
-            updatePatient(patient);
+            if(patient == null){
+                patient = new Patient(SharedPreferencesManager.getActiveUserId(getActivity()), firstName, lastName, patientDateOfBirth, patientGender);
+                createPatient(patient);
+            }
+            else{
+                patient.setFirstName(firstName);
+                patient.setLastName(lastName);
+                patient.setDateOfBirth(patientDateOfBirth);
+                patient.setGender(mGender.getText().toString());
+                updatePatient(patient);
+            }
         } catch (ParseException e) {
-            //Incorrect date was entered show error and dont save
+            //Incorrect date was entered show error and do not save
+            mDateOfBirth.setError(getResources().getString(R.string.incorrectDateOfBirthMessage));
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -333,6 +364,8 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
     @Override
     protected void makeViewsEditable(){
         if(editMode){
+            mFirstName.setClickable(true);
+            mLastName.setClickable(true);
             mGender.setClickable(true);
             mStudyList.setClickable(true);
             mVisibleToStudents.setClickable(true);
@@ -343,6 +376,8 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
     @Override
     protected void makeViewsUneditable(){
         if(!editMode){
+            mFirstName.setClickable(false);
+            mLastName.setClickable(false);
             mGender.setClickable(false);
             mStudyList.setClickable(false);
             mVisibleToStudents.setClickable(false);
@@ -379,13 +414,18 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
     public void setupViewsWithPatientData(){
         Patient patient = ((PatientHeartSoundActivity)getActivity()).getPatient();
         if(patient == null){
-            getActivity().getSupportFragmentManager().popBackStack();
+            editMode = true;
+            makeViewsEditable();
         }
-        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-        mPatientId.setText(patient.getPatientId() + "");
-        mDoctorDetails.setText(((PatientHeartSoundActivity)getActivity()).getUserName(patient.getPrimaryDoctorId()));
-        mDateOfBirth.setText(dateFormat.format(patient.getDateOfBirth()).toString());
-        mGender.setText(Gender.getGender(patient.getGender()).toString());
+        else{
+            SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+            mPatientId.setText(patient.getPatientId() + "");
+            mDoctorDetails.setText(((PatientHeartSoundActivity)getActivity()).getUserName(patient.getPrimaryDoctorId()));
+            mFirstName.setText(patient.getFirstName());
+            mLastName.setText(patient.getLastName());
+            mDateOfBirth.setText(dateFormat.format(patient.getDateOfBirth()).toString());
+            mGender.setText(Gender.getGender(patient.getGender()).toString());
+        }
     }
 
     private void displayDatePickerDialogFragment(){
@@ -427,6 +467,54 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 .create()
                 .show();
 
+    }
+
+    private void onFirstNameClicked(){
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View enterTextDialog = (View)inflater.inflate(R.layout.dialog_enter_text, null);
+        new AlertDialog.Builder(getContext())
+                .setTitle(R.string.firstNameLabel)
+                .setCancelable(true)
+                .setView(enterTextDialog)
+                .setPositiveButton(R.string.positiveButtonOk, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EditText enteredText = (EditText) enterTextDialog.findViewById(R.id.enteredText);
+                        mFirstName.setText(enteredText.getText());
+                    }
+                })
+                .setNegativeButton(R.string.negativeButtonCancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .create()
+                .show();
+    }
+
+    private void onLastNameClicked(){
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View enterTextDialog = (View)inflater.inflate(R.layout.dialog_enter_text, null);
+        new AlertDialog.Builder(getContext())
+                .setTitle(R.string.lastNameLabel)
+                .setCancelable(true)
+                .setView(enterTextDialog)
+                .setPositiveButton(R.string.positiveButtonOk, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EditText enteredText = (EditText) enterTextDialog.findViewById(R.id.enteredText);
+                        mLastName.setText(enteredText.getText());
+                    }
+                })
+                .setNegativeButton(R.string.negativeButtonCancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .create()
+                .show();
     }
 
     private void displayGenderRadioGroupDialog(View view){
@@ -673,13 +761,16 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
 
     @Override
     public void createPatient(Patient patient) throws JSONException {
-        Toast.makeText(getContext(), getResources().getString(R.string.creatingPatient), Toast.LENGTH_SHORT).show();
+        DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity());
         JSONObject bodyParams = WebAPI.addCreatePatientParams(patient);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, WebAPI.PATIENT_BASE_URL , bodyParams,
                 new Response.Listener<JSONObject>(){
                     @Override
                     public void onResponse(JSONObject response) {
                         //update UI accordingly
+                        DialogBoxDisplayHandler.dismissProgressDialog();
+                        ((PatientHeartSoundActivity)(getActivity())).setPatient(JsonObjectParser.getPatientFromJsonString(response.toString()));
+                        setupViewsWithPatientData();
 
                         //use the webAPIResponse to get message from server
 
@@ -692,8 +783,16 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
             public void onErrorResponse(VolleyError error) {
                 //update UI accordingly
 
+                //dismiss the progress dialog box
+                DialogBoxDisplayHandler.dismissProgressDialog();
                 //use the webAPIResponse to get message from server
-
+                if(webAPIResponse.getStatusCode().equals(ResponseStatusCode.UNAUTHORIZED)){
+                    SharedPreferencesManager.invalidateUserAccessToken(getActivity());
+                }
+                else{
+                    //Launch Web API Error Fragment
+                    launchWebAPIErrorFragment();
+                }
                 //recreate the webAPIResponse object with default values
                 webAPIResponse = new WebAPIResponse();
             }
@@ -702,10 +801,6 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
             public Map<String, String> getHeaders() throws AuthFailureError {
                 return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
             }
-//            @Override
-//            protected Map<String, String> getParams() {
-//                return WebAPI.addCreatePatientParams(null);//this fragment will contain a patient object which will then be passed
-//            }
             @Override
             protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
                 webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
@@ -738,7 +833,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                     @Override
                     public void onResponse(JSONObject response) {
                         //update UI accordingly
-
+                        setupViewsWithPatientData();
                         //use the webAPIResponse to get message from server
 
                         //recreate the webAPIResponse object with default values

@@ -64,6 +64,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_below="@id/phaseOfCardiacCycleContainer"
+                android:visibility="gone"
                 style="@style/viewSeparation">
                 <TextView
                     android:id="@+id/intensityLabel"
@@ -464,7 +465,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_below="@id/sittingForwardContainer"
-                style="@style/viewSeparation">
+                style="@style/viewSeparation"
+                android:visibility="gone">
                 <TextView
                     android:id="@+id/finalDiagnosisLabel"
                     android:layout_width="0dp"

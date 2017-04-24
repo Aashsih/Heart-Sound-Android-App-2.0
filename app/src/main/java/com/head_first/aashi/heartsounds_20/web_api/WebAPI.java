@@ -200,10 +200,10 @@ public class WebAPI {
         return params;
     }
 
-    public static final HashMap<String, String> addCreateMurmurRatingParams(MurmurRating murmurRating){
-        HashMap<String, String> params = new HashMap<>();
+    public static final JSONObject addCreateMurmurRatingParams(MurmurRating murmurRating) throws JSONException {
+        JSONObject params = new JSONObject();
         params.put(DOCTOR_ID, murmurRating.getDoctorID());
-        params.put(HEARTSOUND_ID, new String("" + murmurRating.getHeartSoundID()));
+        params.put(HEARTSOUND_ID, murmurRating.getHeartSoundID());
         params.put(CARDIAC_PHASE, murmurRating.getCardiacPhase().toString());
         params.put(DURATION_OF_MURMUR, murmurRating.getDurationOfMurmur().toString());
         params.put(LOCATION_MOST_INTENSE, murmurRating.getLocationMostIntense().toString());
@@ -220,10 +220,9 @@ public class WebAPI {
         return params;
     }
 
-    public static final HashMap<String, String> addUpdateMurmurRatingParams(MurmurRating murmurRating){
-        HashMap<String, String> params = new HashMap<>();
-        params.put(MURMUR_RATING_ID, new String("" + murmurRating.getMurmurRatingID()));
-        params.putAll(addCreateMurmurRatingParams(murmurRating));
+    public static final JSONObject addUpdateMurmurRatingParams(MurmurRating murmurRating) throws JSONException {
+        JSONObject params = addCreateMurmurRatingParams(murmurRating);
+        params.put(MURMUR_RATING_ID, murmurRating.getMurmurRatingID());
         params.put(CREATED_ON, murmurRating.getCreatedOn().toString());
         params.put(IS_ACTIVE, new String("" + murmurRating.isActive()));
         return params;

@@ -20,9 +20,11 @@ import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.head_first.aashi.heartsounds_20.R;
@@ -44,6 +46,7 @@ import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.Valsalva;
 import com.head_first.aashi.heartsounds_20.enums.web_api_enums.ResponseStatusCode;
 import com.head_first.aashi.heartsounds_20.interfaces.web_api_interfaces.MurmurRatingAPI;
 import com.head_first.aashi.heartsounds_20.model.MurmurRating;
+import com.head_first.aashi.heartsounds_20.utils.JsonObjectParser;
 import com.head_first.aashi.heartsounds_20.utils.MultiSelectorListAdapter;
 import com.head_first.aashi.heartsounds_20.utils.DialogBoxDisplayHandler;
 import com.head_first.aashi.heartsounds_20.utils.SharedPreferencesManager;
@@ -52,8 +55,10 @@ import com.head_first.aashi.heartsounds_20.web_api.WebAPI;
 import com.head_first.aashi.heartsounds_20.web_api.WebAPIResponse;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -80,7 +85,7 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
     //TextViews
     private TextView mSelectedCharacters;
     private TextView mPhaseOfCardiacCycleText;
-    private TextView mIntensityText;
+    //private TextView mIntensityText;
     private TextView mMurmerDurationText;
     private TextView mMostIntenseLocationText;
     private TextView mRadiationText;
@@ -92,11 +97,11 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
     private TextView mValsalvaText;
     private TextView mLeftLateralPositionText;
     private TextView mSittingForwardText;
-    private TextView mFinalDiagnosisText;
+    //private TextView mFinalDiagnosisText;
 
     //Spinners
     private Spinner mPhaseOfCardiacCycleSpinner;
-    private Spinner mIntensitySpinner;
+    //private Spinner mIntensitySpinner;
     private Spinner mMurmerDurationSpinner;
     private Spinner mMostIntenseLocationSpinner;
     private Spinner mRadiationSpinner;
@@ -108,7 +113,7 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
     private Spinner mValsalvaSpinner;
     private Spinner mLeftLateralPositionSpinner;
     private Spinner mSittingForwardSpinner;
-    private Spinner mFinalDiagnosisSpinner;
+    //private Spinner mFinalDiagnosisSpinner;
 
     //ListView
     private ListView mCharacterSelector;
@@ -131,8 +136,9 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
     private MultiSelectorListAdapter mMultiCharacterSelectorListAdapter;
 
     //Data
-    private int selectedMurmerRatingPosition;
-    private List<CHARACTER> selectedCharacters; //this will be deleted. Instead of this the List<CHARACTER> from the MurmerRating object will be used
+    private Integer selectedMurmerRatingPosition;
+    private List<CHARACTER> selectedCharacters;
+    private MurmurRating murmurRating;
 
     //Web API
     WebAPIResponse webAPIResponse = new WebAPIResponse();
@@ -166,17 +172,21 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         Bundle arguments = getArguments();
-        if(arguments == null){
-            //throw an exception
+        if(arguments != null){
+            selectedMurmerRatingPosition = arguments.getInt(SELECTED_MURMER_RATING_TAG);
+            if(selectedMurmerRatingPosition == null){
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
         }
-        selectedMurmerRatingPosition = arguments.getInt(SELECTED_MURMER_RATING_TAG);
+        else{
+            getActivity().getSupportFragmentManager().popBackStack();
+        }
         mRootView = inflater.inflate(R.layout.fragment_murmer_rating, container, false);
         setUpTextViews();
         setUpSpinnersAndAdapters();
         //If MurmerRating object is not null copy data from the MurmerRating object into the views
         //else load default data
-        loadDefaultDataIntoViews();
-
+        //loadDefaultDataIntoViews();
         //makeViewsUneditable();
         return mRootView;
     }
@@ -190,6 +200,7 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
     public void onResume(){
         super.onResume();
         ((PatientHeartSoundActivity)getActivity()).setupNavigationDrawerContent();
+        requestMurmurRating(MurmurRating.getIdFromString(((PatientHeartSoundActivity)getActivity()).getSelectedMurmurRating(selectedMurmerRatingPosition)).intValue());
     }
 
     @Override
@@ -210,6 +221,46 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
      */
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void setupViewsWithMurmurRatingData(){
+        if(murmurRating == null){
+            getActivity().getSupportFragmentManager().popBackStack();
+        }
+        mSelectedCharacters.setText(murmurRating.getCharacter());
+        mPhaseOfCardiacCycleText.setText(murmurRating.getCardiacPhase().toString());
+        //mIntensityText.setText(murmurRating.getIntensity().toString());
+        mMurmerDurationText.setText(murmurRating.getDurationOfMurmur().toString());
+        mMostIntenseLocationText.setText(murmurRating.getLocationMostIntense().toString());
+        mRadiationText.setText(murmurRating.getRadiation().toString());
+        //mCharacterText.setText(murmurRating.get);
+        mAddedSoundsText.setText(murmurRating.getAddedSounds().toString());
+        mSOneText.setText(murmurRating.getS1().toString());
+        mSTwoText.setText(murmurRating.getS2().toString());
+        mChangeWithBreathingText.setText(murmurRating.getChangeWithBreathing().toString());
+        mValsalvaText.setText(murmurRating.getValsalva().toString());
+        mLeftLateralPositionText.setText(murmurRating.getLeftLateralPosition().toString());
+        mSittingForwardText.setText(murmurRating.getSittingForward().toString());
+        //mFinalDiagnosisText.setText(murmurRating.getFinalDiagnosis().toString());
+    }
+
+    private void copyUpdatedDataFromViews(){
+        if(murmurRating == null){
+            getActivity().getSupportFragmentManager().popBackStack();
+        }
+        murmurRating.setCardiacPhase(CardiacPhase.getCardiacPhase(mPhaseOfCardiacCycleSpinner.getSelectedItem().toString()));
+        murmurRating.setDurationOfMurmur(MurmurDuration.getMurmurDuration(mMurmerDurationSpinner.getSelectedItem().toString()));
+        murmurRating.setLocationMostIntense(MostIntenseLocation.getMostIntenseLocation(mMostIntenseLocationSpinner.getSelectedItem().toString()));
+        murmurRating.setRadiation(Radiation.getRadiation(mRadiationSpinner.getSelectedItem().toString()));
+        murmurRating.setCharacter(mCharacterText.getText().toString());
+        murmurRating.setAddedSounds(AddedSounds.getAddedSounds(mAddedSoundsSpinner.getSelectedItem().toString()));
+        murmurRating.setS1(S1.getSOne(mSOneSpinner.getSelectedItem().toString()));
+        murmurRating.setS2(S2.getSTwo(mSTwoSpinner.getSelectedItem().toString()));
+        murmurRating.setChangeWithBreathing(ChangeWithBreathing.getChangeWithBreathing(mChangeWithBreathingSpinner.getSelectedItem().toString()));
+        murmurRating.setValsalva(Valsalva.getValsalva(mValsalvaText.getText().toString()));
+        murmurRating.setLeftLateralPosition(LeftLateralPosition.getLeftLateralPosition(mLeftLateralPositionSpinner.getSelectedItem().toString()));
+        murmurRating.setSittingForward(SittingForward.getSittingForward(mSittingForwardSpinner.getSelectedItem().toString()));
+
     }
 
     @Override
@@ -282,21 +333,25 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
 
     @Override
     protected void saveChanges(){
-        editMode = false;
-        //Copy the data from the views into the models and make a PUT request to update the database
-
-        saveChangesFromSpinnerSelection();
-        hideEditableViews();
-        showNonEditableViews();
-        makeViewsUneditable();
-        showActionBarMenuItems();
+        try {
+            editMode = false;
+            //Copy the data from the views into the models and make a PUT request to update the database
+            copyUpdatedDataFromViews();
+            hideEditableViews();
+            showNonEditableViews();
+            makeViewsUneditable();
+            showActionBarMenuItems();
+            updateMurmurRating(murmurRating);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void cancelChanges(){
         editMode = false;
         //Copy the data from the models into the Views
-
+        setupViewsWithMurmurRatingData();
         hideEditableViews();
         showNonEditableViews();
         makeViewsUneditable();
@@ -349,7 +404,7 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
     protected void showEditableViews(){
         if(editMode){
             mPhaseOfCardiacCycleSpinner.setVisibility(View.VISIBLE);
-            mIntensitySpinner.setVisibility(View.VISIBLE);
+            //mIntensitySpinner.setVisibility(View.VISIBLE);
             mMurmerDurationSpinner.setVisibility(View.VISIBLE);
             mMostIntenseLocationSpinner.setVisibility(View.VISIBLE);
             mRadiationSpinner.setVisibility(View.VISIBLE);
@@ -360,7 +415,7 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
             mValsalvaSpinner.setVisibility(View.VISIBLE);
             mLeftLateralPositionSpinner.setVisibility(View.VISIBLE);
             mSittingForwardSpinner.setVisibility(View.VISIBLE);
-            mFinalDiagnosisSpinner.setVisibility(View.VISIBLE);
+            //mFinalDiagnosisSpinner.setVisibility(View.VISIBLE);
         }
     }
 
@@ -368,7 +423,7 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
     protected void showNonEditableViews(){
         if(!editMode){
             mPhaseOfCardiacCycleText.setVisibility(View.VISIBLE);
-            mIntensityText.setVisibility(View.VISIBLE);
+            //mIntensityText.setVisibility(View.VISIBLE);
             mMurmerDurationText.setVisibility(View.VISIBLE);
             mMostIntenseLocationText.setVisibility(View.VISIBLE);
             mRadiationText.setVisibility(View.VISIBLE);
@@ -380,7 +435,7 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
             mValsalvaText.setVisibility(View.VISIBLE);
             mLeftLateralPositionText.setVisibility(View.VISIBLE);
             mSittingForwardText.setVisibility(View.VISIBLE);
-            mFinalDiagnosisText.setVisibility(View.VISIBLE);
+            //mFinalDiagnosisText.setVisibility(View.VISIBLE);
         }
     }
 
@@ -388,7 +443,7 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
     protected void hideNonEditableViews(){
         if(editMode){
             mPhaseOfCardiacCycleText.setVisibility(View.GONE);
-            mIntensityText.setVisibility(View.GONE);
+            //mIntensityText.setVisibility(View.GONE);
             mMurmerDurationText.setVisibility(View.GONE);
             mMostIntenseLocationText.setVisibility(View.GONE);
             mRadiationText.setVisibility(View.GONE);
@@ -400,7 +455,7 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
             mValsalvaText.setVisibility(View.GONE);
             mLeftLateralPositionText.setVisibility(View.GONE);
             mSittingForwardText.setVisibility(View.GONE);
-            mFinalDiagnosisText.setVisibility(View.GONE);
+            //mFinalDiagnosisText.setVisibility(View.GONE);
         }
     }
 
@@ -408,7 +463,7 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
     protected void hideEditableViews(){
         if(!editMode){
             mPhaseOfCardiacCycleSpinner.setVisibility(View.GONE);
-            mIntensitySpinner.setVisibility(View.GONE);
+            //mIntensitySpinner.setVisibility(View.GONE);
             mMurmerDurationSpinner.setVisibility(View.GONE);
             mMostIntenseLocationSpinner.setVisibility(View.GONE);
             mRadiationSpinner.setVisibility(View.GONE);
@@ -419,12 +474,13 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
             mValsalvaSpinner.setVisibility(View.GONE);
             mLeftLateralPositionSpinner.setVisibility(View.GONE);
             mSittingForwardSpinner.setVisibility(View.GONE);
-            mFinalDiagnosisSpinner.setVisibility(View.GONE);        }
+            //mFinalDiagnosisSpinner.setVisibility(View.GONE);
+        }
     }
 
     private void copyDataFromTextViewToSpinner(){
         mPhaseOfCardiacCycleSpinner.setSelection(mPhaseOfCardiacCycleSpinnerAdapter.getPosition(CardiacPhase.getCardiacPhase(mPhaseOfCardiacCycleText.getText().toString())));
-        mIntensitySpinner.setSelection(mIntensitySpinnerAdapter.getPosition(Intensity.getIntensity(mIntensityText.getText().toString())));
+        //mIntensitySpinner.setSelection(mIntensitySpinnerAdapter.getPosition(Intensity.getIntensity(mIntensityText.getText().toString())));
         mMurmerDurationSpinner.setSelection(mMurmerDurationSpinnerAdapter.getPosition(MurmurDuration.getMurmurDuration(mMurmerDurationText.getText().toString())));
         mMostIntenseLocationSpinner.setSelection(mMostIntenseLocationSpinnerAdapter.getPosition(MostIntenseLocation.getMostIntenseLocation(mMostIntenseLocationText.getText().toString())));;
         mRadiationSpinner.setSelection(mRadiationSpinnerAdapter.getPosition(Radiation.getRadiation(mRadiationText.getText().toString())));;
@@ -435,20 +491,12 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
         mValsalvaSpinner.setSelection(mValsalvaSpinnerAdapter.getPosition(Valsalva.getValsalva(mValsalvaText.getText().toString())));;
         mLeftLateralPositionSpinner.setSelection(mLeftLateralPositionSpinnerAdapter.getPosition(LeftLateralPosition.getLeftLateralPosition(mLeftLateralPositionText.getText().toString())));;
         mSittingForwardSpinner.setSelection(mSittingForwardSpinnerAdapter.getPosition(SittingForward.getSittingForward(mSittingForwardText.getText().toString())));;
-        mFinalDiagnosisSpinner.setSelection(mFinalDiagnosisSpinnerAdapter.getPosition(FinalDiagnosis.getFinalDiagnosis(mFinalDiagnosisText.getText().toString())));;
-    }
-
-    private void saveChangesFromSpinnerSelection(){
-        //copy the data to the models and then make a PUT request to the database
-
-        //copy the data from the models to the text views
-        //the method to do the above will be used in the onCreateView as well
-
+        //mFinalDiagnosisSpinner.setSelection(mFinalDiagnosisSpinnerAdapter.getPosition(FinalDiagnosis.getFinalDiagnosis(mFinalDiagnosisText.getText().toString())));;
     }
 
     private void setUpTextViews(){
         mPhaseOfCardiacCycleText = (TextView) mRootView.findViewById(R.id.phaseOfCardiacCycleText);
-        mIntensityText = (TextView) mRootView.findViewById(R.id.intensityText);
+        //mIntensityText = (TextView) mRootView.findViewById(R.id.intensityText);
         mMurmerDurationText = (TextView) mRootView.findViewById(R.id.murmerDurationText);
         mMostIntenseLocationText = (TextView) mRootView.findViewById(R.id.mostIntenseLocationText);
         mRadiationText = (TextView) mRootView.findViewById(R.id.radiationText);
@@ -459,7 +507,7 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
         mValsalvaText = (TextView) mRootView.findViewById(R.id.valsalvaText);
         mLeftLateralPositionText = (TextView) mRootView.findViewById(R.id.leftLateralPositionText);
         mSittingForwardText = (TextView) mRootView.findViewById(R.id.sittingForwardText);
-        mFinalDiagnosisText = (TextView) mRootView.findViewById(R.id.finalDiagnosisText);
+        //mFinalDiagnosisText = (TextView) mRootView.findViewById(R.id.finalDiagnosisText);
         mCharacterText = (TextView) mRootView.findViewById(R.id.murmerDurationText);
         mSelectedCharacters = (TextView) mRootView.findViewById(R.id.selectedCharacters);
         mSelectedCharacters.setOnClickListener(new View.OnClickListener() {
@@ -479,10 +527,10 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
         mPhaseOfCardiacCycleSpinner.setAdapter(mPhaseOfCardiacCycleSpinnerAdapter);
 
         //Intensity
-        mIntensitySpinner = (Spinner) mRootView.findViewById(R.id.intensitySpinner);
-        mIntensitySpinnerAdapter = new ArrayAdapter<Intensity>(getContext(), android.R.layout.simple_spinner_item, Intensity.values());
+        //mIntensitySpinner = (Spinner) mRootView.findViewById(R.id.intensitySpinner);
+        //mIntensitySpinnerAdapter = new ArrayAdapter<Intensity>(getContext(), android.R.layout.simple_spinner_item, Intensity.values());
         //mPhaseOfCardiacCycleSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mIntensitySpinner.setAdapter(mIntensitySpinnerAdapter);
+        //mIntensitySpinner.setAdapter(mIntensitySpinnerAdapter);
 
         //Murmer Duration
         mMurmerDurationSpinner = (Spinner) mRootView.findViewById(R.id.murmerDurationSpinner);
@@ -546,10 +594,10 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
         mSittingForwardSpinner.setAdapter(mSittingForwardSpinnerAdapter);
 
         //Final Diagnosis
-        mFinalDiagnosisSpinner = (Spinner) mRootView.findViewById(R.id.finalDiagnosisSpinner);
+        //mFinalDiagnosisSpinner = (Spinner) mRootView.findViewById(R.id.finalDiagnosisSpinner);
         mFinalDiagnosisSpinnerAdapter = new ArrayAdapter<FinalDiagnosis>(getContext(), android.R.layout.simple_spinner_item, FinalDiagnosis.values());
         //mPhaseOfCardiacCycleSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mFinalDiagnosisSpinner.setAdapter(mFinalDiagnosisSpinnerAdapter);
+        //mFinalDiagnosisSpinner.setAdapter(mFinalDiagnosisSpinnerAdapter);
 
         //Character Adapter Setup
         mMultiCharacterSelectorListAdapter = new MultiSelectorListAdapter(getContext(), Arrays.asList(CHARACTER.values()),selectedCharacters);
@@ -558,7 +606,7 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
     private void loadDefaultDataIntoViews(){
 
         mPhaseOfCardiacCycleText.setText(mPhaseOfCardiacCycleSpinner.getSelectedItem().toString());
-        mIntensityText.setText(mIntensitySpinner.getSelectedItem().toString());
+        //mIntensityText.setText(mIntensitySpinner.getSelectedItem().toString());
         mMurmerDurationText.setText(mMurmerDurationSpinner.getSelectedItem().toString());
         mMostIntenseLocationText.setText(mMostIntenseLocationSpinner.getSelectedItem().toString());
         mRadiationText.setText(mRadiationSpinner.getSelectedItem().toString());
@@ -569,7 +617,7 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
         mValsalvaText.setText(mValsalvaSpinner.getSelectedItem().toString());
         mLeftLateralPositionText.setText(mLeftLateralPositionSpinner.getSelectedItem().toString());
         mSittingForwardText.setText(mSittingForwardSpinner.getSelectedItem().toString());
-        mFinalDiagnosisText.setText(mFinalDiagnosisSpinner.getSelectedItem().toString());
+        //mFinalDiagnosisText.setText(mFinalDiagnosisSpinner.getSelectedItem().toString());
 
     }
 
@@ -597,6 +645,17 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
                 .create()
                 .show();
 
+    }
+
+    private void launchWebAPIErrorFragment(){
+        Bundle bundle = new Bundle();
+        bundle.putString(WebAPIErrorFragment.WEB_API_ERROR_MESSAGE_TAG, webAPIResponse.getMessage());
+        WebAPIErrorFragment webAPIErrorFragment = WebAPIErrorFragment.newInstance();
+        webAPIErrorFragment.setArguments(bundle);
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.fragmentContainer, webAPIErrorFragment, WebAPIErrorFragment.WEB_API_ERROR_FRAGMENT_TAG)
+                .commit();
     }
 
     @Override
@@ -663,13 +722,15 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
 
     @Override
     public void requestMurmurRating(int murmurRatingId) {
-        DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity(), getResources().getString(R.string.retrievingMurmurRating));
+        DialogBoxDisplayHandler.dismissProgressDialog();
+        DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity());
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, WebAPI.MURMUR_RATING_BASE_URL + murmurRatingId, null,
                 new Response.Listener<JSONObject>(){
                     @Override
                     public void onResponse(JSONObject response) {
                         //update UI accordingly
-
+                        murmurRating = JsonObjectParser.getMurmurRatingFromJsonString(response.toString());
+                        setupViewsWithMurmurRatingData();
                         //use the webAPIResponse to get message from server
 
                         //recreate the webAPIResponse object with default values
@@ -684,12 +745,18 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
             public void onErrorResponse(VolleyError error) {
                 //update UI accordingly
 
-                //use the webAPIResponse to get message from server
-
-                //recreate the webAPIResponse object with default values
-                webAPIResponse = new WebAPIResponse();
                 //dismiss the progress dialog box
                 DialogBoxDisplayHandler.dismissProgressDialog();
+                //use the webAPIResponse to get message from server
+                if(webAPIResponse.getStatusCode().equals(ResponseStatusCode.UNAUTHORIZED)){
+                    SharedPreferencesManager.invalidateUserAccessToken(getActivity());
+                }
+                else{
+                    //Launch Web API Error Fragment
+                    launchWebAPIErrorFragment();
+                }
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
             }
         }){
             @Override
@@ -720,8 +787,9 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
     }
 
     @Override
-    public void createMurmurRating(MurmurRating murmurRating) {
+    public void createMurmurRating(MurmurRating murmurRating) throws JSONException {
         Toast.makeText(getContext(), getResources().getString(R.string.creatingMurmurRating), Toast.LENGTH_SHORT).show();
+        JSONObject bodyParams = WebAPI.addCreateMurmurRatingParams(murmurRating);
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.POST, WebAPI.MURMUR_RATING_BASE_URL, null,
                 new Response.Listener<JSONArray>(){
                     @Override
@@ -751,7 +819,7 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
             }
             @Override
             protected Map<String, String> getParams() {
-                return WebAPI.addCreateMurmurRatingParams(null);//this fragment will have a HeartSound object which will then be passed
+                return null;//this fragment will have a HeartSound object which will then be passed
             }
             @Override
             protected Response<JSONArray> parseNetworkResponse(NetworkResponse response) {
@@ -779,14 +847,15 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
     }
 
     @Override
-    public void updateMurmurRating(MurmurRating murmurRating) {
+    public void updateMurmurRating(MurmurRating murmurRating) throws JSONException {
         DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity(), getResources().getString(R.string.updatingMurmurRating));
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, WebAPI.MURMUR_RATING_BASE_URL, null,
+        JSONObject bodyParams = WebAPI.addUpdateMurmurRatingParams(murmurRating);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, WebAPI.MURMUR_RATING_BASE_URL, bodyParams,
                 new Response.Listener<JSONObject>(){
                     @Override
                     public void onResponse(JSONObject response) {
                         //update UI accordingly
-
+                        setupViewsWithMurmurRatingData();
                         //use the webAPIResponse to get message from server
 
                         //recreate the webAPIResponse object with default values
@@ -801,12 +870,18 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
             public void onErrorResponse(VolleyError error) {
                 //update UI accordingly
 
-                //use the webAPIResponse to get message from server
-
-                //recreate the webAPIResponse object with default values
-                webAPIResponse = new WebAPIResponse();
                 //dismiss the progress dialog box
                 DialogBoxDisplayHandler.dismissProgressDialog();
+                //use the webAPIResponse to get message from server
+                if(webAPIResponse.getStatusCode().equals(ResponseStatusCode.UNAUTHORIZED)){
+                    SharedPreferencesManager.invalidateUserAccessToken(getActivity());
+                }
+                else{
+                    //Launch Web API Error Fragment
+                    launchWebAPIErrorFragment();
+                }
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
             }
         }){
             @Override
@@ -814,13 +889,23 @@ public class MurmerRatingFragment extends EditableFragment implements MurmurRati
                 return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
             }
             @Override
-            protected Map<String, String> getParams() {
-                return WebAPI.addUpdateMurmurRatingParams(null);//this fragment will have a HeartSound object which will then be passed
-            }
-            @Override
             protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
-                return super.parseNetworkResponse(response);
+                try {
+                    String jsonString = new String(response.data,
+                            HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+
+                    JSONObject result = null;
+
+                    if (jsonString != null && jsonString.length() > 0)
+                        result = new JSONObject(jsonString);
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                    return Response.success(result,
+                            HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException e) {
+                    return Response.error(new ParseError(e));
+                } catch (JSONException je) {
+                    return Response.error(new ParseError(je));
+                }
             }
             @Override
             protected VolleyError parseNetworkError(VolleyError volleyError){

@@ -44,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/createdByLabel"
-                android:layout_below="@id/patientIdLabel"
+                android:layout_below="@id/patientId"
                 android:layout_alignParentLeft="true"
                 style="@style/viewSeparation">
             </TextView>
@@ -58,17 +58,54 @@
             </TextView>
 
             <TextView
-                android:id="@+id/dateOfBirthLabel"
+                android:id="@+id/firstNameLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/dateOfBirthLabel"
+                android:text="@string/firstNameLabel"
                 android:layout_below="@id/doctorDetails"
                 android:layout_alignParentLeft="true"
                 style="@style/viewSeparation">
             </TextView>
             <TextView
+                android:id="@+id/firstName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/defaultEmptyString"
+                android:layout_below="@id/firstNameLabel"
+                android:layout_alignParentLeft="true">
+            </TextView>
+
+            <TextView
+                android:id="@+id/lastNameLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/lastNameLabel"
+                android:layout_below="@id/firstName"
+                android:layout_alignParentLeft="true"
+                style="@style/viewSeparation">
+            </TextView>
+            <TextView
+                android:id="@+id/lastName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/defaultEmptyString"
+                android:layout_below="@id/lastNameLabel"
+                android:layout_alignParentLeft="true">
+            </TextView>
+
+
+            <TextView
+                android:id="@+id/dateOfBirthLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dateOfBirthLabel"
+                android:layout_below="@id/lastName"
+                android:layout_alignParentLeft="true"
+                style="@style/viewSeparation">
+            </TextView>
+            <TextView
                 android:id="@+id/dateOfBirth"
-                android:text="@string/dateOfBirth"
+                android:hint="@string/dateOfBirth"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/dateOfBirthLabel"
@@ -96,7 +133,7 @@
                     android:id="@+id/genderText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/gender"
+                    android:hint="@string/gender"
                     android:layout_weight="1"
                     android:gravity="right"
                     android:scrollbars = "horizontal">
@@ -109,6 +146,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_below="@id/genderContainer"
+                android:visibility="gone"
                 style="@style/viewSeparation">
 
                 <TextView
@@ -139,6 +177,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/studyContainer"
                 android:layout_alignParentLeft="true"
+                android:visibility="gone"
                 style="@style/viewSeparation">
             </TextView>
             <Switch
@@ -148,6 +187,7 @@
                 android:layout_alignTop="@id/visibleToStudentsLabel"
                 android:layout_below="@id/dateOfBirth"
                 android:layout_alignParentRight="true"
+                android:visibility="gone"
                 style="@style/viewSeparation"/>
 
             <TextView
@@ -157,6 +197,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/visibleToStudentsLabel"
                 android:layout_alignParentLeft="true"
+                android:visibility="gone"
                 style="@style/viewSeparation">
             </TextView>
             <TextView
@@ -167,6 +208,7 @@
                 android:layout_alignTop="@id/visibleToUsersLabel"
                 android:layout_below="@id/visibleToStudentsLabel"
                 android:layout_alignParentRight="true"
+                android:visibility="gone"
                 style="@style/viewSeparation"/>
         </RelativeLayout>
     </ScrollView>

@@ -150,6 +150,14 @@ public class JsonObjectParser {
     }
 
     //Murmur Rating parsing
+    public static MurmurRating getMurmurRatingFromJsonString(String jsonString){
+        if(jsonString == null || jsonString.isEmpty()){
+            return null;
+        }
+        Type type = new TypeToken<MurmurRating>(){}.getType();
+        return gson.fromJson(jsonString, type);
+    }
+
     public static Collection<MurmurRating> getMurmurRatingListFromJsonString(String jsonString){
         if(jsonString == null || jsonString.isEmpty()){
             return null;

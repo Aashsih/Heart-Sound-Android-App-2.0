@@ -21,6 +21,9 @@ public enum Gender {
     }
 
     public static Gender getGender(String value){
+        if(value == null){
+            return Gender.OTHER;
+        }
         Gender gender = valueToGender.get(value);
         if(gender == null){
             switch (value){
