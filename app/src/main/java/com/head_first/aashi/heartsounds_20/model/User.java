@@ -1,10 +1,8 @@
 package com.head_first.aashi.heartsounds_20.model;
 
 import com.head_first.aashi.heartsounds_20.interfaces.model_interfaces.IUser;
-import com.head_first.aashi.heartsounds_20.web_api.WebAPI;
 
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * Created by Aashish Indorewala on 05-Nov-16.
@@ -12,6 +10,10 @@ import java.util.HashMap;
 
 
 public abstract class User implements IUser{
+    private static final int PRIMARY_USER_ID_LENGTH = 36;
+    private static final int PRIMARY_USER_ID_PARTS = 5;
+    private static final String PRIMARY_USER_ID_SEPARATOR = "-";
+
     private String id;
     private String accessToken;
     private String username;
@@ -21,6 +23,10 @@ public abstract class User implements IUser{
     private Date createdOn;
     private boolean isActive;
     private long userPermissionId;
+
+    public static boolean isValidUserId(String userId){
+        return userId.length() == PRIMARY_USER_ID_LENGTH && (userId.split(PRIMARY_USER_ID_SEPARATOR).length == PRIMARY_USER_ID_PARTS);
+    }
 
     public User(String id, String username, String firstName, String lastName, String email){
         this.id = id;

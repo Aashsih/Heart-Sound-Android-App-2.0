@@ -59,6 +59,11 @@ public final class MurmurRating {
         return null;
     }
 
+    public MurmurRating(String doctorID, long heartSoundID){
+        this.setDoctorID(doctorID);
+        this.setHeartSoundID(heartSoundID);
+    }
+
     //Getters
     public long getMurmurRatingID() {
         return MurmurRatingID;
@@ -141,6 +146,17 @@ public final class MurmurRating {
     }
 
     //Setters
+    public void setDoctorID(String doctorID) {
+        boolean validDoctorID = User.isValidUserId(doctorID);
+        if(validDoctorID){
+            this.DoctorID = doctorID;
+        }
+    }
+
+    public void setHeartSoundID(long heartSoundID) {
+        HeartSoundID = heartSoundID;
+    }
+
     public void setCardiacPhase(com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.CardiacPhase cardiacPhase) {
         CardiacPhase = cardiacPhase;
     }

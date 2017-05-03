@@ -1,7 +1,6 @@
 package com.head_first.aashi.heartsounds_20.controller.activities;
 
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -25,7 +23,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.controller.fragment.AudioRecordingFragment;
 import com.head_first.aashi.heartsounds_20.controller.fragment.HeartSoundFragment;
-import com.head_first.aashi.heartsounds_20.controller.fragment.MurmerRatingFragment;
+import com.head_first.aashi.heartsounds_20.controller.fragment.MurmurRatingFragment;
 import com.head_first.aashi.heartsounds_20.controller.fragment.PatientFragment;
 import com.head_first.aashi.heartsounds_20.controller.fragment.WebAPIErrorFragment;
 import com.head_first.aashi.heartsounds_20.enums.web_api_enums.ResponseStatusCode;
@@ -123,7 +121,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         else if(fragment instanceof HeartSoundFragment){
             mToolbar.setTitle(HEART_SOUND_PAGE_TITLE);
         }
-        else if(fragment instanceof MurmerRatingFragment){
+        else if(fragment instanceof MurmurRatingFragment){
             mToolbar.setTitle(MURMER_RATING_PAGE_TITLE);
         }
         else if(fragment instanceof AudioRecordingFragment){
@@ -137,9 +135,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         if(patient == null){
             disableNavigationMenu();
         }
-        else{
-            getAllUsers();
-        }
+        getAllUsers();
     }
 
     @Override
@@ -158,8 +154,8 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
     public void onBackPressed()
     {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-        if(fragment instanceof MurmerRatingFragment){
-            if(onBackPressedFromMurmurRatingFragment((MurmerRatingFragment) fragment)){
+        if(fragment instanceof MurmurRatingFragment){
+            if(onBackPressedFromMurmurRatingFragment((MurmurRatingFragment) fragment)){
                 return;
             }
 
@@ -218,15 +214,29 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         }
     }
 
+    public int addNewMurmurRatingToHeartSoundToMurmurRatingMap(String murmurRating){
+        int newMurmurRatingPosition = -1;
+        if(heartSoundToMurmurRating.containsKey(selectedHeartSound)){
+            boolean result = heartSoundToMurmurRating.get(selectedHeartSound).add(murmurRating);
+            if(result){
+                newMurmurRatingPosition = heartSoundToMurmurRating.get(selectedHeartSound).size() - 1;
+            }
+        }
+        else{
+            finish();
+        }
+        return newMurmurRatingPosition;
+    }
+
     public void setupNavigationDrawerContent(){
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         if(patient != null){
-            if(fragment instanceof HeartSoundFragment || fragment instanceof MurmerRatingFragment){
+            if(fragment instanceof HeartSoundFragment || fragment instanceof MurmurRatingFragment){
                 //Store a local copy of the active heart sound and then use that to fetch
                 //the murmur rating associated with it
                 if(heartSoundToMurmurRating.containsKey(selectedHeartSound)){//this condition should never be false
                     List<String> murmurRatings = heartSoundToMurmurRating.get(selectedHeartSound);
-                    if(murmurRatings == null || murmurRatings.isEmpty()){
+                    if(murmurRatings == null){
                         requestMurmurRatingsForHeartSound(selectedHeartSound.intValue());
                     }
                     navigationDrawerContentListAdapter = new NavigationDrawerContentListAdapter<>(getApplicationContext(), heartSoundToMurmurRating.get(selectedHeartSound));
@@ -278,7 +288,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         return false;
     }
 
-    private boolean onBackPressedFromMurmurRatingFragment(MurmerRatingFragment fragment){
+    private boolean onBackPressedFromMurmurRatingFragment(MurmurRatingFragment fragment){
         if(fragment.editModeEnabled()){
             fragment.cancelChanges();
             return true;
@@ -304,7 +314,8 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
     private void setUpData(){
         heartSoundToMurmurRating = new HashMap<>();
         for(String heartSoundId: heartSounds){
-            heartSoundToMurmurRating.put(HeartSound.getIdFromString(heartSoundId), new ArrayList<String>());
+            //heartSoundToMurmurRating.put(HeartSound.getIdFromString(heartSoundId), new ArrayList<String>());
+            heartSoundToMurmurRating.put(HeartSound.getIdFromString(heartSoundId), null);
         }
         //the following will be deleted later
 //        for(int i = 0; i < 10; i++) {
@@ -351,14 +362,13 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         //Launch MurmerRating Fragments here
         //To identify which MurmerRating was selected use the "selectedHeartSound" field like this
         // MurmerRating murmerRating = heartSoundToMurmurRating.get(selectedHeartSound);
-        MurmerRatingFragment murmerRatingFragment = MurmerRatingFragment.newInstance();
+        MurmurRatingFragment murmurRatingFragment = MurmurRatingFragment.newInstance();
         Bundle bundle = new Bundle();
-        bundle.putInt(MurmerRatingFragment.SELECTED_MURMER_RATING_TAG, position);
-        murmerRatingFragment.setArguments(bundle);
+        bundle.putInt(MurmurRatingFragment.SELECTED_MURMER_RATING_TAG, position);
+        murmurRatingFragment.setArguments(bundle);
         mDrawerLayout.closeDrawers();
-
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragmentContainer, murmerRatingFragment, MurmerRatingFragment.MURMER_RATING_FRAGMENT_TAG)
+                .replace(R.id.fragmentContainer, murmurRatingFragment, MurmurRatingFragment.MURMER_RATING_FRAGMENT_TAG)
                 .addToBackStack(null)
                 .commit();
 
@@ -394,6 +404,12 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         }
         else{
             //add new MurmurRating by launching the MurmurRating Fragment
+            mDrawerLayout.closeDrawers();
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentContainer, MurmurRatingFragment.newInstance(), MurmurRatingFragment.MURMER_RATING_FRAGMENT_TAG)
+                    .addToBackStack(null)
+                    .commit();
+
         }
     }
 
@@ -556,10 +572,10 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
     public void requestMurmurRatingsForHeartSound(int heartSoundId) {
         DialogBoxDisplayHandler.dismissProgressDialog();
         DialogBoxDisplayHandler.showIndefiniteProgressDialog(this);
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, WebAPI.GET_MURMUR_RATING_FOR_HEART_SOUND_URL + heartSoundId, null,
-                new Response.Listener<JSONArray>(){
+        StringRequest request = new StringRequest(Request.Method.GET, WebAPI.GET_MURMUR_RATING_FOR_HEART_SOUND_URL + heartSoundId,
+                new Response.Listener<String>(){
                     @Override
-                    public void onResponse(JSONArray response) {
+                    public void onResponse(String response) {
                         //update UI accordingly
                         DialogBoxDisplayHandler.dismissProgressDialog();
                         Collection<MurmurRating> murmurRatingCollection = JsonObjectParser.getMurmurRatingListFromJsonString(response.toString());
@@ -599,7 +615,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
                 return WebAPI.prepareAccessTokenHeader(SharedPreferencesManager.getUserAccessToken(PatientHeartSoundActivity.this));
             }
             @Override
-            protected Response<JSONArray> parseNetworkResponse(NetworkResponse response) {
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
                 webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
                 return super.parseNetworkResponse(response);
             }

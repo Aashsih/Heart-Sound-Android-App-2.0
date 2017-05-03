@@ -38,12 +38,18 @@ public class NavigationDrawerContentListAdapter<T> extends BaseAdapter{
 
     @Override
     public int getCount() {
-        return objects.size();
+        if(objects != null){
+            return objects.size();
+        }
+        return 0;
     }
 
     @Override
     public Object getItem(int position) {
-        return objects.get(position);
+        if(objects != null){
+            return objects.get(position);
+        }
+        return null;
     }
 
     @Override

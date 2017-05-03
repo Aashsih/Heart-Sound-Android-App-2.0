@@ -206,7 +206,7 @@ public class UserProfileFragment extends EditableFragment implements UserAPI{
                 break;
 
             case R.id.editItem:
-                editUserProfile();
+                editFragment();
                 break;
             case R.id.saveChangesItem:
                 saveChanges();
@@ -220,7 +220,7 @@ public class UserProfileFragment extends EditableFragment implements UserAPI{
 
     //Editable Fragment Method Implementations
     @Override
-    protected void editUserProfile(){
+    protected void editFragment(){
         editMode = true;
         hideNonEditableViews();
         showEditableViews();

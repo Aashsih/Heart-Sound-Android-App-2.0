@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,7 +32,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
-import com.google.gson.JsonObject;
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.controller.activities.PatientHeartSoundActivity;
 import com.head_first.aashi.heartsounds_20.enums.Gender;
@@ -274,7 +272,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 deletePatient((int)((PatientHeartSoundActivity)getActivity()).getPatient().getPatientId());
                 break;
             case R.id.editItem:
-                editUserProfile();
+                editFragment();
                 break;
             case R.id.refreshViewItem:
                 break;
@@ -289,38 +287,42 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
     }
 
     @Override
-    protected void editUserProfile(){
+    protected void editFragment(){
         editMode = true;
         makeViewsEditable();
         showActionBarMenuItems();
         ((NavgigationDrawerUtils)getActivity()).disableNavigationMenu();
     }
 
+    public Patient getUpdatedDataFromViewToModel() throws ParseException {
+        Patient patient = ((PatientHeartSoundActivity)getActivity()).getPatient();
+        if(patient == null){
+            patient = new Patient(SharedPreferencesManager.getActiveUserId(getActivity()));
+        }
+        patient.setDateOfBirth((new SimpleDateFormat(DATE_FORMAT)).parse(mDateOfBirth.getText().toString()));
+        patient.setGender(mGender.getText().toString());
+        patient.setFirstName(mFirstName.getText().toString());
+        patient.setLastName(mLastName.getText().toString());
+        return patient;
+    }
+
     @Override
     protected void saveChanges(){
         try {
             //Copy the data from the views into the models
-            Patient patient = ((PatientHeartSoundActivity)getActivity()).getPatient();
-            String firstName = mFirstName.getText().toString();
-            String lastName = mLastName.getText().toString();
-            String dateOfBirthString = mDateOfBirth.getText().toString();
-            Date patientDateOfBirth = (new SimpleDateFormat(DATE_FORMAT)).parse(mDateOfBirth.getText().toString());
-            String patientGender = mGender.getText().toString();
+            Patient patient = getUpdatedDataFromViewToModel();
             editMode = false;
             makeViewsUneditable();
             showActionBarMenuItems();
             ((NavgigationDrawerUtils)getActivity()).enableNavigationMenu();
-            if(patient == null){
-                patient = new Patient(SharedPreferencesManager.getActiveUserId(getActivity()), firstName, lastName, patientDateOfBirth, patientGender);
+            if(((PatientHeartSoundActivity)getActivity()).getPatient() == null){
                 createPatient(patient);
             }
             else{
-                patient.setFirstName(firstName);
-                patient.setLastName(lastName);
-                patient.setDateOfBirth(patientDateOfBirth);
-                patient.setGender(mGender.getText().toString());
                 updatePatient(patient);
             }
+            mDateOfBirth.setError(null);
+            mDateOfBirth.clearFocus();
         } catch (ParseException e) {
             //Incorrect date was entered show error and do not save
             mDateOfBirth.setError(getResources().getString(R.string.incorrectDateOfBirthMessage));
@@ -332,6 +334,9 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
 
     @Override
     public void cancelChanges(){
+        if(((PatientHeartSoundActivity)(getActivity())).getPatient() == null){
+            getActivity().finish();
+        }
         editMode = false;
         //Copy the data from the models into the Views
         setupViewsWithPatientData();

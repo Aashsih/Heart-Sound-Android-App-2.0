@@ -9,7 +9,7 @@ import android.support.v4.app.Fragment;
 public abstract class EditableFragment extends Fragment{
     protected boolean editMode;
 
-    protected abstract void editUserProfile();
+    protected abstract void editFragment();
     protected abstract void saveChanges();
     public abstract void cancelChanges();
     protected abstract void showEditableViews();

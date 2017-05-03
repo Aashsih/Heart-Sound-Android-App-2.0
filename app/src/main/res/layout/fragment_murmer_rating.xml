@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.head_first.aashi.heartsounds_20.controller.fragment.MurmerRatingFragment"
+    tools:context="com.head_first.aashi.heartsounds_20.controller.fragment.MurmurRatingFragment"
     style="@style/rootLayoutPadding">
 
     <!-- TODO: Update blank fragment layout -->

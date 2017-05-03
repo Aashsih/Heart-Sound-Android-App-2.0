@@ -12,10 +12,6 @@ import java.util.Date;
 
 public final class Patient {
     private static String DATE_FORMAT = "yyyy-MM-dd'T'hh:mm:ss.SSS";
-    private static final int PRIMARY_DCOTOR_ID_LENGTH = 36;
-    private static final int PRIMARY_DCOTOR_ID_PARTS = 5;
-    private static final String PRIMARY_DCOTOR_ID_SEPARATOR = "-";
-
 
     private long patientId;
     private String primaryDoctorId;
@@ -27,12 +23,8 @@ public final class Patient {
     private Date createdOn;
     private boolean isActive;
 
-    public Patient(String primaryDoctorId, String firstName, String lastName, Date dateOfBirth, String gender) throws ParseException {
+    public Patient(String primaryDoctorId){
         this.setPrimaryDoctorId(primaryDoctorId);
-        this.setFirstName(firstName);
-        this.setLastName(lastName);
-        this.setDateOfBirth(dateOfBirth);
-        this.setGender(gender);
     }
 
     //Getters
@@ -82,7 +74,7 @@ public final class Patient {
 
     //Setters
     public void setPrimaryDoctorId(String primaryDoctorId) {
-        boolean validPrimaryDoctorId = primaryDoctorId.length() == PRIMARY_DCOTOR_ID_LENGTH && (primaryDoctorId.split(PRIMARY_DCOTOR_ID_SEPARATOR).length == PRIMARY_DCOTOR_ID_PARTS);
+        boolean validPrimaryDoctorId = User.isValidUserId(primaryDoctorId);
         if(validPrimaryDoctorId){
             this.primaryDoctorId = primaryDoctorId;
         }
