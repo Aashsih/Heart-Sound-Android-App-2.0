@@ -152,8 +152,8 @@ public class WebAPI {
         return params;
     }
 
-    public static final HashMap<String, String> addShareUnsharePatientParams(String patientId, String doctorId){
-        HashMap<String, String> params = new HashMap<>();
+    public static final JSONObject addShareUnsharePatientParams(int patientId, String doctorId) throws JSONException {
+        JSONObject params = new JSONObject();
         params.put(PATIENT_ID_LOWER_CASE, patientId);
         params.put(DOCTOR_ID_LOWER_CASE, doctorId);
         return params;

@@ -11,23 +11,24 @@ import android.widget.CompoundButton;
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.CHARACTER;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Aashish Indorewala on 29-Jan-17.
  */
 
-public class MultiSelectorListAdapter<T extends Enum> extends BaseAdapter {
+public class MultiSelectorListAdapter extends BaseAdapter {
     private static final int LIST_ITEM_LAYOUT = R.layout.multi_selector_list_item;
 
     //Views and context
     private Context context;
 
     //Data
-    private List<Object> objects;
-    private List<Object> selectedObjects;
+    private List objects;
+    private List selectedObjects;
 
-    public MultiSelectorListAdapter(Context context, List<Object> objects, List<Object> selectedObjects){
+    public MultiSelectorListAdapter(Context context, List objects, List selectedObjects){
         if(context == null || objects == null || selectedObjects == null){
             //throw an exception
         }
@@ -35,7 +36,6 @@ public class MultiSelectorListAdapter<T extends Enum> extends BaseAdapter {
         this.objects = objects;
         this.selectedObjects = selectedObjects;
     }
-
 
     @Override
     public int getCount() {
@@ -60,12 +60,12 @@ public class MultiSelectorListAdapter<T extends Enum> extends BaseAdapter {
         }
         CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkbox);
         checkBox.setText(objects.get(position).toString());
-        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                MultiSelectorListAdapter.this.onCheckedChanged(buttonView, isChecked);
-            }
-        });
+//        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                MultiSelectorListAdapter.this.onCheckedChanged(buttonView, isChecked);
+//            }
+//        });
         if(selectedObjects.toString().toLowerCase().contains(objects.get(position).toString().toLowerCase())){
             checkBox.setChecked(true);
         }

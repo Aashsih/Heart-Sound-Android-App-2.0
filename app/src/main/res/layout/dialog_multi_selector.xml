@@ -4,12 +4,29 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/selectAllButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/selectAllButtonText"
+            />
+        <Button
+            android:id="@+id/deselectAllButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/deselectAllButtonText"/>
+    </LinearLayout>
+
     <ListView
         android:id="@+id/multiSelectorList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:focusable="true">
-
+        android:layout_height="wrap_content">
     </ListView>
 
 </LinearLayout>

@@ -5,6 +5,8 @@
     <string name="negativeButtonCancel">Cancel</string>
     <string name="positiveButtonYes">Yes</string>
     <string name="negativeButtonNo">No</string>
+    <string name="positiveButtonShare">Share</string>
+    <string name="negativeButtonHide">Hide</string>
     <string name="defaultSpinnerString">(not set)</string>
     <string name="defaultEmptyString">(empty)</string>
 
@@ -92,11 +94,18 @@
     <string name="finalDiagnosisLabel">Final Diagnosis:</string>
     <string name="saveMurmerRatingButtonText">Save Changes</string>
 
+    <!-- Multi Selector Dialog -->
+    <string name="selectAllButtonText">Select All</string>
+    <string name="deselectAllButtonText">Deselect All</string>
+
     <!-- Multi-Character Selector Dialog -->
     <string name="multipleCharacterSelectorDialogTitle">Characters</string>
 
-    <!-- Multi-Character Selector Dialog -->
+    <!-- Multi-Study Selector Dialog -->
     <string name="multipleStudySelectorDialogTitle">Study List</string>
+
+    <!-- Multi-Doctor Selector Dialog -->
+    <string name="multipleDoctorSelectorDialogTitle">Study List</string>
 
     <!-- Gender Selector Dialog -->
     <string name="genderSelectorDialogTitle">Gender</string>
@@ -144,6 +153,7 @@
     <string name="patientDeleted">Patient Deleted</string>
     <string name="deletingHeartSound">Updating Heart Sound</string>
     <string name="deletingMurmurRating">Deleting Murmur Rating</string>
+    <string name="deletingMurmurRatingFailed">Could not delete Murmur Rating</string>
     <string name="connectingToStethoscopeMessage">Connecting to Available Stethoscope</string>
     <string name="downloadingFromStethoscopeMessage">Downloading </string>
     <string name="uploadingToStethoscopeMessage">Uploading </string>

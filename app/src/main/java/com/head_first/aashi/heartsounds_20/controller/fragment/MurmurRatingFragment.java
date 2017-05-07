@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -104,7 +106,7 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
     //Spinners
     private Spinner mPhaseOfCardiacCycleSpinner;
     //private Spinner mIntensitySpinner;
-    private Spinner mMurmerDurationSpinner;
+    private Spinner mMurmurDurationSpinner;
     private Spinner mMostIntenseLocationSpinner;
     private Spinner mRadiationSpinner;
     //private Spinner mCharacterSpinner;
@@ -257,7 +259,7 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
                     ((PatientHeartSoundActivity)(getActivity())).getSelectedHeartSound());
         }
          murmurRating.setCardiacPhase(CardiacPhase.getCardiacPhase(mPhaseOfCardiacCycleSpinner.getSelectedItem().toString()));
-         murmurRating.setDurationOfMurmur(MurmurDuration.getMurmurDuration(mMurmerDurationSpinner.getSelectedItem().toString()));
+         murmurRating.setDurationOfMurmur(MurmurDuration.getMurmurDuration(mMurmurDurationSpinner.getSelectedItem().toString()));
          murmurRating.setLocationMostIntense(MostIntenseLocation.getMostIntenseLocation(mMostIntenseLocationSpinner.getSelectedItem().toString()));
          murmurRating.setRadiation(Radiation.getRadiation(mRadiationSpinner.getSelectedItem().toString()));
          murmurRating.setCharacter(mSelectedCharacters.getText().toString());
@@ -312,6 +314,9 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
         // handling item selection
         switch (item.getItemId()) {
             case R.id.deleteItem:
+                if(murmurRating != null){
+                    deleteMurmurRating((int)murmurRating.getMurmurRatingID());
+                }
                 break;
             case R.id.editItem:
                 editFragment();
@@ -381,7 +386,7 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
         if(editMode){
 //            mPhaseOfCardiacCycleSpinner.setEnabled(true);
 //            mIntensitySpinner.setEnabled(true);
-//            mMurmerDurationSpinner.setEnabled(true);
+//            mMurmurDurationSpinner.setEnabled(true);
 //            mMostIntenseLocationSpinner.setEnabled(true);
 //            mRadiationSpinner.setEnabled(true);
 //            //mCharacterSpinner.setEnabled(true);
@@ -402,7 +407,7 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
         if(!editMode){
 //            mPhaseOfCardiacCycleSpinner.setEnabled(false);
 //            mIntensitySpinner.setEnabled(false);
-//            mMurmerDurationSpinner.setEnabled(false);
+//            mMurmurDurationSpinner.setEnabled(false);
 //            mMostIntenseLocationSpinner.setEnabled(false);
 //            mRadiationSpinner.setEnabled(false);
 //            //mCharacterSpinner.setEnabled(false);
@@ -423,7 +428,7 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
         if(editMode){
             mPhaseOfCardiacCycleSpinner.setVisibility(View.VISIBLE);
             //mIntensitySpinner.setVisibility(View.VISIBLE);
-            mMurmerDurationSpinner.setVisibility(View.VISIBLE);
+            mMurmurDurationSpinner.setVisibility(View.VISIBLE);
             mMostIntenseLocationSpinner.setVisibility(View.VISIBLE);
             mRadiationSpinner.setVisibility(View.VISIBLE);
             mAddedSoundsSpinner.setVisibility(View.VISIBLE);
@@ -482,7 +487,7 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
         if(!editMode){
             mPhaseOfCardiacCycleSpinner.setVisibility(View.GONE);
             //mIntensitySpinner.setVisibility(View.GONE);
-            mMurmerDurationSpinner.setVisibility(View.GONE);
+            mMurmurDurationSpinner.setVisibility(View.GONE);
             mMostIntenseLocationSpinner.setVisibility(View.GONE);
             mRadiationSpinner.setVisibility(View.GONE);
             mAddedSoundsSpinner.setVisibility(View.GONE);
@@ -499,7 +504,7 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
     private void copyDataFromTextViewToSpinner(){
         mPhaseOfCardiacCycleSpinner.setSelection(mPhaseOfCardiacCycleSpinnerAdapter.getPosition(CardiacPhase.getCardiacPhase(mPhaseOfCardiacCycleText.getText().toString())));
         //mIntensitySpinner.setSelection(mIntensitySpinnerAdapter.getPosition(Intensity.getIntensity(mIntensityText.getText().toString())));
-        mMurmerDurationSpinner.setSelection(mMurmerDurationSpinnerAdapter.getPosition(MurmurDuration.getMurmurDuration(mMurmerDurationText.getText().toString())));
+        mMurmurDurationSpinner.setSelection(mMurmerDurationSpinnerAdapter.getPosition(MurmurDuration.getMurmurDuration(mMurmerDurationText.getText().toString())));
         mMostIntenseLocationSpinner.setSelection(mMostIntenseLocationSpinnerAdapter.getPosition(MostIntenseLocation.getMostIntenseLocation(mMostIntenseLocationText.getText().toString())));;
         mRadiationSpinner.setSelection(mRadiationSpinnerAdapter.getPosition(Radiation.getRadiation(mRadiationText.getText().toString())));;
         mAddedSoundsSpinner.setSelection(mAddedSoundsSpinnerAdapter.getPosition(AddedSounds.getAddedSounds(mAddedSoundsText.getText().toString())));;
@@ -551,10 +556,10 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
         //mIntensitySpinner.setAdapter(mIntensitySpinnerAdapter);
 
         //Murmer Duration
-        mMurmerDurationSpinner = (Spinner) mRootView.findViewById(R.id.murmerDurationSpinner);
+        mMurmurDurationSpinner = (Spinner) mRootView.findViewById(R.id.murmerDurationSpinner);
         mMurmerDurationSpinnerAdapter = new ArrayAdapter<MurmurDuration>(getContext(), android.R.layout.simple_spinner_item, MurmurDuration.values());
         //mPhaseOfCardiacCycleSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        mMurmerDurationSpinner.setAdapter(mMurmerDurationSpinnerAdapter);
+        mMurmurDurationSpinner.setAdapter(mMurmerDurationSpinnerAdapter);
 
         //Most Intense Location
         mMostIntenseLocationSpinner = (Spinner) mRootView.findViewById(R.id.mostIntenseLocationSpinner);
@@ -625,7 +630,7 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
 
         mPhaseOfCardiacCycleText.setText(mPhaseOfCardiacCycleSpinner.getSelectedItem().toString());
         //mIntensityText.setText(mIntensitySpinner.getSelectedItem().toString());
-        mMurmerDurationText.setText(mMurmerDurationSpinner.getSelectedItem().toString());
+        mMurmerDurationText.setText(mMurmurDurationSpinner.getSelectedItem().toString());
         mMostIntenseLocationText.setText(mMostIntenseLocationSpinner.getSelectedItem().toString());
         mRadiationText.setText(mRadiationSpinner.getSelectedItem().toString());
         mAddedSoundsText.setText(mAddedSoundsSpinner.getSelectedItem().toString());
@@ -642,8 +647,24 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
     private void displayCharactersDialog(View view){
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View characterSelectorDialog = (View)inflater.inflate(R.layout.dialog_multi_selector, null);
-
         mCharacterSelector = (ListView)characterSelectorDialog.findViewById(R.id.multiSelectorList);
+        Button selectAllButton = (Button) characterSelectorDialog.findViewById(R.id.selectAllButton);
+        selectAllButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectedCharacters.clear();
+                selectedCharacters.addAll(Arrays.asList(CHARACTER.values()));
+                mMultiCharacterSelectorListAdapter.notifyDataSetChanged();
+            }
+        });
+        Button deselectAllButton = (Button) characterSelectorDialog.findViewById(R.id.deselectAllButton);
+        deselectAllButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectedCharacters.clear();
+                mMultiCharacterSelectorListAdapter.notifyDataSetChanged();
+            }
+        });
         mCharacterSelector.setAdapter(mMultiCharacterSelectorListAdapter);
         new AlertDialog.Builder(getContext())
                 .setTitle(R.string.multipleCharacterSelectorDialogTitle)
@@ -739,7 +760,7 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
     }
 
     @Override
-    public void requestMurmurRating(int murmurRatingId) {
+    public void requestMurmurRating(final int murmurRatingId) {
         DialogBoxDisplayHandler.dismissProgressDialog();
         DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity());
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, WebAPI.MURMUR_RATING_BASE_URL + murmurRatingId, null,
@@ -749,6 +770,9 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
                         //update UI accordingly
                         murmurRating = JsonObjectParser.getMurmurRatingFromJsonString(response.toString());
                         setupViewsWithMurmurRatingData();
+                        if(!murmurRating.getDoctorID().equalsIgnoreCase(SharedPreferencesManager.getActiveUserId(getActivity()))){
+                            mActionBarMenu.findItem(R.id.deleteItem).setVisible(false);
+                        }
                         //use the webAPIResponse to get message from server
 
                         //recreate the webAPIResponse object with default values
@@ -957,14 +981,15 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
     }
 
     @Override
-    public void deleteMurmurRating(int murmurRatingId) {
+    public void deleteMurmurRating(final int murmurRatingId) {
         Toast.makeText(getContext(), getResources().getString(R.string.deletingMurmurRating), Toast.LENGTH_SHORT).show();
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.DELETE, WebAPI.MURMUR_RATING_BASE_URL + murmurRatingId, null,
-                new Response.Listener<JSONArray>(){
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.DELETE, WebAPI.MURMUR_RATING_BASE_URL + murmurRatingId, null,
+                new Response.Listener<JSONObject>(){
                     @Override
-                    public void onResponse(JSONArray response) {
+                    public void onResponse(JSONObject response) {
                         //update UI accordingly
-
+                        ((PatientHeartSoundActivity)getActivity()).deleteMurmurRatingFromHeartSoundToMurmurRatingMap(murmurRating);
+                        getActivity().getSupportFragmentManager().popBackStack();
                         //use the webAPIResponse to get message from server
 
                         //recreate the webAPIResponse object with default values
@@ -974,8 +999,9 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
 
             @Override
             public void onErrorResponse(VolleyError error) {
-                //update UI accordingly
 
+                //update UI accordingly
+                Toast.makeText(getContext(), getResources().getString(R.string.deletingMurmurRatingFailed), Toast.LENGTH_SHORT).show();
                 //use the webAPIResponse to get message from server
 
                 //recreate the webAPIResponse object with default values
@@ -987,9 +1013,23 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
                 return WebAPI.prepareAccessTokenHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
             }
             @Override
-            protected Response<JSONArray> parseNetworkResponse(NetworkResponse response) {
-                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
-                return super.parseNetworkResponse(response);
+            protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+                try {
+                    String jsonString = new String(response.data,
+                            HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+
+                    JSONObject result = null;
+
+                    if (jsonString != null && jsonString.length() > 0)
+                        result = new JSONObject(jsonString);
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                    return Response.success(result,
+                            HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException e) {
+                    return Response.error(new ParseError(e));
+                } catch (JSONException je) {
+                    return Response.error(new ParseError(je));
+                }
             }
             @Override
             protected VolleyError parseNetworkError(VolleyError volleyError){

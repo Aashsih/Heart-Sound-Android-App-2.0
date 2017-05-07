@@ -7,13 +7,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -39,6 +43,7 @@ import com.head_first.aashi.heartsounds_20.enums.web_api_enums.ResponseStatusCod
 import com.head_first.aashi.heartsounds_20.interfaces.util_interfaces.NavgigationDrawerUtils;
 import com.head_first.aashi.heartsounds_20.interfaces.web_api_interfaces.PatientAPI;
 import com.head_first.aashi.heartsounds_20.model.Patient;
+import com.head_first.aashi.heartsounds_20.model.User;
 import com.head_first.aashi.heartsounds_20.utils.JsonObjectParser;
 import com.head_first.aashi.heartsounds_20.utils.MultiSelectorListAdapter;
 import com.head_first.aashi.heartsounds_20.utils.DialogBoxDisplayHandler;
@@ -102,12 +107,18 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
     private Button mSavePatientButton;
     private ListView mStudyListSelector;
     private RadioGroup mGenderRadioGroup;
+    private ListView mDoctorListSelector;
 
     private DatePickerDialog mDatePickerDialog;
     private Calendar mCalendar;
 
     //Adapter
     private MultiSelectorListAdapter mMultiStudySelectorListAdapter;
+    private MultiSelectorListAdapter mDoctorListSelectorAdapter;
+
+    //Data
+    private List<User> selectedDoctors;
+    private List<User> allDoctors;
 
     //Web API
     WebAPIResponse webAPIResponse = new WebAPIResponse();
@@ -185,7 +196,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 displayStudyListDialog(view);
             }
         });
-        mMultiStudySelectorListAdapter = new MultiSelectorListAdapter(getContext(), Arrays.asList(new String[]{"Study1","Study2","Study3","Study4","Study5"}),selectedStudy);
+        //mMultiStudySelectorListAdapter = new MultiSelectorListAdapter(getContext(), Arrays.asList(new String[]{"Study1","Study2","Study3","Study4","Study5"}),selectedStudy);
         //If Patient object is not null copy data from the Patient object into the views
         setupViewsWithPatientData();
         makeViewsUneditable();
@@ -260,6 +271,13 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 }
             }
         }
+        Patient patient = ((PatientHeartSoundActivity)getActivity()).getPatient();
+        if(patient != null){
+            if(!patient.getPrimaryDoctorId().equalsIgnoreCase(SharedPreferencesManager.getActiveUserId(getActivity()))){
+                mActionBarMenu.findItem(R.id.deleteItem).setVisible(false);
+                mActionBarMenu.findItem(R.id.sharePatientItem).setVisible(false);
+            }
+        }
     }
 
     @Override
@@ -267,6 +285,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
         // handling item selection
         switch (item.getItemId()) {
             case R.id.sharePatientItem:
+                displayDoctorListDialog();
                 break;
             case R.id.deleteItem:
                 deletePatient((int)((PatientHeartSoundActivity)getActivity()).getPatient().getPatientId());
@@ -452,7 +471,23 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View studySelectorDialog = (View)inflater.inflate(R.layout.dialog_multi_selector, null);
         mStudyListSelector = (ListView) studySelectorDialog.findViewById(R.id.multiSelectorList);
-
+        Button selectAllButton = (Button) studySelectorDialog.findViewById(R.id.selectAllButton);
+        selectAllButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectedStudy.clear();
+                selectedStudy.addAll(Arrays.asList(new String[]{"Study1","Study2","Study3","Study4","Study5"}));
+                mMultiStudySelectorListAdapter.notifyDataSetChanged();
+            }
+        });
+        Button deselectAllButton = (Button) studySelectorDialog.findViewById(R.id.deselectAllButton);
+        deselectAllButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectedStudy.clear();
+                mMultiStudySelectorListAdapter.notifyDataSetChanged();
+            }
+        });
         mStudyListSelector.setAdapter(mMultiStudySelectorListAdapter);
         new AlertDialog.Builder(getContext())
                 .setTitle(R.string.multipleStudySelectorDialogTitle)
@@ -469,6 +504,83 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                         }
                     }
                 })
+                .create()
+                .show();
+
+    }
+
+    private void displayDoctorListDialog(){
+        if(allDoctors == null){
+            allDoctors = ((PatientHeartSoundActivity)getActivity()).getAllUserObjects();
+        }
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View doctorSelectorDialog = inflater.inflate(R.layout.dialog_multi_selector, null);
+        mDoctorListSelector = (ListView) doctorSelectorDialog.findViewById(R.id.multiSelectorList);
+        mDoctorListSelector.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkbox);
+                checkBox.setChecked(!checkBox.isChecked());
+                if(checkBox.isChecked()){
+                    selectedDoctors.add(allDoctors.get(position));
+                }
+                else{
+                    selectedDoctors.remove(allDoctors.get(position));
+                }
+            }
+        });
+        mDoctorListSelectorAdapter = new MultiSelectorListAdapter(getContext(),allDoctors, selectedDoctors = new ArrayList<>());
+        mDoctorListSelector.setAdapter(mDoctorListSelectorAdapter);
+        Button selectAllButton = (Button) doctorSelectorDialog.findViewById(R.id.selectAllButton);
+        selectAllButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectedDoctors.clear();
+                selectedDoctors.addAll(allDoctors);
+                mDoctorListSelectorAdapter.notifyDataSetChanged();
+            }
+        });
+        Button deselectAllButton = (Button) doctorSelectorDialog.findViewById(R.id.deselectAllButton);
+        deselectAllButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectedDoctors.clear();
+                mDoctorListSelectorAdapter.notifyDataSetChanged();
+            }
+        });
+        new AlertDialog.Builder(getContext())
+                .setTitle(R.string.multipleDoctorSelectorDialogTitle)
+                .setCancelable(false)
+                .setView(doctorSelectorDialog)
+                .setPositiveButton(R.string.positiveButtonShare, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(getContext(), getResources().getString(R.string.sharingPatient), Toast.LENGTH_SHORT).show();
+                        //share Patient
+                        for(User aDoctor : selectedDoctors){
+                            try {
+                                sharePatient(aDoctor.getId());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.negativeButtonHide, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(getContext(), getResources().getString(R.string.unsharingPatient), Toast.LENGTH_SHORT).show();
+                        //hide Patient
+                        for(User aDoctor : selectedDoctors){
+                            try {
+                                unSharePatient(aDoctor.getId());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                })
+                .setNeutralButton(R.string.negativeButtonCancel, null)
                 .create()
                 .show();
 
@@ -588,17 +700,13 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
     //--------------------------------------------------------------
     //Implementation for PatientAPI
     @Override
-    public void sharePatient(String doctorId) {
-        Toast.makeText(getContext(), getResources().getString(R.string.sharingPatient), Toast.LENGTH_SHORT).show();
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, WebAPI.ADD_DOCTOR_TO_PATIENT_URL, null,
+    public void sharePatient(String doctorId) throws JSONException {
+        //Toast.makeText(getContext(), getResources().getString(R.string.sharingPatient), Toast.LENGTH_SHORT).show();
+        JSONObject bodyParams = WebAPI.addShareUnsharePatientParams(((int)((PatientHeartSoundActivity)getActivity()).getPatient().getPatientId()), doctorId);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, WebAPI.ADD_DOCTOR_TO_PATIENT_URL, bodyParams,
                 new Response.Listener<JSONObject>(){
                     @Override
                     public void onResponse(JSONObject response) {
-                        //update UI accordingly
-
-                        //use the webAPIResponse to get message from server
-
-                        //recreate the webAPIResponse object with default values
                         webAPIResponse = new WebAPIResponse();
                     }
                 }, new Response.ErrorListener(){
@@ -608,7 +716,13 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 //update UI accordingly
 
                 //use the webAPIResponse to get message from server
-
+                if(webAPIResponse.getStatusCode().equals(ResponseStatusCode.UNAUTHORIZED)){
+                    SharedPreferencesManager.invalidateUserAccessToken(getActivity());
+                }
+                else{
+                    //Launch Web API Error Fragment
+                    launchWebAPIErrorFragment();
+                }
                 //recreate the webAPIResponse object with default values
                 webAPIResponse = new WebAPIResponse();
             }
@@ -618,13 +732,23 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
             }
             @Override
-            protected Map<String, String> getParams() {
-                return WebAPI.addShareUnsharePatientParams(mPatientId.getText().toString(), mDoctorDetails.getText().toString());
-            }
-            @Override
             protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
-                return super.parseNetworkResponse(response);
+                try {
+                    String jsonString = new String(response.data,
+                            HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+
+                    JSONObject result = null;
+
+                    if (jsonString != null && jsonString.length() > 0)
+                        result = new JSONObject(jsonString);
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                    return Response.success(result,
+                            HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException e) {
+                    return Response.error(new ParseError(e));
+                } catch (JSONException je) {
+                    return Response.error(new ParseError(je));
+                }
             }
             @Override
             protected VolleyError parseNetworkError(VolleyError volleyError){
@@ -645,9 +769,10 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
     }
 
     @Override
-    public void unSharePatient(String doctorId) {
-        Toast.makeText(getContext(), getResources().getString(R.string.unsharingPatient), Toast.LENGTH_SHORT).show();
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, WebAPI.REMOVE_DOCTOR_FROM_PATIENT_URL , null,
+    public void unSharePatient(String doctorId) throws JSONException {
+        //Toast.makeText(getContext(), getResources().getString(R.string.unsharingPatient), Toast.LENGTH_SHORT).show();
+        JSONObject bodyParams = WebAPI.addShareUnsharePatientParams(((int)((PatientHeartSoundActivity)getActivity()).getPatient().getPatientId()), doctorId);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, WebAPI.REMOVE_DOCTOR_FROM_PATIENT_URL , bodyParams,
                 new Response.Listener<JSONObject>(){
                     @Override
                     public void onResponse(JSONObject response) {
@@ -675,13 +800,23 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
             }
             @Override
-            protected Map<String, String> getParams() {
-                return WebAPI.addShareUnsharePatientParams(mPatientId.getText().toString(), mDoctorDetails.getText().toString());
-            }
-            @Override
             protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
-                return super.parseNetworkResponse(response);
+                try {
+                    String jsonString = new String(response.data,
+                            HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+
+                    JSONObject result = null;
+
+                    if (jsonString != null && jsonString.length() > 0)
+                        result = new JSONObject(jsonString);
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                    return Response.success(result,
+                            HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException e) {
+                    return Response.error(new ParseError(e));
+                } catch (JSONException je) {
+                    return Response.error(new ParseError(je));
+                }
             }
             @Override
             protected VolleyError parseNetworkError(VolleyError volleyError){

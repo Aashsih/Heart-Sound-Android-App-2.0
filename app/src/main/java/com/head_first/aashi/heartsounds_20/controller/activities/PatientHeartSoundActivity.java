@@ -1,5 +1,6 @@
 package com.head_first.aashi.heartsounds_20.controller.activities;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,7 +19,6 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.head_first.aashi.heartsounds_20.R;
 import com.head_first.aashi.heartsounds_20.controller.fragment.AudioRecordingFragment;
@@ -28,6 +28,7 @@ import com.head_first.aashi.heartsounds_20.controller.fragment.PatientFragment;
 import com.head_first.aashi.heartsounds_20.controller.fragment.WebAPIErrorFragment;
 import com.head_first.aashi.heartsounds_20.enums.web_api_enums.ResponseStatusCode;
 import com.head_first.aashi.heartsounds_20.interfaces.util_interfaces.NavgigationDrawerUtils;
+import com.head_first.aashi.heartsounds_20.model.Doctor;
 import com.head_first.aashi.heartsounds_20.model.HeartSound;
 import com.head_first.aashi.heartsounds_20.model.MurmurRating;
 import com.head_first.aashi.heartsounds_20.model.Patient;
@@ -41,10 +42,9 @@ import com.head_first.aashi.heartsounds_20.web_api.RequestQueueSingleton;
 import com.head_first.aashi.heartsounds_20.web_api.WebAPI;
 import com.head_first.aashi.heartsounds_20.web_api.WebAPIResponse;
 
-import org.json.JSONArray;
-
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -191,8 +191,15 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
             return null;
         }
         else{
-            return userIdToUserMap.get(userId).getUserName();
+            return userIdToUserMap.get(userId).getName();
         }
+    }
+
+    public List<User> getAllUserObjects(){
+        if(userIdToUserMap != null){
+            return new ArrayList<>(userIdToUserMap.values());
+        }
+        return null;
     }
 
     //Later on this method will return HeartSound
@@ -216,16 +223,28 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
 
     public int addNewMurmurRatingToHeartSoundToMurmurRatingMap(String murmurRating){
         int newMurmurRatingPosition = -1;
-        if(heartSoundToMurmurRating.containsKey(selectedHeartSound)){
-            boolean result = heartSoundToMurmurRating.get(selectedHeartSound).add(murmurRating);
-            if(result){
-                newMurmurRatingPosition = heartSoundToMurmurRating.get(selectedHeartSound).size() - 1;
+        if(heartSoundToMurmurRating != null){
+            if(heartSoundToMurmurRating.containsKey(selectedHeartSound)){
+                boolean result = heartSoundToMurmurRating.get(selectedHeartSound).add(murmurRating);
+                if(result){
+                    newMurmurRatingPosition = heartSoundToMurmurRating.get(selectedHeartSound).size() - 1;
+                }
+            }
+            else{
+                finish();
             }
         }
-        else{
-            finish();
-        }
         return newMurmurRatingPosition;
+    }
+
+    public boolean deleteMurmurRatingFromHeartSoundToMurmurRatingMap(@NonNull MurmurRating murmurRating){
+        boolean deleted = false;
+        if(heartSoundToMurmurRating != null){
+            if(heartSoundToMurmurRating.containsKey(selectedHeartSound)){
+                deleted = heartSoundToMurmurRating.get(selectedHeartSound).remove(murmurRating.toString());
+            }
+        }
+        return deleted;
     }
 
     public void setupNavigationDrawerContent(){

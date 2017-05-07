@@ -9,8 +9,8 @@ import org.json.JSONException;
  */
 
 public interface PatientAPI {
-    public void sharePatient(String doctorId);
-    public void unSharePatient(String doctorId);
+    public void sharePatient(String doctorId) throws JSONException;
+    public void unSharePatient(String doctorId) throws JSONException;
     public void requestPatient(int patientId);
     public void requestPatients();
     public void createPatient(Patient patient) throws JSONException;

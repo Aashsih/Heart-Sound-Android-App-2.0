@@ -16,8 +16,6 @@ import java.io.IOException;
 
 public abstract class AudioRecorder implements AudioRecording {
 
-
-
     //Note: the output file format if changed, the extension of the file also needs to be chnaged
     protected static final String OUTPUT_FILE_PATH = Environment.getExternalStorageDirectory().toString()+ "/recording.3gpp";
     protected static final int OUTPUT_FILE_FORMAT = MediaRecorder.OutputFormat.THREE_GPP;
