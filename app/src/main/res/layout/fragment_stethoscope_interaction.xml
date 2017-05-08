@@ -25,6 +25,15 @@
         android:layout_marginBottom="31dp" />
 
     <Button
+        android:id="@+id/playFromStethoscope"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/playFromStethoscope"
+        android:layout_above="@+id/downloadFromStethoscope"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="31dp" />
+
+    <Button
         android:id="@+id/connectToStethoscope"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

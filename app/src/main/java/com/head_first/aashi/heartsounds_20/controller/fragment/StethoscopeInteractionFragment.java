@@ -40,9 +40,11 @@ public class StethoscopeInteractionFragment extends Fragment{
     public static final String STETHOSCOPE_INTERACTION_FRAGMENT_TAG = "STETHOSCOPE_INTERACTION_FRAGMENT_TAG";
     private static final String TRACK_NAME = "Track";
     public static final String IS_VOICE_COMMENT_MODE_TAG = "IS_VOICE_COMMENT_MODE_TAG";
+    public static final String HEART_SOUND_TAG = "HEART_SOUND_TAG";
 
     //Layouts and views
     private View mRootView;
+    private Button mPlayFromStethoscope;
     private Button mDownloadFromStethoscope;
     private Button mUploadToStethoscope;
     private Button mConnectToStethoscope;
@@ -90,6 +92,7 @@ public class StethoscopeInteractionFragment extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mRootView = inflater.inflate(R.layout.fragment_stethoscope_interaction, container, false);
+        mPlayFromStethoscope = (Button) mRootView.findViewById(R.id.playFromStethoscope);
         mDownloadFromStethoscope = (Button) mRootView.findViewById(R.id.downloadFromStethoscope);
         mUploadToStethoscope= (Button) mRootView.findViewById(R.id.uploadToStethoscope);
         mConnectToStethoscope = (Button) mRootView.findViewById(R.id.connectToStethoscope);
@@ -114,6 +117,7 @@ public class StethoscopeInteractionFragment extends Fragment{
     public void onDetach() {
         ((NavgigationDrawerUtils)getActivity()).enableNavigationMenu();
         super.onDetach();
+        stethoscopeInteractor.disconnectFromStethoscope();
         mListener = null;
     }
 
@@ -147,6 +151,8 @@ public class StethoscopeInteractionFragment extends Fragment{
 
     private void disableStethoscopeInteractionButtons(){
         if(!stethoscopeInteractor.isStethoscopeConnected()){
+            mPlayFromStethoscope.setClickable(false);
+            mPlayFromStethoscope.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
             mDownloadFromStethoscope.setClickable(false);
             mDownloadFromStethoscope.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
             mUploadToStethoscope.setClickable(false);
@@ -157,6 +163,8 @@ public class StethoscopeInteractionFragment extends Fragment{
 
     private void enableStethoscopeInteractionButtons(){
         if(stethoscopeInteractor.isStethoscopeConnected()){
+            mPlayFromStethoscope.setClickable(true);
+            mPlayFromStethoscope.getBackground().setColorFilter(null);
             mDownloadFromStethoscope.setClickable(true);
             mDownloadFromStethoscope.getBackground().setColorFilter(null);
             mUploadToStethoscope.setClickable(true);
@@ -165,6 +173,12 @@ public class StethoscopeInteractionFragment extends Fragment{
     }
 
     private void setupListenersForButtons(){
+        mPlayFromStethoscope.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playDataFromDeviceOnStethoscope();
+            }
+        });
         mDownloadFromStethoscope.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -297,6 +311,13 @@ public class StethoscopeInteractionFragment extends Fragment{
         }).start();
     }
 
+    private void playDataFromDeviceOnStethoscope(){
+        boolean interactionStarted = stethoscopeInteractor.playDataFromDeviceOnStethoscope();;
+        if(interactionStarted){
+            DialogBoxDisplayHandler.showIndefiniteProgressDialog( getActivity(), getResources().getString(R.string.downloadingFromStethoscopeMessage) + selectedTrack);
+        }
+    }
+
     private void downloadTrackFromStethoscope(){
         boolean interactionStarted = false;
         if(selectedTrack != null){
@@ -310,6 +331,9 @@ public class StethoscopeInteractionFragment extends Fragment{
             if(interactionStarted){
                 DialogBoxDisplayHandler.showIndefiniteProgressDialog( getActivity(), getResources().getString(R.string.downloadingFromStethoscopeMessage) + selectedTrack);
             }
+            else{
+                Toast.makeText(getContext(), R.string.emptyAudioTrack, Toast.LENGTH_SHORT).show();
+            }
 
         }
 
@@ -319,10 +343,10 @@ public class StethoscopeInteractionFragment extends Fragment{
         boolean interactionStarted = false;
         if(selectedTrack != null){
             if(voiceCommentMode){
-                interactionStarted = stethoscopeInteractor.uploadTrackFromStethoscope(stethoscopeInteractor.getTrackId(selectedTrack), AudioType.VoiceComment);
+                interactionStarted = stethoscopeInteractor.uploadTrackToStethoscope(stethoscopeInteractor.getTrackId(selectedTrack), AudioType.VoiceComment);
             }
             else{
-                interactionStarted = stethoscopeInteractor.uploadTrackFromStethoscope(stethoscopeInteractor.getTrackId(selectedTrack), AudioType.Body);
+                interactionStarted = stethoscopeInteractor.uploadTrackToStethoscope(stethoscopeInteractor.getTrackId(selectedTrack), AudioType.Body);
             }
             if(interactionStarted){
                 DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity(), getResources().getString(R.string.uploadingToStethoscopeMessage) + selectedTrack);

@@ -124,12 +124,12 @@
     <string name="navigationDrawerClose">Close Navigation Drawer</string>
 
     <!-- StethoscopeInteractionFragment -->
+    <string name="playFromStethoscope">Play in Stethoscope</string>
     <string name="downloadFromStethoscope">Download</string>
     <string name="uploadToStethoscope">Upload</string>
     <string name="connectToStethoscope">Connect To Stethoscope</string>
 
     <!-- User Messages -->
-    retrievingUsers
     <string name="confirmationMesage">Are you sure?</string>
     <string name="loggingIn">Logging in</string>
     <string name="errorMessage">An Error Occurred</string>
@@ -158,6 +158,8 @@
     <string name="downloadingFromStethoscopeMessage">Downloading </string>
     <string name="uploadingToStethoscopeMessage">Uploading </string>
     <string name="incorrectDateOfBirthMessage">Please select a Date of Birth</string>
+    <string name="emptyAudioTrack">Could not download, the audio track is empty</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

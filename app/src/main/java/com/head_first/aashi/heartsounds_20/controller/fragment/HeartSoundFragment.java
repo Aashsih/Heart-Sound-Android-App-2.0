@@ -79,9 +79,6 @@ public class HeartSoundFragment extends Fragment implements HeartSoundAPI {
     public static final String HEART_SOUND_FRAGMENT_TAG = "HEART_SOUND_FRAGMENT";
     public static final String HEART_SOUND_ID_TAG = "HEART_SOUND_ID_TAG";
 
-    //Data
-    private HeartSound heartSound;
-
     //Layout and View
     private Menu mActionBarMenu;
     private View mRootView;
@@ -93,6 +90,9 @@ public class HeartSoundFragment extends Fragment implements HeartSoundAPI {
     private TextView mHeartSoundId;
     private TextView mDoctorDetails;
     private TextView mDeviceId;
+
+    //Data
+    private HeartSound heartSound;
 
     //Web API
     private WebAPIResponse webAPIResponse = new WebAPIResponse();
@@ -282,6 +282,7 @@ public class HeartSoundFragment extends Fragment implements HeartSoundAPI {
 
     @Override
     public void requestHeartSound(final int heartSoundId) {
+        DialogBoxDisplayHandler.dismissProgressDialog();
         DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity());
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, WebAPI.HEART_SOUND_BASE_URL + heartSoundId, null,
                 new Response.Listener<JSONObject>(){
@@ -289,6 +290,7 @@ public class HeartSoundFragment extends Fragment implements HeartSoundAPI {
                     public void onResponse(JSONObject response) {
                         //update UI accordingly
                         heartSound = JsonObjectParser.getHeartSoundFromJsonString(response.toString());
+                        ((PatientHeartSoundActivity)getActivity()).setHeartSounObject(heartSound);
                         mHeartSoundId.setText(heartSound.getHeartSoundID() + "");
                         mDeviceId.setText(heartSound.getDeviceID());
                         //use the webAPIResponse to get message from server

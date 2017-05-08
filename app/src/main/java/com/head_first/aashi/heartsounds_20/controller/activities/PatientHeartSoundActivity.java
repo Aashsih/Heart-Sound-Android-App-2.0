@@ -79,6 +79,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
     private Map<String, User> userIdToUserMap;
     private List<String> heartSounds;
     private Map<Long, List<String>> heartSoundToMurmurRating;
+    private HeartSound selectedHeartSoundObject;
     private Long selectedHeartSound; //Stores the id of the selected heart sound
 
     //Web API
@@ -193,6 +194,14 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         else{
             return userIdToUserMap.get(userId).getName();
         }
+    }
+
+    public HeartSound getHeartSounObject(){
+        return this.selectedHeartSoundObject;
+    }
+
+    public void setHeartSounObject(HeartSound heartSound){
+        this.selectedHeartSoundObject = heartSound;
     }
 
     public List<User> getAllUserObjects(){

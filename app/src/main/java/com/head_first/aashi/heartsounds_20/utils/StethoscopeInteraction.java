@@ -2,18 +2,19 @@ package com.head_first.aashi.heartsounds_20.utils;
 
 import android.content.Context;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.head_first.aashi.heartsounds_20.controller.fragment.StethoscopeInteractionFragment;
-import com.head_first.aashi.heartsounds_20.model.HeartSound;
 import com.mmm.healthcare.scope.AudioType;
 import com.mmm.healthcare.scope.ConfigurationFactory;
 import com.mmm.healthcare.scope.Errors;
 import com.mmm.healthcare.scope.IBluetoothManager;
 import com.mmm.healthcare.scope.IStethoscopeListener;
 import com.mmm.healthcare.scope.Stethoscope;
+import com.mmm.healthcare.scope.StethoscopeException;
 import com.mmm.healthcare.scope.StethoscopeTrack;
 
 import java.io.File;
@@ -51,18 +52,22 @@ public class StethoscopeInteraction implements IStethoscopeListener{
      * @return
      */
     public boolean connectToAvailableStethoscope(Context context)throws IOException{
+        boolean result = false;
         // Populate stethoscopeSelector with paired stethoscopes.
         ConfigurationFactory.setContext(context);
         IBluetoothManager bluetoothManager = ConfigurationFactory.getBluetoothManager();
         Vector<Stethoscope> scope = bluetoothManager.getPairedDevices();
         if (scope.size() > 0) {
-            stethoscope = scope.get(0);
-            stethoscope.connect();
+            result = connectToStethoscope(scope.get(0));
             stethoscope.addStethoscopeListener(this);
-
-            return stethoscope.isConnected();
         }
-        return false;
+        return result;
+    }
+
+    public boolean connectToStethoscope(@NonNull Stethoscope stethoscope) throws IOException {
+        this.stethoscope = stethoscope;
+        this.stethoscope.connect();
+        return this.stethoscope.isConnected();
     }
 
     /**
@@ -74,6 +79,15 @@ public class StethoscopeInteraction implements IStethoscopeListener{
      */
     public boolean connectToStethoscope(Context context ,String stethoscopeSerialNumber){
         return false;
+    }
+
+    /**
+     * Disconnects the application from a connected stethoscope
+     */
+    public void disconnectFromStethoscope(){
+        if(isStethoscopeConnected()){
+            stethoscope.disconnect();
+        }
     }
 
     /**
@@ -158,13 +172,24 @@ public class StethoscopeInteraction implements IStethoscopeListener{
      * @param audioType The audioType could be either Body (HeartSound) or Voice Comment
      * @return
      */
-    public boolean uploadTrackFromStethoscope(int trackIndex, AudioType audioType){
+    public boolean uploadTrackToStethoscope(int trackIndex, AudioType audioType){
         boolean uploadStarted = false;
         if(stethoscope == null || !stethoscope.isConnected() || audioType == null){
             return false;
         }
         else{
             uploadStarted = uploadHeartSoundTrack(trackIndex, audioType);
+        }
+        return uploadStarted;
+    }
+
+    public boolean playDataFromDeviceOnStethoscope(){
+        boolean uploadStarted = false;
+        if(stethoscope == null || !stethoscope.isConnected()){
+            return false;
+        }
+        else{
+            uploadStarted = playDataOnStethoscope();
         }
         return uploadStarted;
     }
@@ -211,11 +236,12 @@ public class StethoscopeInteraction implements IStethoscopeListener{
             return false;
         }
         else{
-            //Getting the stethoscopeTrack and making sure it is not locked (This is an expensive check and might be chnaged)
-            stethoscope.getStethoscopeTracks().get(trackIndex).setIsLocked(false);
-            stethoscope.startDownloadTrack(trackIndex, audioType);
-            startStethoscopeInteraction();
-            new Thread(new TrackDownloader()).start();
+            try{
+                //Getting the stethoscopeTrack and making sure it is not locked (This is an expensive check and might be chnaged)
+                stethoscope.getStethoscopeTracks().get(trackIndex).setIsLocked(false);
+                stethoscope.startDownloadTrack(trackIndex, audioType);
+                startStethoscopeInteraction();
+                new Thread(new TrackDownloader()).start();
 //            new java.util.Timer().schedule(
 //                    new java.util.TimerTask() {
 //                        @Override
@@ -225,14 +251,17 @@ public class StethoscopeInteraction implements IStethoscopeListener{
 //                    },
 //                    audioType == AudioType.Body? HeartSound.HEART_SOUND_LENGHT : HeartSound.VOICE_COMMENT_LENGHT
 //            );
-            downloadStarted = true;
+                downloadStarted = true;
+            }catch(StethoscopeException ex){
+
+            }
         }
         return downloadStarted;
     }
 
-    private boolean uploadHeartSoundTrack(int trackIndex, AudioType audioType){
+    private boolean uploadHeartSoundTrack(int trackIndex,@NonNull AudioType audioType){
         boolean uploadStarted = false;
-        if(stethoscope == null || !stethoscope.isConnected()){
+        if(stethoscope == null || !stethoscope.isConnected() || trackIndex < 0){
             return false;
         }
         else{
@@ -243,9 +272,24 @@ public class StethoscopeInteraction implements IStethoscopeListener{
             }
             stethoscope.startUploadTrack(trackIndex, audioType);
             //if you want to play on stethoscope then use next line
+            //stethoscope.startAudioOutput();
+            startStethoscopeInteraction();
+            new Thread(new TrackUploader(true)).start();
+            uploadStarted = true;
+        }
+        return uploadStarted;
+    }
+
+    private boolean playDataOnStethoscope(){
+        boolean uploadStarted = false;
+        if(stethoscope == null || !stethoscope.isConnected()){
+            return false;
+        }
+        else{
+            //play on stethoscope
             stethoscope.startAudioOutput();
             startStethoscopeInteraction();
-            new Thread(new TrackUploader()).start();
+            new Thread(new TrackUploader(false)).start();
             uploadStarted = true;
         }
         return uploadStarted;
@@ -399,11 +443,17 @@ public class StethoscopeInteraction implements IStethoscopeListener{
     private class TrackUploader implements Runnable{
         private FileInputStream fileInputStream;
         private OutputStream stethoscopeOutputStream;
+        private boolean uploadToStethoscope;
+
+        public TrackUploader(boolean uploadToStethoscope){
+            this.uploadToStethoscope = uploadToStethoscope;
+        }
 
         @Override
         public void run() {
             int x = 0;
             //byte[] buffer = new byte[MINIMUM_NUMBER_OF_BYTES_PER_TRANSACTION];
+            ByteArray byteArray = new ByteArray();
             byte[] buffer = new byte[80000];
             try {
                 fileInputStream = new FileInputStream(new File(OUTPUT_FILE_PATH));
@@ -423,7 +473,9 @@ public class StethoscopeInteraction implements IStethoscopeListener{
                 exception.printStackTrace();
             }
             Log.v("Tag", "Number of bytes uploaded = " + x*128);
-            //stethoscope.stopUploadAndDownloadTrack();
+            if(uploadToStethoscope){
+                stethoscope.stopUploadAndDownloadTrack();
+            }
             stopStethoscopeInteraction();
         }
 
