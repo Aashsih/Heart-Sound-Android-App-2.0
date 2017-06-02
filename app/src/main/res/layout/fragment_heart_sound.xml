@@ -81,15 +81,21 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:src="@drawable/ic_stethoscope_grey600_24dp"
-                    style="@style/roundShapeView"/>
+                    style="@style/roundShapeView" />
                 <ImageButton
                     android:id="@+id/heartSoundPlayRecordingButton"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_arrow_right_drop_circle_grey600_24dp"
+                    android:visibility="invisible"
                     style="@style/roundShapeView"/>
-
+                <ImageButton
+                    android:id="@+id/extraButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:visibility="invisible"
+                    style="@style/roundShapeView"/>
             </LinearLayout>
 
         </LinearLayout>
@@ -123,6 +129,7 @@
             android:text="@string/createdByLabel"
             android:layout_below="@id/heartSoundId"
             android:layout_alignParentLeft="true"
+            android:visibility="gone"
             style="@style/viewSeparation">
         </TextView>
         <TextView
@@ -131,6 +138,7 @@
             android:layout_height="wrap_content"
             android:text="@string/defaultEmptyString"
             android:layout_below="@id/createdByLabel"
+            android:visibility="gone"
             android:layout_alignParentLeft="true">
         </TextView>
 
@@ -151,6 +159,16 @@
             android:layout_below="@id/deviceIdLabel"
             android:layout_alignParentLeft="true">
         </TextView>
+        <RatingBar
+            android:id="@+id/qualityOfRecording"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:numStars="5"
+            android:stepSize="1"
+            android:layout_alignParentBottom="true"
+            android:visibility="gone"
+            style="@style/viewSeparation"/>
     </RelativeLayout>
 
 </LinearLayout>

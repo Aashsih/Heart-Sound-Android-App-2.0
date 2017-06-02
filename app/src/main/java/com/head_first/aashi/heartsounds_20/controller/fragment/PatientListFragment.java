@@ -46,6 +46,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,7 +84,8 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
     private ExpandablePatientListAdapter expandablePatientListAdapter;
 
     //Data for the fragment
-    private List<Patient> patientList;
+    private List<Patient> allPatients;
+    private List<Patient> filteredPatients;
     private DISPLAY_STATE displayState;
     private Filter filter;
     private String oldFilterString; //this is made equal to the filter String from filter.getSearchString() before the view of this fragment is destroyed
@@ -254,10 +257,12 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
 
     private void setupListView(){
         if(myPatientClicked){
-            patientListAdapter = new ArrayAdapter<Patient>(getContext(), android.R.layout.simple_list_item_1, getMyPatientList());
+            getMyPatientList();
+            patientListAdapter = new ArrayAdapter<Patient>(getContext(), android.R.layout.simple_list_item_1, filteredPatients);
         }
         else{
-            patientListAdapter = new ArrayAdapter<Patient>(getContext(), android.R.layout.simple_list_item_1, getSharedPatientList());
+            getSharedPatientList();
+            patientListAdapter = new ArrayAdapter<Patient>(getContext(), android.R.layout.simple_list_item_1, filteredPatients);
         }
         mListView = (ListView) mRootView.findViewById(R.id.listView);
         mListView.setAdapter(patientListAdapter);
@@ -271,10 +276,17 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
 
     private List<Patient> getMyPatientList(){
         List<Patient> myPatientList = new ArrayList<>();
+        if(filteredPatients == null){
+            filteredPatients = new ArrayList<>();
+        }
+        else{
+            filteredPatients.clear();
+        }
         String userId = SharedPreferencesManager.getActiveUserId(getActivity());
-        for(Patient aPatient : patientList){
+        for(Patient aPatient : allPatients){
             if(aPatient.getPrimaryDoctorId().equalsIgnoreCase(userId)){
                 myPatientList.add(aPatient);
+                filteredPatients.add(aPatient);
             }
         }
         return myPatientList;
@@ -282,10 +294,17 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
 
     private List<Patient> getSharedPatientList(){
         List<Patient> sharedPatientList = new ArrayList<>();
+        if(filteredPatients == null){
+            filteredPatients = new ArrayList<>();
+        }
+        else{
+            filteredPatients.clear();
+        }
         String userId = SharedPreferencesManager.getActiveUserId(getActivity());
-        for(Patient aPatient : patientList){
+        for(Patient aPatient : allPatients){
             if(!aPatient.getPrimaryDoctorId().equalsIgnoreCase(userId)){
                 sharedPatientList.add(aPatient);
+                filteredPatients.add(aPatient);
             }
         }
         return sharedPatientList;
@@ -354,7 +373,7 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
 
     private void onPatientSelected(AdapterView<?> parent, View view, int position, long id){
         Intent patientHeartSoundActivityIntent = new Intent(getActivity(), PatientHeartSoundActivity.class);
-        patientHeartSoundActivityIntent.putExtra(PatientHeartSoundActivity.PATIENT, JsonObjectParser.getJsonStringFromPatient(patientList.get(position)));
+        patientHeartSoundActivityIntent.putExtra(PatientHeartSoundActivity.PATIENT, JsonObjectParser.getJsonStringFromPatient(filteredPatients.get(position)));
         startActivity(patientHeartSoundActivityIntent);
     }
 
@@ -387,6 +406,13 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
             if(mListView == null || patientListAdapter == null){
                 setupListView();
             }
+            if(myPatientClicked){
+                DynamicSearchFilter.onQueryTextSubmit(query , getMyPatientList(), filteredPatients);
+            }
+            else{
+                DynamicSearchFilter.onQueryTextSubmit(query , getSharedPatientList(), filteredPatients);
+            }
+            patientListAdapter.notifyDataSetChanged();
         }
         else if(displayState == DISPLAY_STATE.EXPANDABLE_LIST_VIEW){
             if(mExpandableListView == null || expandablePatientListAdapter == null){
@@ -404,7 +430,13 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
             if(mListView == null || patientListAdapter == null){
                 setupListView();
             }
-
+            if(myPatientClicked){
+                DynamicSearchFilter.onQueryTextChange(newText , getMyPatientList(), filteredPatients);
+            }
+            else{
+                DynamicSearchFilter.onQueryTextChange(newText , getSharedPatientList(), filteredPatients);
+            }
+            patientListAdapter.notifyDataSetChanged();
         }
         else if(displayState == DISPLAY_STATE.EXPANDABLE_LIST_VIEW){
             if(mExpandableListView == null || expandablePatientListAdapter == null){
@@ -431,7 +463,13 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
                         //update UI accordingly
                         Collection<Patient> parsedResponse = JsonObjectParser.getPatientListFromJsonString(response.toString());
                         if(parsedResponse != null){
-                            patientList = new ArrayList<>(parsedResponse);
+                            allPatients = new ArrayList<>(parsedResponse);
+                            Collections.sort(allPatients, new Comparator<Patient>() {
+                                @Override
+                                public int compare(Patient o1, Patient o2) {
+                                    return o1.toString().compareTo(o2.toString());
+                                }
+                            });
                             if(displayState == DISPLAY_STATE.LIST_VIEW){
                                 setupListView();
                             }

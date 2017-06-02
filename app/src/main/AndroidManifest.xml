@@ -30,9 +30,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".controller.activities.UserPatientActivity" />
-        <activity android:name=".controller.activities.PatientHeartSoundActivity"
-            android:windowSoftInputMode="adjustPan"></activity>
+        <activity
+            android:name=".controller.activities.UserPatientActivity"/>
+        <activity
+            android:name=".controller.activities.PatientHeartSoundActivity"
+            android:windowSoftInputMode="adjustPan">
+        </activity>
     </application>
 
 </manifest>

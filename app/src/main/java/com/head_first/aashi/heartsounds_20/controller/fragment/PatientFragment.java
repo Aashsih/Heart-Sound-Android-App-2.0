@@ -242,7 +242,6 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
         inflater.inflate(R.menu.activity_patient_heart_sound_tool_bar_items, menu);
         mActionBarMenu = menu;
         showActionBarMenuItems();
-
     }
 
     @Override
@@ -278,6 +277,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 mActionBarMenu.findItem(R.id.sharePatientItem).setVisible(false);
             }
         }
+        mActionBarMenu.findItem(R.id.refreshViewItem).setVisible(false);
     }
 
     @Override
@@ -529,7 +529,13 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 }
             }
         });
-        mDoctorListSelectorAdapter = new MultiSelectorListAdapter(getContext(),allDoctors, selectedDoctors = new ArrayList<>());
+        List<User> allOtherDoctors = new ArrayList<>();
+        for(User aUser : allDoctors){
+            if(!aUser.getId().equalsIgnoreCase(SharedPreferencesManager.getActiveUserId(getActivity()))){
+                allOtherDoctors.add(aUser);
+            }
+        }
+        mDoctorListSelectorAdapter = new MultiSelectorListAdapter(getContext(),allOtherDoctors, selectedDoctors = new ArrayList<>());
         mDoctorListSelector.setAdapter(mDoctorListSelectorAdapter);
         Button selectAllButton = (Button) doctorSelectorDialog.findViewById(R.id.selectAllButton);
         selectAllButton.setOnClickListener(new View.OnClickListener() {
@@ -555,7 +561,9 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 .setPositiveButton(R.string.positiveButtonShare, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getContext(), getResources().getString(R.string.sharingPatient), Toast.LENGTH_SHORT).show();
+                        if(!selectedDoctors.isEmpty()){
+                            Toast.makeText(getContext(), getResources().getString(R.string.sharingPatient), Toast.LENGTH_SHORT).show();
+                        }
                         //share Patient
                         for(User aDoctor : selectedDoctors){
                             try {
@@ -569,7 +577,9 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 .setNegativeButton(R.string.negativeButtonHide, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getContext(), getResources().getString(R.string.unsharingPatient), Toast.LENGTH_SHORT).show();
+                        if(!selectedDoctors.isEmpty()){
+                            Toast.makeText(getContext(), getResources().getString(R.string.unsharingPatient), Toast.LENGTH_SHORT).show();
+                        }
                         //hide Patient
                         for(User aDoctor : selectedDoctors){
                             try {

@@ -163,6 +163,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         } //else if check for next condition
         else if(fragment instanceof HeartSoundFragment){
             if(onBackPressedFromHeartSoundFragment((HeartSoundFragment)fragment)){
+
                 return;
             }
         }
@@ -180,6 +181,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
     }
 
     public Patient getPatient(){
+
         return patient;
     }
 
@@ -196,11 +198,11 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         }
     }
 
-    public HeartSound getHeartSounObject(){
+    public HeartSound getHeartSoundObject(){
         return this.selectedHeartSoundObject;
     }
 
-    public void setHeartSounObject(HeartSound heartSound){
+    public void setHeartSoundObject(HeartSound heartSound){
         this.selectedHeartSoundObject = heartSound;
     }
 
@@ -272,6 +274,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
                 }
                 else{
                     //lock the navigation bar as a new HeartSound is being created
+                    disableNavigationMenu();
                 }
             }
             else{
@@ -313,6 +316,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         navigationDrawerContentListAdapter = new NavigationDrawerContentListAdapter<>(this, StringUtil.convertListToListOfString(heartSounds));
         mNavigationViewListContent.setAdapter(navigationDrawerContentListAdapter);
         mToolbar.setTitle(PATIENT);
+        enableNavigationMenu();
         return false;
     }
 
@@ -368,14 +372,10 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
 
     private void launchHeartSoundFragment(AdapterView<?> parent, View view, int position, long id){
         mAddNewButton.setText(getResources().getString(R.string.addMurmurRatingButtonLabel));
-        //Launch HeartSound Fragments here
-        selectedHeartSound = HeartSound.getIdFromString(heartSounds.get(position));
-        Bundle bundle = new Bundle();
-        bundle.putLong(HeartSoundFragment.HEART_SOUND_ID_TAG, selectedHeartSound);
         HeartSoundFragment heartSoundFragment = HeartSoundFragment.newInstance();
-        heartSoundFragment.setArguments(bundle);
         mDrawerLayout.closeDrawers();
-        //Change the contents of the NavigationView to a List of MurmerRatings
+        selectedHeartSound = HeartSound.getIdFromString(heartSounds.get(position));
+        //Change the contents of the NavigationView to a List of MurmurRatings
         navigationDrawerContentListAdapter = new NavigationDrawerContentListAdapter<>(this, heartSoundToMurmurRating.get(selectedHeartSound));
         mNavigationViewListContent.setAdapter(navigationDrawerContentListAdapter);
 
@@ -428,6 +428,12 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
         if(fragment instanceof PatientFragment){
             //add new heart sound by launching the HeartSoundFragment
+            mDrawerLayout.closeDrawers();
+            selectedHeartSound = null;
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentContainer, HeartSoundFragment.newInstance(), HeartSoundFragment.HEART_SOUND_FRAGMENT_TAG)
+                    .addToBackStack(null)
+                    .commit();
 
         }
         else{

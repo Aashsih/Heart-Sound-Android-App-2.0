@@ -2,6 +2,7 @@ package com.head_first.aashi.heartsounds_20.web_api;
 
 import android.content.Context;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
@@ -11,6 +12,7 @@ import com.android.volley.toolbox.Volley;
  */
 
 public class RequestQueueSingleton {
+    private static final int REQUEST_TIMEOUT_MS = 5000;
     private static RequestQueueSingleton singletonInstance;
     private RequestQueue requestQueue;
     private static Context context;
@@ -35,7 +37,11 @@ public class RequestQueueSingleton {
     }
 
     public <T> void addToRequestQueue(Request<T> request){
-       requestQueue.add(request);
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                REQUEST_TIMEOUT_MS,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        requestQueue.add(request);
     }
 
 }

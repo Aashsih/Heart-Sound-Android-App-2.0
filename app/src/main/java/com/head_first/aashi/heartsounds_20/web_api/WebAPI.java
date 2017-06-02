@@ -1,5 +1,7 @@
 package com.head_first.aashi.heartsounds_20.web_api;
 
+import android.util.Base64;
+
 import com.head_first.aashi.heartsounds_20.model.HeartSound;
 import com.head_first.aashi.heartsounds_20.model.MurmurRating;
 import com.head_first.aashi.heartsounds_20.model.Patient;
@@ -7,6 +9,7 @@ import com.head_first.aashi.heartsounds_20.model.Patient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 /**
@@ -177,26 +180,48 @@ public class WebAPI {
         return params;
     }
 
-    public static final HashMap<String, String> addCreateHeartSoundParams(HeartSound heartSound, int patientId){
-        HashMap<String, String> params = new HashMap<>();
-        params.put(PATIENT_ID_LOWER_CASE, new String("" + patientId));
-        params.putAll(addCommonHeartSoundParams(heartSound));
+    public static final JSONObject addCreateHeartSoundParams(HeartSound heartSound, int patientId) throws JSONException {
+        JSONObject params = addCommonHeartSoundParams(heartSound);
+        params.put(PATIENT_ID_LOWER_CASE, patientId);
         return params;
     }
 
-    public static final HashMap<String, String> addUpdateHeartSoundParams(HeartSound heartSound){
-        HashMap<String, String> params = new HashMap<>();
-        params.put(HEARTSOUND_ID, new String("" + heartSound.getHeartSoundID()));
-        params.putAll(addCommonHeartSoundParams(heartSound));
-        params.put(IS_ACTIVE, new String("" + heartSound.isActive()));
+    public static final JSONObject addUpdateQualityOfRecordingParams(HeartSound heartSound) throws JSONException {
+        JSONObject params = new JSONObject();
+        params.put(HEARTSOUND_ID, heartSound.getHeartSoundID().intValue());
+        //params.put(HEART_SOUND_DATA, Base64.encodeToString(heartSound.getHeartSoundData().getBytes(), Base64.NO_WRAP));
+        params.put(QUALITY_OF_RECORDING, heartSound.getQualityOfRecording());
+        params.put(IS_ACTIVE, heartSound.isActive());
         return params;
     }
 
-    private static final HashMap<String, String> addCommonHeartSoundParams(HeartSound heartSound){
-        HashMap<String, String> params = new HashMap<>();
-        params.put(HEART_SOUND_DATA, new String(heartSound.getHeartSoundData()));
-        params.put(VOICE_COMMENT_DATA, new String(heartSound.getVoiceCommentData()));
-        params.put(QUALITY_OF_RECORDING, heartSound.getQualityOfRecording().toString());
+    public static final JSONObject addUpdateHeartSoundParams(HeartSound heartSound) throws JSONException {
+        JSONObject params = new JSONObject();
+        params.put(HEARTSOUND_ID, heartSound.getHeartSoundID().intValue());
+        //params.put(HEART_SOUND_DATA, Base64.encodeToString(heartSound.getHeartSoundData().getBytes(), Base64.NO_WRAP));
+        params.put(HEART_SOUND_DATA, heartSound.getHeartSoundData());
+        params.put(DEVICE_ID, heartSound.getDeviceID());
+        params.put(QUALITY_OF_RECORDING, heartSound.getQualityOfRecording());
+        params.put(IS_ACTIVE, heartSound.isActive());
+        return params;
+    }
+
+    public static final JSONObject addUpdateVoiceCommentParams(HeartSound heartSound) throws JSONException {
+        JSONObject params = new JSONObject();
+        params.put(HEARTSOUND_ID, heartSound.getHeartSoundID().intValue());
+        //params.put(VOICE_COMMENT_DATA, Base64.encodeToString(heartSound.getVoiceCommentData().getBytes(), Base64.NO_WRAP));
+        params.put(VOICE_COMMENT_DATA, heartSound.getVoiceCommentData());
+        params.put(QUALITY_OF_RECORDING, heartSound.getQualityOfRecording());
+        params.put(IS_ACTIVE, heartSound.isActive());
+        return params;
+    }
+
+    private static final JSONObject addCommonHeartSoundParams(HeartSound heartSound) throws JSONException {
+        JSONObject params = new JSONObject();
+        params.put(HEART_SOUND_DATA, heartSound.getHeartSoundData());
+        params.put(VOICE_COMMENT_DATA, heartSound.getVoiceCommentData());
+        params.put(DEVICE_ID, heartSound.getDeviceID());
+        params.put(QUALITY_OF_RECORDING, heartSound.getQualityOfRecording());
         return params;
     }
 

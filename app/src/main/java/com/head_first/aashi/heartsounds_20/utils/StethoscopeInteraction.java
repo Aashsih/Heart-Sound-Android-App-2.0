@@ -4,10 +4,12 @@ import android.content.Context;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Base64;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.head_first.aashi.heartsounds_20.controller.activities.PatientHeartSoundActivity;
 import com.head_first.aashi.heartsounds_20.controller.fragment.StethoscopeInteractionFragment;
+import com.head_first.aashi.heartsounds_20.model.HeartSound;
 import com.mmm.healthcare.scope.AudioType;
 import com.mmm.healthcare.scope.ConfigurationFactory;
 import com.mmm.healthcare.scope.Errors;
@@ -17,6 +19,7 @@ import com.mmm.healthcare.scope.Stethoscope;
 import com.mmm.healthcare.scope.StethoscopeException;
 import com.mmm.healthcare.scope.StethoscopeTrack;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -24,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -37,10 +41,15 @@ import java.util.Vector;
 public class StethoscopeInteraction implements IStethoscopeListener{
     private static final String OUTPUT_FILE_PATH = Environment.getExternalStorageDirectory().toString()+ "/stethoscopeRecording";;
     private static final int MINIMUM_NUMBER_OF_BYTES_PER_TRANSACTION = 128;
+    private static final double WAITING_TIME_TO_UPLOAD_ONE_BYTE_TO_STETHOSCOPE = 0.04170373665;
 
     private Stethoscope stethoscope;
     private StethoscopeInteractionFragment stethoscopeInteractionFragment;
     private boolean stethoscopeInteractionInProgress;
+    private List<byte[]> byteArrayList;
+    ByteArrayOutputStream byteArrayOutputStream;
+    private AudioType audioType;
+
 
     public StethoscopeInteraction(StethoscopeInteractionFragment fragment){
         this.stethoscopeInteractionFragment = fragment;
@@ -157,11 +166,12 @@ public class StethoscopeInteraction implements IStethoscopeListener{
      */
     public boolean downloadTrackFromStethoscope(int trackIndex, AudioType audioType){
         boolean downloadStarted = false;
+        this.audioType = audioType;
         if(stethoscope == null || !stethoscope.isConnected() || audioType == null){
             return false;
         }
         else{
-            downloadStarted = downloadHeartSoundTrack(trackIndex, audioType);
+            downloadStarted = downloadHeartSoundTrack(trackIndex);
         }
         return downloadStarted;
     }
@@ -174,17 +184,19 @@ public class StethoscopeInteraction implements IStethoscopeListener{
      */
     public boolean uploadTrackToStethoscope(int trackIndex, AudioType audioType){
         boolean uploadStarted = false;
+        this.audioType = audioType;
         if(stethoscope == null || !stethoscope.isConnected() || audioType == null){
             return false;
         }
         else{
-            uploadStarted = uploadHeartSoundTrack(trackIndex, audioType);
+            uploadStarted = uploadHeartSoundTrack(trackIndex);
         }
         return uploadStarted;
     }
 
-    public boolean playDataFromDeviceOnStethoscope(){
+    public boolean playDataFromDeviceOnStethoscope(@NonNull AudioType audioType){
         boolean uploadStarted = false;
+        this.audioType = audioType;
         if(stethoscope == null || !stethoscope.isConnected()){
             return false;
         }
@@ -230,7 +242,7 @@ public class StethoscopeInteraction implements IStethoscopeListener{
         return stethoscope.getStethoscopeTracks();
     }
 
-    private boolean downloadHeartSoundTrack(int trackIndex, AudioType audioType){
+    private boolean downloadHeartSoundTrack(int trackIndex){
         boolean downloadStarted = false;
         if(stethoscope == null || !stethoscope.isConnected()){
             return false;
@@ -259,7 +271,7 @@ public class StethoscopeInteraction implements IStethoscopeListener{
         return downloadStarted;
     }
 
-    private boolean uploadHeartSoundTrack(int trackIndex,@NonNull AudioType audioType){
+    private boolean uploadHeartSoundTrack(int trackIndex){
         boolean uploadStarted = false;
         if(stethoscope == null || !stethoscope.isConnected() || trackIndex < 0){
             return false;
@@ -295,6 +307,37 @@ public class StethoscopeInteraction implements IStethoscopeListener{
         return uploadStarted;
     }
 
+    private void setHeartSound(){
+        HeartSound heartSound = ((PatientHeartSoundActivity)stethoscopeInteractionFragment.getActivity()).getHeartSoundObject();
+        if(audioType == AudioType.Body){
+            StringBuffer stringBuffer = new StringBuffer();
+            for(byte[] byteArray : byteArrayList){
+                for(byte aByte : byteArray){
+                    stringBuffer.append(aByte);
+                }
+
+            }
+            //heartSound.setHeartSoundData(Base64.encodeToString(stringBuffer.toString().getBytes(), Base64.DEFAULT));
+            heartSound.setHeartSoundData(Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT));
+            heartSound.setDeviceID(stethoscope.getSerialNumber());
+            heartSound.setHeartSoundChanged(true);
+        }
+        else{
+            StringBuffer stringBuffer = new StringBuffer();
+            for(byte[] byteArray : byteArrayList){
+                for(byte aByte : byteArray){
+                    stringBuffer.append(aByte);
+                }
+
+            }
+            //heartSound.setVoiceCommentData(Base64.encodeToString(stringBuffer.toString().getBytes(), Base64.DEFAULT));
+            heartSound.setVoiceCommentData(Base64.encodeToString(byteArrayOutputStream.toByteArray(), Base64.DEFAULT));
+            heartSound.setVoiceCommentChanged(true);
+        }
+        byteArrayList = null;
+
+    }
+
     @Override
     public void disconnected() {
         stethoscope.stopUploadAndDownloadTrack();
@@ -316,6 +359,7 @@ public class StethoscopeInteraction implements IStethoscopeListener{
     @Override
     public void endOfInputStream() {
         stethoscope.stopUploadAndDownloadTrack();
+        setHeartSound();
         stopStethoscopeInteraction();
         //upload the data in stethoscopeData to the DB
 
@@ -391,7 +435,7 @@ public class StethoscopeInteraction implements IStethoscopeListener{
     //The File name used needs to be changed
     private class TrackDownloader implements Runnable{
         private InputStream stethoscopeInputStream;
-        private FileOutputStream fileOutputStream;
+        //private FileOutputStream fileOutputStream;
 
         @Override
         public void run() {
@@ -400,8 +444,10 @@ public class StethoscopeInteraction implements IStethoscopeListener{
             try {
                 File outputFile = new File(OUTPUT_FILE_PATH);
                 outputFile.createNewFile();
-                fileOutputStream = new FileOutputStream(outputFile);
+                //fileOutputStream = new FileOutputStream(outputFile);
                 stethoscopeInputStream = stethoscope.getAudioInputStream();
+                byteArrayOutputStream = new ByteArrayOutputStream();
+                byteArrayList = new ArrayList<>();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -413,11 +459,11 @@ public class StethoscopeInteraction implements IStethoscopeListener{
                     bytesRead = stethoscopeInputStream.read(buffer);
                     if(bytesRead <= 0){
                         Thread.sleep(100);
-                        Log.v("Bytes Read", "Bytes Read: " + bytesRead);
                     }
                     else{
-                        Log.v("Bytes Read", "Bytes Read: " + bytesRead);
-                        fileOutputStream.write(buffer);
+                        //fileOutputStream.write(buffer);
+                        byteArrayList.add(buffer);
+                        byteArrayOutputStream.write(buffer);
                         x++;
                     }
                 }
@@ -428,15 +474,19 @@ public class StethoscopeInteraction implements IStethoscopeListener{
                 }
 
             }
-            try {
-                fileOutputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                //fileOutputStream.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
             Log.v("Tag", "Number of bytes downloaded = " + x*128);
+            //setHeartSound();
             stethoscope.stopDownloadTrack();
-            stopStethoscopeInteraction();
+//            stopStethoscopeInteraction();
+
         }
+
+
     }
 
     //The File name used needs to be changed
@@ -445,24 +495,32 @@ public class StethoscopeInteraction implements IStethoscopeListener{
         private OutputStream stethoscopeOutputStream;
         private boolean uploadToStethoscope;
 
+
         public TrackUploader(boolean uploadToStethoscope){
             this.uploadToStethoscope = uploadToStethoscope;
         }
-
         @Override
         public void run() {
             int x = 0;
             //byte[] buffer = new byte[MINIMUM_NUMBER_OF_BYTES_PER_TRANSACTION];
             ByteArray byteArray = new ByteArray();
-            byte[] buffer = new byte[80000];
+            byte[] buffer = null;
+            if(audioType == AudioType.Body){
+                buffer = Base64.decode(((PatientHeartSoundActivity)stethoscopeInteractionFragment.getActivity()).getHeartSoundObject().getHeartSoundData().getBytes(), Base64.DEFAULT);
+            }
+            else{
+                buffer = Base64.decode(((PatientHeartSoundActivity)stethoscopeInteractionFragment.getActivity()).getHeartSoundObject().getVoiceCommentData().getBytes(), Base64.DEFAULT);
+            }
             try {
-                fileInputStream = new FileInputStream(new File(OUTPUT_FILE_PATH));
-                while((fileInputStream.read(buffer)) > 0){
-
-                }
+//                fileInputStream = new FileInputStream(new File(OUTPUT_FILE_PATH));
+//                while((fileInputStream.read(buffer)) > 0){
+//
+//                }
                 stethoscopeOutputStream = stethoscope.getAudioOutputStream();
                 //while(stethoscopeInteractionInProgress){// && (fileInputStream.read(buffer)) > 0){
-                    stethoscopeOutputStream.write(buffer);
+                stethoscopeOutputStream.write(buffer);
+                //stethoscopeOutputStream.close();
+                    Thread.sleep((long)Math.ceil(WAITING_TIME_TO_UPLOAD_ONE_BYTE_TO_STETHOSCOPE * buffer.length));
                     x++;
                 //}
             }
@@ -471,12 +529,16 @@ public class StethoscopeInteraction implements IStethoscopeListener{
             }
             catch (IOException exception) {
                 exception.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            Log.v("Tag", "Number of bytes uploaded = " + x*128);
+            Log.v("Tag", "Number of bytes uploaded = " + buffer.length);
             if(uploadToStethoscope){
                 stethoscope.stopUploadAndDownloadTrack();
             }
-            stopStethoscopeInteraction();
+            else{
+                stopStethoscopeInteraction();
+            }
         }
 
 //        private int copyBytes(byte[] source, byte[] destination, int offset, int numberOfBytesToCopy){

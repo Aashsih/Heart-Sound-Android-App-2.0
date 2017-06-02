@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,14 +13,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.head_first.aashi.heartsounds_20.R;
@@ -35,8 +39,10 @@ import com.head_first.aashi.heartsounds_20.web_api.WebAPI;
 import com.head_first.aashi.heartsounds_20.web_api.WebAPIResponse;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
@@ -90,6 +96,7 @@ public class HeartSoundFragment extends Fragment implements HeartSoundAPI {
     private TextView mHeartSoundId;
     private TextView mDoctorDetails;
     private TextView mDeviceId;
+    private RatingBar mQualityOfRecording;
 
     //Data
     private HeartSound heartSound;
@@ -135,18 +142,24 @@ public class HeartSoundFragment extends Fragment implements HeartSoundAPI {
         mHeartSoundId = (TextView) mRootView.findViewById(R.id.heartSoundId);
         mDoctorDetails = (TextView) mRootView.findViewById(R.id.doctorDetails);
         mDeviceId = (TextView) mRootView.findViewById(R.id.deviceId);
+        mQualityOfRecording = (RatingBar) mRootView.findViewById(R.id.qualityOfRecording);
         //If HeartSound object is not null copy data from the HeartSound object into the views
 
-        setupListenersForButtons();
+        setupListenersForViews();
         return mRootView;
     }
 
     @Override
     public void onResume(){
         super.onResume();
-        if(getArguments() != null){
-            long heartSoundId = getArguments().getLong(HEART_SOUND_ID_TAG);
-            requestHeartSound((int)heartSoundId);
+        Long selectedHeartSound = ((PatientHeartSoundActivity)getActivity()).getSelectedHeartSound();
+        if(selectedHeartSound != null){
+            requestHeartSound(selectedHeartSound.intValue());
+        }
+        else{
+            heartSound = new HeartSound(((PatientHeartSoundActivity)getActivity()).getPatient().getPatientId());
+            ((PatientHeartSoundActivity)getActivity()).setHeartSoundObject(heartSound);
+            mQualityOfRecording.setVisibility(View.GONE);
         }
         ((PatientHeartSoundActivity)getActivity()).setupNavigationDrawerContent();
     }
@@ -200,6 +213,7 @@ public class HeartSoundFragment extends Fragment implements HeartSoundAPI {
                 menuItem.setVisible(false);
             }
         }
+        mActionBarMenu.findItem(R.id.deleteItem).setVisible(false);
     }
 
     @Override
@@ -214,7 +228,7 @@ public class HeartSoundFragment extends Fragment implements HeartSoundAPI {
         return true;
     }
 
-    private void setupListenersForButtons(){
+    private void setupListenersForViews(){
         mRecordNewVoiceCommentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -245,6 +259,24 @@ public class HeartSoundFragment extends Fragment implements HeartSoundAPI {
                 launchStethoscopeInteractionFragment(false);
             }
         });
+        mQualityOfRecording.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                onQualityOfRatingChanged(ratingBar, rating, fromUser);
+            }
+        });
+    }
+
+    private void onQualityOfRatingChanged(RatingBar ratingBar, float rating, boolean fromUser){
+        if(heartSound != null){
+            heartSound.setQualityOfRecording((int)rating);
+            try {
+                updateQualityOfRecording(heartSound);
+            } catch (JSONException e) {
+                Toast.makeText(getContext(), R.string.qualityOfRecordingFailedToUpdateMessage, Toast.LENGTH_SHORT).show();
+
+            }
+        }
     }
 
     private void launchAudioRecordingFragment(boolean recordMode, boolean voiceCommentMode){
@@ -290,9 +322,11 @@ public class HeartSoundFragment extends Fragment implements HeartSoundAPI {
                     public void onResponse(JSONObject response) {
                         //update UI accordingly
                         heartSound = JsonObjectParser.getHeartSoundFromJsonString(response.toString());
-                        ((PatientHeartSoundActivity)getActivity()).setHeartSounObject(heartSound);
-                        mHeartSoundId.setText(heartSound.getHeartSoundID() + "");
+                        ((PatientHeartSoundActivity)getActivity()).setHeartSoundObject(heartSound);
+                        mHeartSoundId.setText((heartSound.getHeartSoundID() + 1) + "");
                         mDeviceId.setText(heartSound.getDeviceID());
+                        mQualityOfRecording.setVisibility(View.VISIBLE);
+                        mQualityOfRecording.setRating(heartSound.getQualityOfRecording());
                         //use the webAPIResponse to get message from server
 
                         //recreate the webAPIResponse object with default values
@@ -347,67 +381,20 @@ public class HeartSoundFragment extends Fragment implements HeartSoundAPI {
 
     @Override
     public void createHeartSound(HeartSound heartSound) {
-        Toast.makeText(getContext(), getResources().getString(R.string.creatingHeartSound), Toast.LENGTH_SHORT).show();
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.POST, WebAPI.HEART_SOUND_BASE_URL, null,
-                new Response.Listener<JSONArray>(){
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        //update UI accordingly
-
-                        //use the webAPIResponse to get message from server
-
-                        //recreate the webAPIResponse object with default values
-                        webAPIResponse = new WebAPIResponse();
-                    }
-                }, new Response.ErrorListener(){
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //update UI accordingly
-
-                //use the webAPIResponse to get message from server
-
-                //recreate the webAPIResponse object with default values
-                webAPIResponse = new WebAPIResponse();
-            }
-        }){
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
-            }
-            @Override
-            protected Map<String, String> getParams() {
-                return WebAPI.addCreateHeartSoundParams(null, 0);//this fragment will have a HeartSound object which will then be passed along with the PatientId
-            }
-            @Override
-            protected Response<JSONArray> parseNetworkResponse(NetworkResponse response) {
-                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
-                return super.parseNetworkResponse(response);
-            }
-            @Override
-            protected VolleyError parseNetworkError(VolleyError volleyError){
-                if(volleyError.networkResponse != null && volleyError.networkResponse.data != null){
-                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(volleyError.networkResponse.statusCode));
-                    String errorMessage = new String(volleyError.networkResponse.data);
-                    VolleyError error = new VolleyError(errorMessage);
-                    volleyError = error;
-                    webAPIResponse.setMessage(errorMessage);
-                    return volleyError;
-                }
-                webAPIResponse.setStatusCode(ResponseStatusCode.INTERNAL_SERVER_ERROR);
-                webAPIResponse.setMessage("");
-                return volleyError;
-            }
-        };
-
-        RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
-
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void updateHeartSound(HeartSound heartSound) {
-        DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity(), getResources().getString(R.string.updatingHeartSound));
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, WebAPI.HEART_SOUND_BASE_URL, null,
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateQualityOfRecording(HeartSound heartSound) throws JSONException {
+        DialogBoxDisplayHandler.dismissProgressDialog();
+        DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity());
+        JSONObject bodyParams = WebAPI.addUpdateQualityOfRecordingParams(heartSound);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.PUT, WebAPI.HEART_SOUND_BASE_URL, bodyParams,
                 new Response.Listener<JSONObject>(){
                     @Override
                     public void onResponse(JSONObject response) {
@@ -427,12 +414,18 @@ public class HeartSoundFragment extends Fragment implements HeartSoundAPI {
             public void onErrorResponse(VolleyError error) {
                 //update UI accordingly
 
-                //use the webAPIResponse to get message from server
-
-                //recreate the webAPIResponse object with default values
-                webAPIResponse = new WebAPIResponse();
                 //dismiss the progress dialog box
                 DialogBoxDisplayHandler.dismissProgressDialog();
+                //use the webAPIResponse to get message from server
+                if(webAPIResponse.getStatusCode().equals(ResponseStatusCode.UNAUTHORIZED)){
+                    SharedPreferencesManager.invalidateUserAccessToken(getActivity());
+                }
+                else{
+                    //Launch Web API Error Fragment
+                    ((PatientHeartSoundActivity)getActivity()).launchWebAPIErrorFragment();
+                }
+                //recreate the webAPIResponse object with default values
+                webAPIResponse = new WebAPIResponse();
             }
         }){
             @Override
@@ -440,13 +433,23 @@ public class HeartSoundFragment extends Fragment implements HeartSoundAPI {
                 return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
             }
             @Override
-            protected Map<String, String> getParams() {
-                return WebAPI.addUpdateHeartSoundParams(null);//this fragment will have a HeartSound object which will then be passed
-            }
-            @Override
             protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
-                return super.parseNetworkResponse(response);
+                try {
+                    String jsonString = new String(response.data,
+                            HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+
+                    JSONObject result = null;
+
+                    if (jsonString != null && jsonString.length() > 0)
+                        result = new JSONObject(jsonString);
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                    return Response.success(result,
+                            HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException e) {
+                    return Response.error(new ParseError(e));
+                } catch (JSONException je) {
+                    return Response.error(new ParseError(je));
+                }
             }
             @Override
             protected VolleyError parseNetworkError(VolleyError volleyError){

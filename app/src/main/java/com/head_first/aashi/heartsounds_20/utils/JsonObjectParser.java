@@ -1,11 +1,16 @@
 package com.head_first.aashi.heartsounds_20.utils;
 
+import android.util.Base64;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
 import com.head_first.aashi.heartsounds_20.model.Doctor;
 import com.head_first.aashi.heartsounds_20.model.HeartSound;
@@ -15,6 +20,7 @@ import com.head_first.aashi.heartsounds_20.model.User;
 import com.head_first.aashi.heartsounds_20.web_api.WebAPI;
 
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,6 +43,12 @@ public class JsonObjectParser {
     static {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Date.class, new DateDeserializer());
+        // Adapter to convert byte[] in a Java Object to a String in Json
+//        gsonBuilder.registerTypeAdapter(byte[].class, new JsonSerializer<byte[]>() {
+//            public JsonElement serialize(byte[] src, Type typeOfSrc, JsonSerializationContext context) {
+//                return new JsonPrimitive(Base64.encodeToString(src, Base64.NO_WRAP));
+//            }
+//        });
         gson = gsonBuilder.create();
     }
 

@@ -2,15 +2,13 @@ package com.head_first.aashi.heartsounds_20.utils;
 
 import android.util.Log;
 
-import java.io.ByteArrayInputStream;
-
 /**
  * Created by Aashish Indorewala on 05-Mar-17.
  */
 
 public class ByteArray {
     private static final int INITIAL_SIZE = 1280;
-    private static final int SIZE_ICREASE_FACTOR = 2;
+    private static final int SIZE_INCREASE_FACTOR = 2;
     private int numberOfBytes;
     private byte[] byteArray;
 
@@ -54,7 +52,7 @@ public class ByteArray {
     }
 
     private void expandCapacity(){
-        byte[] newByteArray = new byte[byteArray.length * SIZE_ICREASE_FACTOR];
+        byte[] newByteArray = new byte[byteArray.length * SIZE_INCREASE_FACTOR];
         for(int i = 0; i < byteArray.length; i++){
             newByteArray[i] = byteArray[i];
         }

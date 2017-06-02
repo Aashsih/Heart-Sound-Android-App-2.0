@@ -1,6 +1,7 @@
 package com.head_first.aashi.heartsounds_20.utils;
 
 import com.head_first.aashi.heartsounds_20.model.Filter;
+import com.head_first.aashi.heartsounds_20.model.Patient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,15 +46,15 @@ public class DynamicSearchFilter {
 
     private static <V> void filterGroupItemsOnQueryChange(String query, List<V> allGroupItems, List<V> filteredGroupItems){
         for(int i = 0; i < allGroupItems.size(); i++){
-            if(allGroupItems.get(i) instanceof String){
-                String groupItem = (String) allGroupItems.get(i);
-                if(groupItem.toLowerCase().contains(query.toLowerCase())){
+            if(allGroupItems.get(i) instanceof Filter.GroupItem){
+                Filter.GroupItem groupItem = (Filter.GroupItem) allGroupItems.get(i);
+                if(groupItem.getItemName().toLowerCase().contains(query.toLowerCase())){
                     filteredGroupItems.add(allGroupItems.get(i));
                 }
             }
-            else if(allGroupItems.get(i) instanceof Filter.GroupItem){
-                Filter.GroupItem groupItem = (Filter.GroupItem) allGroupItems.get(i);
-                if(groupItem.getItemName().toLowerCase().contains(query.toLowerCase())){
+            else{
+                String groupItem = allGroupItems.get(i).toString();
+                if(groupItem.toLowerCase().contains(query.toLowerCase())){
                     filteredGroupItems.add(allGroupItems.get(i));
                 }
             }
@@ -93,15 +94,15 @@ public class DynamicSearchFilter {
 
     private static <T> void filterGroupItemsOnQuerySubmit(String query, List<T> allGroupItems, List<T> filteredGroupItems){
         for(int i = 0; i < allGroupItems.size(); i++){
-            if(allGroupItems.get(i) instanceof String){
-                String groupItem = (String) allGroupItems.get(i);
-                if(groupItem.toLowerCase().startsWith(query.toLowerCase())){
+            if(allGroupItems.get(i) instanceof Filter.GroupItem){
+                Filter.GroupItem groupItem = (Filter.GroupItem) allGroupItems.get(i);
+                if(groupItem.getItemName().toLowerCase().startsWith(query.toLowerCase())){
                     filteredGroupItems.add(allGroupItems.get(i));
                 }
             }
-            else if(allGroupItems.get(i) instanceof Filter.GroupItem){
-                Filter.GroupItem groupItem = (Filter.GroupItem) allGroupItems.get(i);
-                if(groupItem.getItemName().toLowerCase().startsWith(query.toLowerCase())){
+            else{
+                String groupItem = allGroupItems.get(i).toString();
+                if(groupItem.toLowerCase().startsWith(query.toLowerCase())){
                     filteredGroupItems.add(allGroupItems.get(i));
                 }
             }

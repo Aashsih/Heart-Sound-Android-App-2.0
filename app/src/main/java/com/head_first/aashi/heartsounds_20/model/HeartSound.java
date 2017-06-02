@@ -1,5 +1,10 @@
 package com.head_first.aashi.heartsounds_20.model;
 
+import android.util.Log;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 
 /**
@@ -18,8 +23,8 @@ public final class HeartSound {
     public static final int VOICE_COMMENT_LENGHT = 10000;
     public static final int HEART_SOUND_LENGHT = 10000;
 
-    private long HeartSoundID;
-    private long PatientID;
+    private Long HeartSoundID;
+    private Long PatientID;
     private long doctorId; //Could have
     private String DeviceID;
     private String HeartSoundData;
@@ -27,6 +32,8 @@ public final class HeartSound {
     private Integer QualityOfRecording;
     private Date CreatedOn;
     private boolean IsActive;
+    private boolean heartSoundChanged;
+    private boolean voiceCommentChanged;
 
     //static methods
     public static Long getIdFromString(String heartSoundString){
@@ -39,9 +46,13 @@ public final class HeartSound {
         return null;
     }
 
+    public HeartSound(Long patientID){
+        this.setPatientID(patientID);
+    }
+
     //Getters
 
-    public long getHeartSoundID() {
+    public Long getHeartSoundID() {
         return HeartSoundID;
     }
 
@@ -57,12 +68,12 @@ public final class HeartSound {
         return DeviceID;
     }
 
-    public byte[] getHeartSoundData() {
-        return HeartSoundData.getBytes();
+    public String getHeartSoundData(){
+          return HeartSoundData;
     }
 
-    public byte[] getVoiceCommentData() {
-        return VoiceCommentData.getBytes();
+    public String getVoiceCommentData() {
+        return VoiceCommentData;
     }
 
     public Integer getQualityOfRecording() {
@@ -75,6 +86,59 @@ public final class HeartSound {
 
     public boolean isActive() {
         return IsActive;
+    }
+
+    public boolean hasHeartSoundChanged(){
+        return heartSoundChanged;
+    }
+
+    public boolean hasVoiceCommentChanged(){
+        return voiceCommentChanged;
+    }
+
+    //Setters
+    public void setHeartSoundID(Long heartSoundID) {
+        HeartSoundID = heartSoundID;
+    }
+
+    public void setPatientID(long patientID) {
+        PatientID = patientID;
+    }
+
+    public void setDoctorId(long doctorId) {
+        this.doctorId = doctorId;
+    }
+
+    public void setDeviceID(String deviceID) {
+        DeviceID = deviceID;
+    }
+
+    public void setHeartSoundData(String heartSoundData) {
+        HeartSoundData = heartSoundData;
+    }
+
+    public void setVoiceCommentData(String voiceCommentData) {
+        VoiceCommentData = voiceCommentData;
+    }
+
+    public void setQualityOfRecording(Integer qualityOfRecording) {
+        QualityOfRecording = qualityOfRecording;
+    }
+
+    public void setCreatedOn(Date createdOn) {
+        CreatedOn = createdOn;
+    }
+
+    public void setActive(boolean active) {
+        IsActive = active;
+    }
+
+    public void setHeartSoundChanged(boolean heartSoundChanged){
+        this.heartSoundChanged = heartSoundChanged;
+    }
+
+    public void setVoiceCommentChanged(boolean voiceCommentChanged){
+        this.voiceCommentChanged = voiceCommentChanged;
     }
 
     @Override

@@ -14,6 +14,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.head_first.aashi.heartsounds_20.R;
+import com.head_first.aashi.heartsounds_20.controller.fragment.LoginFragment;
 import com.head_first.aashi.heartsounds_20.controller.fragment.PatientListFragment;
 import com.head_first.aashi.heartsounds_20.controller.fragment.UserProfileFragment;
 import com.head_first.aashi.heartsounds_20.controller.fragment.WebAPIErrorFragment;
@@ -71,14 +72,13 @@ public class UserPatientActivity extends AppCompatActivity {
     @Override
     public void onBackPressed(){
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-        if(fragment instanceof UserProfileFragment){
-            if(((UserProfileFragment) fragment).editModeEnabled()){
-                ((UserProfileFragment) fragment).cancelChanges();
-                return;
-            }
-
+        if(fragment instanceof WebAPIErrorFragment || fragment instanceof LoginFragment){
+            super.onBackPressed();
         }
-        super.onBackPressed();
+        else{
+            finish();
+        }
+
     }
 
     @Override
@@ -161,33 +161,6 @@ public class UserPatientActivity extends AppCompatActivity {
                 .addToBackStack(null)
                 .replace(R.id.fragmentContainer, webAPIErrorFragment, WebAPIErrorFragment.WEB_API_ERROR_FRAGMENT_TAG)
                 .commit();
-    }
-
-    //Test Method, delete before releasing the Production Code
-    private void testRequest() {
-        String url = "https://skyhawk.aut.ac.nz/HeartSounds/";
-        HashMap<String, String> params = new HashMap<String, String>();
-        params.put("FirstName", "TestDoctorFirstName");
-        params.put("LastName", "TestDoctorLastName");
-        params.put("Email", "testDoctorAndroid1@gmail.com");
-        params.put("Password", "testDoctorAndroid1@gmail.com");
-        params.put("ConfirmPassword", "testDoctorAndroid1@gmail.com");
-
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, url + "api/Doctor/Register", new JSONObject(params),
-                new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Toast.makeText(UserPatientActivity.this, "got a successfull response", Toast.LENGTH_SHORT).show();
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(UserPatientActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        RequestQueueSingleton.getInstance(getApplicationContext()).addToRequestQueue(request);
     }
 
 }

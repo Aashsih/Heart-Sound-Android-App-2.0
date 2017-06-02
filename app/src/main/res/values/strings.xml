@@ -155,10 +155,14 @@
     <string name="deletingMurmurRating">Deleting Murmur Rating</string>
     <string name="deletingMurmurRatingFailed">Could not delete Murmur Rating</string>
     <string name="connectingToStethoscopeMessage">Connecting to Available Stethoscope</string>
+    <string name="playingDataToStethoscopeMessage">Playing on Stethoscope </string>
     <string name="downloadingFromStethoscopeMessage">Downloading </string>
     <string name="uploadingToStethoscopeMessage">Uploading </string>
     <string name="incorrectDateOfBirthMessage">Please select a Date of Birth</string>
+    <string name="qualityOfRecordingFailedToUpdateMessage">Could not update Quality of recording</string>
     <string name="emptyAudioTrack">Could not download, the audio track is empty</string>
+    <string name="noDataToUpload">No Data to upload</string>
+    <string name="noDataToPlay">No Data to play</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
