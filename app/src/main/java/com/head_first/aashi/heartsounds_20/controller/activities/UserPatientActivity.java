@@ -76,7 +76,7 @@ public class UserPatientActivity extends AppCompatActivity {
             super.onBackPressed();
         }
         else{
-            finish();
+            this.finishAffinity();
         }
 
     }

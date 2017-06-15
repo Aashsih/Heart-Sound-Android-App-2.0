@@ -151,6 +151,7 @@
     <string name="updatingMurmurRating">Updating Murmur Rating</string>
     <string name="deletingPatient">Deleting Patient</string>
     <string name="patientDeleted">Patient Deleted</string>
+    <string name="deletePatient">Delete Patient</string>
     <string name="deletingHeartSound">Updating Heart Sound</string>
     <string name="deletingMurmurRating">Deleting Murmur Rating</string>
     <string name="deletingMurmurRatingFailed">Could not delete Murmur Rating</string>
@@ -163,7 +164,7 @@
     <string name="emptyAudioTrack">Could not download, the audio track is empty</string>
     <string name="noDataToUpload">No Data to upload</string>
     <string name="noDataToPlay">No Data to play</string>
-
+    <string name="uploadFailed">Upload Failed</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

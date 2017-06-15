@@ -38,10 +38,7 @@ public class VoiceRecorder extends AudioRecorder{
     @Override
     public void startRecording() throws IOException {
         super.startRecording();
-        File outputFile = new File(OUTPUT_FILE_PATH);
-        if(outputFile.exists()){
-            outputFile.delete();
-        }
+        deleteOutputFile();
         setupMediaRecorder();
         mediaRecorder.prepare();
         mediaRecorder.start();

@@ -1,6 +1,8 @@
 package com.head_first.aashi.heartsounds_20.controller.activities;
 
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.transition.Visibility;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -70,6 +72,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
     private ActionBarDrawerToggle mActionBarDrawerToggle;
     private ListView mNavigationViewListContent;
     private Button mAddNewButton;
+    private Drawable mNavigationIcon;
 
     //Adapters
     NavigationDrawerContentListAdapter<String> navigationDrawerContentListAdapter;
@@ -135,6 +138,9 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         super.onResume();
         if(patient == null){
             disableNavigationMenu();
+        }
+        else{
+            enableNavigationMenu();
         }
         getAllUsers();
     }
@@ -264,13 +270,14 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
             if(fragment instanceof HeartSoundFragment || fragment instanceof MurmurRatingFragment){
                 //Store a local copy of the active heart sound and then use that to fetch
                 //the murmur rating associated with it
-                if(heartSoundToMurmurRating.containsKey(selectedHeartSound)){//this condition should never be false
+                if(heartSoundToMurmurRating.containsKey(selectedHeartSound)){
                     List<String> murmurRatings = heartSoundToMurmurRating.get(selectedHeartSound);
                     if(murmurRatings == null){
                         requestMurmurRatingsForHeartSound(selectedHeartSound.intValue());
                     }
                     navigationDrawerContentListAdapter = new NavigationDrawerContentListAdapter<>(getApplicationContext(), heartSoundToMurmurRating.get(selectedHeartSound));
                     mNavigationViewListContent.setAdapter(navigationDrawerContentListAdapter);
+                    enableNavigationMenu();
                 }
                 else{
                     //lock the navigation bar as a new HeartSound is being created
@@ -450,11 +457,18 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
     // Implementation for NavigationDrawerUtils interface
     @Override
     public void disableNavigationMenu(){
+        if(mToolbar.getNavigationIcon() != null){
+            mNavigationIcon = mToolbar.getNavigationIcon();
+        }
+        mToolbar.setNavigationIcon(null);
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
     }
 
     @Override
     public void enableNavigationMenu(){
+        if(mNavigationIcon != null){
+            mToolbar.setNavigationIcon(mNavigationIcon);
+        }
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 

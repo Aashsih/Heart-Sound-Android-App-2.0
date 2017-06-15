@@ -12,18 +12,34 @@ import com.head_first.aashi.heartsounds_20.enums.web_api_enums.ResponseStatusCod
 
 /**
  * Created by Aashish Indorewala on 18-Mar-17.
+ *
+ * An object of this class will store:
+ * 1. Response Status Code
+ * 2. Server Response Message
+ * returned after a REST API call.
  */
-
 public class WebAPIResponse {
 
     private ResponseStatusCode statusCode;
     private String message;
 
+    /**
+     * Default Constructor that initializes:
+     * 1. statusCode to valid
+     * 2. message to null
+     */
     public WebAPIResponse() {
         this.statusCode = ResponseStatusCode.INVALID_STATUS_CODE;
         this.message = null;
     }
 
+    /**
+     * This constructor is used to initialize the fields to
+     * the values passed in the parameters
+     *
+     * @param statusCode Web API response status code
+     * @param message Web API server response
+     */
     public WebAPIResponse(ResponseStatusCode statusCode, String message) {
         this.statusCode = statusCode;
         this.message = message;

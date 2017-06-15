@@ -12,7 +12,7 @@ import com.android.volley.toolbox.Volley;
  */
 
 public class RequestQueueSingleton {
-    private static final int REQUEST_TIMEOUT_MS = 5000;
+    private static final int REQUEST_TIMEOUT_MS = 10000;
     private static RequestQueueSingleton singletonInstance;
     private RequestQueue requestQueue;
     private static Context context;

@@ -1,5 +1,6 @@
 package com.head_first.aashi.heartsounds_20.controller.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
@@ -84,6 +85,7 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
     public static final String SELECTED_MURMER_RATING_TAG = "SELECTED_MURMER_RATING_TAG";
 
     //Layout and View
+    private Activity mParentActivity;
     private Menu mActionBarMenu;
     private View mRootView;
     //TextViews
@@ -194,6 +196,7 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        mParentActivity = getActivity();
     }
 
     @Override
@@ -236,21 +239,23 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
         if(murmurRating == null){
             getActivity().getSupportFragmentManager().popBackStack();
         }
-        mSelectedCharacters.setText(murmurRating.getCharacter());
-        mPhaseOfCardiacCycleText.setText(murmurRating.getCardiacPhase().toString());
-        //mIntensityText.setText(murmurRating.getIntensity().toString());
-        mMurmerDurationText.setText(murmurRating.getDurationOfMurmur().toString());
-        mMostIntenseLocationText.setText(murmurRating.getLocationMostIntense().toString());
-        mRadiationText.setText(murmurRating.getRadiation().toString());
-        //mCharacterText.setText(murmurRating.get);
-        mAddedSoundsText.setText(murmurRating.getAddedSounds().toString());
-        mSOneText.setText(murmurRating.getS1().toString());
-        mSTwoText.setText(murmurRating.getS2().toString());
-        mChangeWithBreathingText.setText(murmurRating.getChangeWithBreathing().toString());
-        mValsalvaText.setText(murmurRating.getValsalva().toString());
-        mLeftLateralPositionText.setText(murmurRating.getLeftLateralPosition().toString());
-        mSittingForwardText.setText(murmurRating.getSittingForward().toString());
-        //mFinalDiagnosisText.setText(murmurRating.getFinalDiagnosis().toString());
+        else{
+            mSelectedCharacters.setText(murmurRating.getCharacter());
+            mPhaseOfCardiacCycleText.setText(murmurRating.getCardiacPhase().toString());
+            //mIntensityText.setText(murmurRating.getIntensity().toString());
+            mMurmerDurationText.setText(murmurRating.getDurationOfMurmur().toString());
+            mMostIntenseLocationText.setText(murmurRating.getLocationMostIntense().toString());
+            mRadiationText.setText(murmurRating.getRadiation().toString());
+            //mCharacterText.setText(murmurRating.get);
+            mAddedSoundsText.setText(murmurRating.getAddedSounds().toString());
+            mSOneText.setText(murmurRating.getS1().toString());
+            mSTwoText.setText(murmurRating.getS2().toString());
+            mChangeWithBreathingText.setText(murmurRating.getChangeWithBreathing().toString());
+            mValsalvaText.setText(murmurRating.getValsalva().toString());
+            mLeftLateralPositionText.setText(murmurRating.getLeftLateralPosition().toString());
+            mSittingForwardText.setText(murmurRating.getSittingForward().toString());
+            //mFinalDiagnosisText.setText(murmurRating.getFinalDiagnosis().toString());
+        }
     }
 
     private void copyUpdatedDataFromViews(){
@@ -258,18 +263,20 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
             murmurRating = new MurmurRating(SharedPreferencesManager.getActiveUserId(getActivity()),
                     ((PatientHeartSoundActivity)(getActivity())).getSelectedHeartSound());
         }
-         murmurRating.setCardiacPhase(CardiacPhase.getCardiacPhase(mPhaseOfCardiacCycleSpinner.getSelectedItem().toString()));
-         murmurRating.setDurationOfMurmur(MurmurDuration.getMurmurDuration(mMurmurDurationSpinner.getSelectedItem().toString()));
-         murmurRating.setLocationMostIntense(MostIntenseLocation.getMostIntenseLocation(mMostIntenseLocationSpinner.getSelectedItem().toString()));
-         murmurRating.setRadiation(Radiation.getRadiation(mRadiationSpinner.getSelectedItem().toString()));
-         murmurRating.setCharacter(mSelectedCharacters.getText().toString());
-         murmurRating.setAddedSounds(AddedSounds.getAddedSounds(mAddedSoundsSpinner.getSelectedItem().toString()));
-         murmurRating.setS1(S1.getSOne(mSOneSpinner.getSelectedItem().toString()));
-         murmurRating.setS2(S2.getSTwo(mSTwoSpinner.getSelectedItem().toString()));
-         murmurRating.setChangeWithBreathing(ChangeWithBreathing.getChangeWithBreathing(mChangeWithBreathingSpinner.getSelectedItem().toString()));
-         murmurRating.setValsalva(Valsalva.getValsalva(mValsalvaSpinner.getSelectedItem().toString()));
-         murmurRating.setLeftLateralPosition(LeftLateralPosition.getLeftLateralPosition(mLeftLateralPositionSpinner.getSelectedItem().toString()));
-         murmurRating.setSittingForward(SittingForward.getSittingForward(mSittingForwardSpinner.getSelectedItem().toString()));
+        else{
+            murmurRating.setCardiacPhase(CardiacPhase.getCardiacPhase(mPhaseOfCardiacCycleSpinner.getSelectedItem().toString()));
+            murmurRating.setDurationOfMurmur(MurmurDuration.getMurmurDuration(mMurmurDurationSpinner.getSelectedItem().toString()));
+            murmurRating.setLocationMostIntense(MostIntenseLocation.getMostIntenseLocation(mMostIntenseLocationSpinner.getSelectedItem().toString()));
+            murmurRating.setRadiation(Radiation.getRadiation(mRadiationSpinner.getSelectedItem().toString()));
+            murmurRating.setCharacter(mSelectedCharacters.getText().toString());
+            murmurRating.setAddedSounds(AddedSounds.getAddedSounds(mAddedSoundsSpinner.getSelectedItem().toString()));
+            murmurRating.setS1(S1.getSOne(mSOneSpinner.getSelectedItem().toString()));
+            murmurRating.setS2(S2.getSTwo(mSTwoSpinner.getSelectedItem().toString()));
+            murmurRating.setChangeWithBreathing(ChangeWithBreathing.getChangeWithBreathing(mChangeWithBreathingSpinner.getSelectedItem().toString()));
+            murmurRating.setValsalva(Valsalva.getValsalva(mValsalvaSpinner.getSelectedItem().toString()));
+            murmurRating.setLeftLateralPosition(LeftLateralPosition.getLeftLateralPosition(mLeftLateralPositionSpinner.getSelectedItem().toString()));
+            murmurRating.setSittingForward(SittingForward.getSittingForward(mSittingForwardSpinner.getSelectedItem().toString()));
+        }
     }
 
     @Override
@@ -770,7 +777,7 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
                         //update UI accordingly
                         murmurRating = JsonObjectParser.getMurmurRatingFromJsonString(response.toString());
                         setupViewsWithMurmurRatingData();
-                        if(!murmurRating.getDoctorID().equalsIgnoreCase(SharedPreferencesManager.getActiveUserId(getActivity()))){
+                        if(!murmurRating.getDoctorID().equalsIgnoreCase(SharedPreferencesManager.getActiveUserId(mParentActivity))){
                             mActionBarMenu.findItem(R.id.deleteItem).setVisible(false);
                         }
                         //use the webAPIResponse to get message from server

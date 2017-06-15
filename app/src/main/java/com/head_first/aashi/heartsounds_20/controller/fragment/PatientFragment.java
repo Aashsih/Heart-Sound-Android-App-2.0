@@ -288,7 +288,7 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
                 displayDoctorListDialog();
                 break;
             case R.id.deleteItem:
-                deletePatient((int)((PatientHeartSoundActivity)getActivity()).getPatient().getPatientId());
+                confirmPatientDeletion();
                 break;
             case R.id.editItem:
                 editFragment();
@@ -304,6 +304,28 @@ public class PatientFragment extends EditableFragment implements DatePickerDialo
         }
         return true;
     }
+
+    private void confirmPatientDeletion(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(getContext().getResources().getString(R.string.deletePatient));
+        builder.setMessage(getContext().getResources().getString(R.string.confirmationMesage));
+        builder.setPositiveButton(getContext().getResources().getString(R.string.positiveButtonYes), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deletePatient((int)((PatientHeartSoundActivity)getActivity()).getPatient().getPatientId());
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton(getContext().getResources().getString(R.string.negativeButtonNo), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
 
     @Override
     protected void editFragment(){

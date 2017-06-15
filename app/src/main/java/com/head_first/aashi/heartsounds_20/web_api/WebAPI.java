@@ -190,6 +190,9 @@ public class WebAPI {
         JSONObject params = new JSONObject();
         params.put(HEARTSOUND_ID, heartSound.getHeartSoundID().intValue());
         //params.put(HEART_SOUND_DATA, Base64.encodeToString(heartSound.getHeartSoundData().getBytes(), Base64.NO_WRAP));
+        params.put(HEART_SOUND_DATA, heartSound.getHeartSoundData());
+        params.put(VOICE_COMMENT_DATA, heartSound.getVoiceCommentData());
+        params.put(DEVICE_ID, heartSound.getDeviceID());
         params.put(QUALITY_OF_RECORDING, heartSound.getQualityOfRecording());
         params.put(IS_ACTIVE, heartSound.isActive());
         return params;
@@ -200,6 +203,7 @@ public class WebAPI {
         params.put(HEARTSOUND_ID, heartSound.getHeartSoundID().intValue());
         //params.put(HEART_SOUND_DATA, Base64.encodeToString(heartSound.getHeartSoundData().getBytes(), Base64.NO_WRAP));
         params.put(HEART_SOUND_DATA, heartSound.getHeartSoundData());
+        params.put(VOICE_COMMENT_DATA, heartSound.getVoiceCommentData());
         params.put(DEVICE_ID, heartSound.getDeviceID());
         params.put(QUALITY_OF_RECORDING, heartSound.getQualityOfRecording());
         params.put(IS_ACTIVE, heartSound.isActive());
@@ -210,7 +214,9 @@ public class WebAPI {
         JSONObject params = new JSONObject();
         params.put(HEARTSOUND_ID, heartSound.getHeartSoundID().intValue());
         //params.put(VOICE_COMMENT_DATA, Base64.encodeToString(heartSound.getVoiceCommentData().getBytes(), Base64.NO_WRAP));
+        params.put(HEART_SOUND_DATA, heartSound.getHeartSoundData());
         params.put(VOICE_COMMENT_DATA, heartSound.getVoiceCommentData());
+        params.put(DEVICE_ID, heartSound.getDeviceID());
         params.put(QUALITY_OF_RECORDING, heartSound.getQualityOfRecording());
         params.put(IS_ACTIVE, heartSound.isActive());
         return params;

@@ -72,14 +72,12 @@ public class StethoscopeInteractionFragment extends Fragment{
     private Button mUploadToStethoscope;
     private Button mConnectToStethoscope;
     private RadioGroup mTracksAvailableInStethoscope;
-    ProgressDialog progressDialog;
 
     //Data
     private StethoscopeInteraction stethoscopeInteractor;
     private String selectedTrack;
     private boolean voiceCommentMode;
     private Integer clickedButtonId;
-    private String progressDialogMessage;
     //private boolean bluetoothOn;
 
     //Web API
@@ -141,7 +139,7 @@ public class StethoscopeInteractionFragment extends Fragment{
 
     @Override
     public void onDetach() {
-        ((NavgigationDrawerUtils)getActivity()).enableNavigationMenu();
+        //((NavgigationDrawerUtils)getActivity()).enableNavigationMenu();
         super.onDetach();
         stethoscopeInteractor.disconnectFromStethoscope();
         mListener = null;
