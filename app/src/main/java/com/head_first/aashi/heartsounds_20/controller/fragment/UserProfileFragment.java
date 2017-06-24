@@ -6,25 +6,36 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.head_first.aashi.heartsounds_20.R;
+import com.head_first.aashi.heartsounds_20.controller.activities.PatientHeartSoundActivity;
+import com.head_first.aashi.heartsounds_20.enums.murmur_rating_enums.CHARACTER;
 import com.head_first.aashi.heartsounds_20.enums.web_api_enums.ResponseStatusCode;
 import com.head_first.aashi.heartsounds_20.interfaces.web_api_interfaces.UserAPI;
 import com.head_first.aashi.heartsounds_20.model.Doctor;
+import com.head_first.aashi.heartsounds_20.model.Password;
 import com.head_first.aashi.heartsounds_20.model.User;
 import com.head_first.aashi.heartsounds_20.utils.DialogBoxDisplayHandler;
 import com.head_first.aashi.heartsounds_20.utils.SharedPreferencesManager;
@@ -33,8 +44,11 @@ import com.head_first.aashi.heartsounds_20.web_api.WebAPI;
 import com.head_first.aashi.heartsounds_20.web_api.WebAPIResponse;
 import com.head_first.aashi.heartsounds_20.utils.JsonObjectParser;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -58,7 +72,10 @@ public class UserProfileFragment extends EditableFragment implements UserAPI{
     private TextView mLogoutButtonText;
     private EditText mEditableFirstName;
     private EditText mEditableLastName;
-
+    private EditText oldPassword;
+    private EditText newPassword;
+    private EditText confirmNewPassword;
+    private AlertDialog changePasswordDialog;
     //Data
     private User loggedInUser;
 
@@ -126,6 +143,91 @@ public class UserProfileFragment extends EditableFragment implements UserAPI{
         });
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    private void displayChangePasswordDialog(){
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View changePasswordDialogView = inflater.inflate(R.layout.dialog_change_password, null);
+        oldPassword = (EditText) changePasswordDialogView.findViewById(R.id.oldPasswordText);
+        newPassword = (EditText) changePasswordDialogView.findViewById(R.id.newPasswordText);
+        confirmNewPassword = (EditText) changePasswordDialogView.findViewById(R.id.confirmNewPasswordText);
+        newPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable arg0) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                onNewPasswordTextChanged(s.toString());
+            }
+        });
+        confirmNewPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable arg0) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                onConfirmNewPasswordTextChanged(s.toString());
+            }
+        });
+        changePasswordDialog = new AlertDialog.Builder(getContext())
+                .setTitle(R.string.changePasswordItemText)
+                .setCancelable(true)
+                .setView(changePasswordDialogView)
+                .setPositiveButton(R.string.positiveButtonOk, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            changeUserPassword(oldPassword.getText().toString(),
+                                    newPassword.getText().toString(),
+                                    confirmNewPassword.getText().toString());
+                        } catch (JSONException e) {
+                            Toast.makeText(getContext(), getResources().getString(R.string.unsuccessfulPasswordChange), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.negativeButtonCancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .create();
+        changePasswordDialog.show();
+        changePasswordDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+    }
+
+    private void onConfirmNewPasswordTextChanged(String enteredString){
+        if(!newPassword.getText().toString().equals(enteredString.toString())){
+            confirmNewPassword.setError("Should be same as the new Password");
+            changePasswordDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+        }
+        else{
+            confirmNewPassword.setError(null);
+            if(Password.isPasswordFormatCorrect(confirmNewPassword.getText().toString())) {
+                changePasswordDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+            }
+        }
+    }
+
+    private void onNewPasswordTextChanged(String enteredString){
+        if(Password.isPasswordFormatCorrect(enteredString.toString())){
+            newPassword.setError(null);
+        }
+        else{
+            Log.v("edit text content",enteredString.toString());
+            newPassword.setError(Password.CORRECT_PASSWORD_FORMAT);
+        }
     }
 
     @Override
@@ -203,6 +305,9 @@ public class UserProfileFragment extends EditableFragment implements UserAPI{
                 break;
             case R.id.logoutItem:
                 logoutUser();
+                break;
+            case R.id.changePasswordItem:
+                displayChangePasswordDialog();
                 break;
 
             case R.id.editItem:
@@ -297,7 +402,8 @@ public class UserProfileFragment extends EditableFragment implements UserAPI{
                 //if menu item is edit or refresh
                 //if(menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.editItemText)) ||
                 if(menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.refreshViewItemText))
-                        || menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.logoutItemText))){
+                        || menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.logoutItemText))
+                        || menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.changePasswordItemText))){
                     menuItem.setVisible(true);
                 }
                 else{
@@ -396,34 +502,33 @@ public class UserProfileFragment extends EditableFragment implements UserAPI{
     }
 
     @Override
-    public void changeUserPassword(String oldPassword, String newPassword) {
-        DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity(), getResources().getString(R.string.retrievingUserDetails));
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, WebAPI.CHANGE_USER_PASSWORD_URL, null,
+    public void changeUserPassword(String oldPassword, String newPassword, String confrimNewPassword) throws JSONException {
+        DialogBoxDisplayHandler.showIndefiniteProgressDialog(getActivity());
+        JSONObject bodyParams = WebAPI.addChangePasswordParams(oldPassword, newPassword, confrimNewPassword);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, WebAPI.CHANGE_USER_PASSWORD_URL, bodyParams,
                 new Response.Listener<JSONObject>(){
                     @Override
                     public void onResponse(JSONObject response) {
-                        //update UI accordingly
-
-                        //use the webAPIResponse to get message from server
-
-                        //recreate the webAPIResponse object with default values
                         webAPIResponse = new WebAPIResponse();
-                        //dismiss the progress dialog box
                         DialogBoxDisplayHandler.dismissProgressDialog();
-
+                        Toast.makeText(getContext(), getResources().getString(R.string.successfulPasswordChange), Toast.LENGTH_SHORT).show();
                     }
                 }, new Response.ErrorListener(){
 
             @Override
             public void onErrorResponse(VolleyError error) {
                 //update UI accordingly
-
+                DialogBoxDisplayHandler.dismissProgressDialog();
                 //use the webAPIResponse to get message from server
-
+                if(webAPIResponse.getStatusCode().equals(ResponseStatusCode.UNAUTHORIZED)){
+                    SharedPreferencesManager.invalidateUserAccessToken(getActivity());
+                }
+                else{
+                    //Launch Web API Error Fragment
+                    Toast.makeText(getContext(), "The Old password provided was incorrect", Toast.LENGTH_SHORT).show();
+                }
                 //recreate the webAPIResponse object with default values
                 webAPIResponse = new WebAPIResponse();
-                //dismiss the progress dialog box
-                DialogBoxDisplayHandler.dismissProgressDialog();
             }
         }){
             @Override
@@ -431,13 +536,23 @@ public class UserProfileFragment extends EditableFragment implements UserAPI{
                 return WebAPI.prepareJsonRequestHeader(SharedPreferencesManager.getUserAccessToken(getActivity()));
             }
             @Override
-            protected Map<String, String> getParams() {
-                return WebAPI.addChangePasswordParams(null, null, null);
-            }
-            @Override
             protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-                webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
-                return super.parseNetworkResponse(response);
+                try {
+                    String jsonString = new String(response.data,
+                            HttpHeaderParser.parseCharset(response.headers, PROTOCOL_CHARSET));
+
+                    JSONObject result = null;
+
+                    if (jsonString != null && jsonString.length() > 0)
+                        result = new JSONObject(jsonString);
+                    webAPIResponse.setStatusCode(ResponseStatusCode.getResponseStatusCode(response.statusCode));
+                    return Response.success(result,
+                            HttpHeaderParser.parseCacheHeaders(response));
+                } catch (UnsupportedEncodingException e) {
+                    return Response.error(new ParseError(e));
+                } catch (JSONException je) {
+                    return Response.error(new ParseError(je));
+                }
             }
             @Override
             protected VolleyError parseNetworkError(VolleyError volleyError){
@@ -456,6 +571,7 @@ public class UserProfileFragment extends EditableFragment implements UserAPI{
         };
         RequestQueueSingleton.getInstance(getContext()).addToRequestQueue(request);
     }
+
 
     @Override
     public void registerUser(Doctor doctor) {

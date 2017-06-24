@@ -35,9 +35,18 @@
     </item>
 
     <item
-        android:id="@+id/refreshViewItem"
+        android:id="@+id/changePasswordItem"
         app:showAsAction="ifRoom"
         android:orderInCategory="4"
+        android:title="@string/changePasswordItemText"
+        android:icon="@drawable/ic_lock_reset_grey600_24dp">
+    </item>
+
+
+    <item
+        android:id="@+id/refreshViewItem"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="5"
         android:title="@string/refreshViewItemText"
         android:icon="@drawable/ic_refresh_grey600_24dp">
     </item>
@@ -45,7 +54,7 @@
     <item
         android:id="@+id/saveChangesItem"
         app:showAsAction="ifRoom"
-        android:orderInCategory="5"
+        android:orderInCategory="6"
         android:title="@string/saveChangesItemText"
         android:icon="@drawable/ic_check_white_24dp">
     </item>
@@ -53,7 +62,7 @@
     <item
         android:id="@+id/cancelChangesItem"
         app:showAsAction="ifRoom"
-        android:orderInCategory="6"
+        android:orderInCategory="7"
         android:title="@string/cancelChangesItemText"
         android:icon="@drawable/ic_cancel_white_24dp">
     </item>

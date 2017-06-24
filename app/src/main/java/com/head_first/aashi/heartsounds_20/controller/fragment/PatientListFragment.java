@@ -212,6 +212,7 @@ public class PatientListFragment extends Fragment implements SearchView.OnQueryT
         menu.findItem(R.id.cancelChangesItem).setVisible(false);
         menu.findItem(R.id.logoutItem).setVisible(false);
         menu.findItem(R.id.filterPatientsItem).setVisible(false);
+        menu.findItem(R.id.changePasswordItem).setVisible(false);
     }
 
     @Override

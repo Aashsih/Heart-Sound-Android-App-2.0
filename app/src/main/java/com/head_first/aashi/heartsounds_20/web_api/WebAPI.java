@@ -147,11 +147,11 @@ public class WebAPI {
         return params;
     }
 
-    public static final HashMap<String, String> addChangePasswordParams(String oldPassword, String newPassword, String confirmPassword){
-        HashMap<String, String> params = new HashMap<>();
+    public static final JSONObject addChangePasswordParams(String oldPassword, String newPassword, String confirmNewPassword) throws JSONException {
+        JSONObject params = new JSONObject();
         params.put(OLD_PASSWORD, oldPassword);
         params.put(NEW_PASSWORD, newPassword);
-        params.put(CONFIRM_PASSWORD, confirmPassword);
+        params.put(CONFIRM_PASSWORD, confirmNewPassword);
         return params;
     }
 

@@ -119,6 +119,12 @@
     <string name="searchButton">Search</string>
     <string name="filterSearch">Filter Items</string>
 
+    <!-- Change Password Dialog -->
+    <string name="changePasswordItemText">Change Password</string>
+    <string name="oldPasswordLabel">Old Password</string>
+    <string name="newPasswordLabel">New Password</string>
+    <string name="confirmNewPasswordLabel">Confirm New Password</string>
+
     <!-- PatientHeartSoundActivity -->
     <string name="navigationDrawerOpen">Open Navigation Drawer</string>
     <string name="navigationDrawerClose">Close Navigation Drawer</string>
@@ -165,6 +171,8 @@
     <string name="noDataToUpload">No Data to upload</string>
     <string name="noDataToPlay">No Data to play</string>
     <string name="uploadFailed">Upload Failed</string>
+    <string name="successfulPasswordChange">Password Changed Successfully</string>
+    <string name="unsuccessfulPasswordChange">Password change unsuccessful</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
