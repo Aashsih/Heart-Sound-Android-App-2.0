@@ -11,7 +11,8 @@ import com.head_first.aashi.heartsounds_20.controller.fragment.WebAPIErrorFragme
 import com.head_first.aashi.heartsounds_20.enums.web_api_enums.ResponseStatusCode;
 
 /**
- * Created by Aashish Indorewala on 18-Mar-17.
+ * This class stores some information returned
+ * by the server as a respons
  *
  * An object of this class will store:
  * 1. Response Status Code
@@ -57,6 +58,13 @@ public class WebAPIResponse {
         return message;
     }
 
+    /**
+     * This method is used to set the message returned by the
+     * server.
+     * If the message passed in the parameter is empty, then
+     * a default message is stored in it.
+     * @param message
+     */
     public void setMessage(String message) {
         if(message == null || message.isEmpty()){
             this.message = "No Internet Connection. Please try again";

@@ -10,7 +10,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * Created by Aashish Indorewala on 05-Nov-16.
+ * This class will not be utilized currently.
+ * Currently the authorization and security for
+ * passwords is handled by the server and this
+ * class will be used incase the app needs to
+ * migrate to a server that cannot provide the
+ * required security.
  */
 
 public final class Password {

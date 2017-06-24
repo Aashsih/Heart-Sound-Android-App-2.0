@@ -1,7 +1,14 @@
 package com.head_first.aashi.heartsounds_20.model;
 
 /**
- * Created by Aashish Indorewala on 11-Jan-17.
+ * This class is current not in use.
+ *
+ * This model represents one Student User.
+ * A Student can view Patient, their
+ * HeartSound and MurmurRating if a Doctor
+ * has made the Patient public.
+ * A Student is not allowed to create a
+ * Patient but is allowed to create MurmurRating.
  */
 
 public class Student extends PatientUser {

@@ -7,7 +7,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by Aashish Indorewala on 05-Nov-16.
+ * This model represents one Patient.
+ *
+ * A Patient can be created by a doctor and
+ * can have one or more HeartSound associated
+ * with it.
  */
 
 public final class Patient {
@@ -114,7 +118,7 @@ public final class Patient {
         }
     }
 
-
+//The following code will be used in the future
     /**
      *This constructor should be used when gettin data from the database
      */

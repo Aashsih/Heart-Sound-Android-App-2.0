@@ -13,7 +13,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Aashish Indorewala on 11-Jan-17.
+ * This class is for a future state of the project
+ * and is not currently utilized and only contains
+ * prototype code.
+ *
+ * It is used to represent an Expandable list with
+ * heading and items stored in a map, where headings
+ * represent the Key and the items represent the
+ * value.
  */
 
 public class Filter implements Serializable{

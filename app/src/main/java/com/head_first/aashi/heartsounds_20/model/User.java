@@ -5,10 +5,10 @@ import com.head_first.aashi.heartsounds_20.interfaces.model_interfaces.IUser;
 import java.util.Date;
 
 /**
- * Created by Aashish Indorewala on 05-Nov-16.
+ * This model represents one User of the app.
+ * It will extended by different users like
+ * Doctor, Student and StudyLeader.
  */
-
-
 public abstract class User implements IUser{
     private static final int PRIMARY_USER_ID_LENGTH = 36;
     private static final int PRIMARY_USER_ID_PARTS = 5;
@@ -87,7 +87,7 @@ public abstract class User implements IUser{
         return getName();
     }
 
-
+//The following code will be used in the future
 //    Setters
 //
 //    public final void setUsername(String username) throws InputException{

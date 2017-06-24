@@ -34,7 +34,7 @@
     <string name="loginButton">Login</string>
 
     <!-- User Profile Fragment -->
-    <string name="userRoleText">User Role</string>
+    <string name="userRoleText">Doctor</string>
     <string name="firstNameLabel">First Name</string>
     <string name="firstNameHint">first name</string>
     <string name="lastNameLabel">Last Name</string>
@@ -56,7 +56,7 @@
     <string name="addMurmurRatingButtonLabel">Add Murmur Rating</string>
 
     <!-- Patient Fragment -->
-    <string name="patientIdLabel">Patient Id</string>
+    <string name="patientIdLabel">Patient ID</string>
     <string name="studyLabel">Study</string>
     <string name="studyList">(not set)</string>
     <string name="createdByLabel">Created By</string>
@@ -70,9 +70,9 @@
     <string name="savePatientButtonText">Save Changes</string>
 
     <!-- HeartSound Fragment -->
-    <string name="heartSoundIdLabel">HeartSound Id</string>
+    <string name="heartSoundIdLabel">HeartSound ID</string>
     <string name="saveHeartSoundButtonText">Save Changes</string>
-    <string name="deviceIdLabel">Device Id</string>
+    <string name="deviceIdLabel">Device ID</string>
     <string name="voiceCommentLabel">Voice Comment</string>
     <string name="heartSoundLabel">Heart Sound</string>
 

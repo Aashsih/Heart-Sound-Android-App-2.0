@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import com.android.volley.AuthFailureError;
@@ -73,6 +74,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
     private ListView mNavigationViewListContent;
     private Button mAddNewButton;
     private Drawable mNavigationIcon;
+    private ImageButton mNavigationDrawerHeader;
 
     //Adapters
     NavigationDrawerContentListAdapter<String> navigationDrawerContentListAdapter;
@@ -102,6 +104,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
         mActionBarDrawerToggle =  new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigationDrawerOpen,  R.string.navigationDrawerClose);
         mActionBarDrawerToggle.syncState();
         mNavigationViewListContent = (ListView) findViewById(R.id.navigationViewContent);
+        mNavigationDrawerHeader = (ImageButton) findViewById(R.id.header);
 
         mAddNewButton = (Button) findViewById(R.id.addNewButton);
         mAddNewButton.setOnClickListener(new View.OnClickListener() {
@@ -271,6 +274,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
                 //Store a local copy of the active heart sound and then use that to fetch
                 //the murmur rating associated with it
                 if(heartSoundToMurmurRating.containsKey(selectedHeartSound)){
+                    mNavigationDrawerHeader.setImageResource(R.drawable.murmur_rating_navigation_menu_header);
                     List<String> murmurRatings = heartSoundToMurmurRating.get(selectedHeartSound);
                     if(murmurRatings == null){
                         requestMurmurRatingsForHeartSound(selectedHeartSound.intValue());
@@ -286,6 +290,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
             }
             else{
                 //use the patient id to make a call and get all the Heart Sounds associated with the patient
+                mNavigationDrawerHeader.setImageResource(R.drawable.stethoscope_navigation_menu_header);
                 requestPatientHeartSounds((int)patient.getPatientId());
             }
         }

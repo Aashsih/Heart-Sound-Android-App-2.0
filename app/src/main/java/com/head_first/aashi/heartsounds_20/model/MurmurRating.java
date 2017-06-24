@@ -19,7 +19,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Aashish Indorewala on 05-Nov-16.
+ * This model represents one MurmurRating that a HeartSound
+ * could have.
+ * A MurmurRating is created for a HeartSound and one
+ * HeartSound can have multiple MurmurRating.
+ *
  */
 
 public final class MurmurRating {
@@ -226,6 +230,7 @@ public final class MurmurRating {
         return "Murmur Rating " + (getMurmurRatingID() + 1);
     }
 
+// The following code will be used in the future
     /**
      *This constructor should be used when gettin data from the database
      */

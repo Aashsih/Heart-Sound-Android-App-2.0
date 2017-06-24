@@ -8,24 +8,17 @@ import java.util.Collections;
 import java.util.Date;
 
 /**
- * Created by Aashish Indorewala on 05-Nov-16.
- */
-
-/**
- * Once a HeartSound is created only the creator of the HeartSound can edit it.
- * The only thing that can be edited for a HeartSound post creation is the VoiceComment Data (this will be overridden)
- * The HeartSound Data itself should not overridden because there might be multiple MurmerRatings assosciated with it
- * and will become invalid.
- * [Make the sure that the VoiceComment and the HeartSound Data are within the defined limits]
+ * This model represents one HeartSound that a Patient
+ * could have.
+ * A HeartSound is created for a Patient and one
+ * Patient can have multiple HeartSounds.
+ * Each HeartSound can have one or more MurmurRating
+ * associated with it.
  */
 public final class HeartSound {
-    //time specified in milliseconds
-    public static final int VOICE_COMMENT_LENGHT = 10000;
-    public static final int HEART_SOUND_LENGHT = 10000;
-
     private Long HeartSoundID;
     private Long PatientID;
-    private long doctorId; //Could have
+    private long doctorId;
     private String DeviceID;
     private String HeartSoundData;
     private String VoiceCommentData;
@@ -146,8 +139,10 @@ public final class HeartSound {
         return "Heart Sound " + (getHeartSoundID() + 1);
     }
 
+
+//The following code will be used in the future
     /**
-     *This constructor should be used when gettin data from the database
+     *This constructor should be used when getting data from the database
      */
 //    public HeartSound(long PatientID, byte[] HeartSoundData, byte[] VoiceCommentData, Integer QualityOfRecording) {
 //        //The HeartSoundID will be received from the data base

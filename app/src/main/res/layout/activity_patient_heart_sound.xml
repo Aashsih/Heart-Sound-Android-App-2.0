@@ -33,8 +33,8 @@
             android:id="@+id/navigationDrawerContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <TextView
-                android:id="@+id/patientName"
+            <ImageButton
+                android:id="@+id/header"
                 android:layout_width="match_parent"
                 android:text="Place the Header Here"
                 android:layout_height="120dp" />
@@ -48,7 +48,7 @@
                 android:id="@+id/navigationViewContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/patientName"
+                android:layout_below="@id/header"
                 android:layout_above="@id/addNewButton">
             </ListView>
         </RelativeLayout>
