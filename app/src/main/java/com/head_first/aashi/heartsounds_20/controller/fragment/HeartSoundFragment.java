@@ -152,6 +152,7 @@ public class HeartSoundFragment extends Fragment implements HeartSoundAPI {
     @Override
     public void onResume(){
         super.onResume();
+        ((PatientHeartSoundActivity)getActivity()).setSupportActionBarTitle(this);
         Long selectedHeartSound = ((PatientHeartSoundActivity)getActivity()).getSelectedHeartSound();
         if(selectedHeartSound != null){
             requestHeartSound(selectedHeartSound.intValue());

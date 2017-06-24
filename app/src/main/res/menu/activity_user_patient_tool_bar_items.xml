@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/editItem"
-        android:icon="@drawable/ic_pencil_grey600_24dp"
+        android:icon="@drawable/ic_pencil_white_24dp"
         app:showAsAction="ifRoom"
         android:orderInCategory="1"
         android:title="@string/editItemText">
@@ -12,7 +12,7 @@
 
     <item
         android:id="@+id/logoutItem"
-        android:icon="@drawable/ic_logout_grey600_24dp"
+        android:icon="@drawable/ic_logout_white_24dp"
         app:showAsAction="ifRoom"
         android:orderInCategory="1"
         android:title="@string/logoutItemText">
@@ -23,7 +23,7 @@
         app:showAsAction="ifRoom"
         android:orderInCategory="2"
         android:title="@string/addPatientItemText"
-        android:icon="@drawable/ic_plus_grey600_48dp">
+        android:icon="@drawable/ic_plus_white_48dp">
     </item>
 
     <item
@@ -31,7 +31,7 @@
         app:showAsAction="ifRoom"
         android:orderInCategory="3"
         android:title="@string/filterPatientsItemText"
-        android:icon="@drawable/ic_filter_grey600_24dp">
+        android:icon="@drawable/ic_filter_white_24dp">
     </item>
 
     <item
@@ -39,7 +39,7 @@
         app:showAsAction="ifRoom"
         android:orderInCategory="4"
         android:title="@string/changePasswordItemText"
-        android:icon="@drawable/ic_lock_reset_grey600_24dp">
+        android:icon="@drawable/ic_lock_reset_white_24dp">
     </item>
 
 
@@ -48,7 +48,7 @@
         app:showAsAction="ifRoom"
         android:orderInCategory="5"
         android:title="@string/refreshViewItemText"
-        android:icon="@drawable/ic_refresh_grey600_24dp">
+        android:icon="@drawable/ic_refresh_white_24dp">
     </item>
 
     <item

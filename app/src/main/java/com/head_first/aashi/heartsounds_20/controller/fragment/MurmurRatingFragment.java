@@ -263,20 +263,20 @@ public class MurmurRatingFragment extends EditableFragment implements MurmurRati
             murmurRating = new MurmurRating(SharedPreferencesManager.getActiveUserId(getActivity()),
                     ((PatientHeartSoundActivity)(getActivity())).getSelectedHeartSound());
         }
-        else{
-            murmurRating.setCardiacPhase(CardiacPhase.getCardiacPhase(mPhaseOfCardiacCycleSpinner.getSelectedItem().toString()));
-            murmurRating.setDurationOfMurmur(MurmurDuration.getMurmurDuration(mMurmurDurationSpinner.getSelectedItem().toString()));
-            murmurRating.setLocationMostIntense(MostIntenseLocation.getMostIntenseLocation(mMostIntenseLocationSpinner.getSelectedItem().toString()));
-            murmurRating.setRadiation(Radiation.getRadiation(mRadiationSpinner.getSelectedItem().toString()));
-            murmurRating.setCharacter(mSelectedCharacters.getText().toString());
-            murmurRating.setAddedSounds(AddedSounds.getAddedSounds(mAddedSoundsSpinner.getSelectedItem().toString()));
-            murmurRating.setS1(S1.getSOne(mSOneSpinner.getSelectedItem().toString()));
-            murmurRating.setS2(S2.getSTwo(mSTwoSpinner.getSelectedItem().toString()));
-            murmurRating.setChangeWithBreathing(ChangeWithBreathing.getChangeWithBreathing(mChangeWithBreathingSpinner.getSelectedItem().toString()));
-            murmurRating.setValsalva(Valsalva.getValsalva(mValsalvaSpinner.getSelectedItem().toString()));
-            murmurRating.setLeftLateralPosition(LeftLateralPosition.getLeftLateralPosition(mLeftLateralPositionSpinner.getSelectedItem().toString()));
-            murmurRating.setSittingForward(SittingForward.getSittingForward(mSittingForwardSpinner.getSelectedItem().toString()));
-        }
+
+        murmurRating.setCardiacPhase(CardiacPhase.getCardiacPhase(mPhaseOfCardiacCycleSpinner.getSelectedItem().toString()));
+        murmurRating.setDurationOfMurmur(MurmurDuration.getMurmurDuration(mMurmurDurationSpinner.getSelectedItem().toString()));
+        murmurRating.setLocationMostIntense(MostIntenseLocation.getMostIntenseLocation(mMostIntenseLocationSpinner.getSelectedItem().toString()));
+        murmurRating.setRadiation(Radiation.getRadiation(mRadiationSpinner.getSelectedItem().toString()));
+        murmurRating.setCharacter(mSelectedCharacters.getText().toString());
+        murmurRating.setAddedSounds(AddedSounds.getAddedSounds(mAddedSoundsSpinner.getSelectedItem().toString()));
+        murmurRating.setS1(S1.getSOne(mSOneSpinner.getSelectedItem().toString()));
+        murmurRating.setS2(S2.getSTwo(mSTwoSpinner.getSelectedItem().toString()));
+        murmurRating.setChangeWithBreathing(ChangeWithBreathing.getChangeWithBreathing(mChangeWithBreathingSpinner.getSelectedItem().toString()));
+        murmurRating.setValsalva(Valsalva.getValsalva(mValsalvaSpinner.getSelectedItem().toString()));
+        murmurRating.setLeftLateralPosition(LeftLateralPosition.getLeftLateralPosition(mLeftLateralPositionSpinner.getSelectedItem().toString()));
+        murmurRating.setSittingForward(SittingForward.getSittingForward(mSittingForwardSpinner.getSelectedItem().toString()));
+
     }
 
     @Override

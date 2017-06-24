@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/editItem"
-        android:icon="@drawable/ic_pencil_grey600_24dp"
+        android:icon="@drawable/ic_pencil_white_24dp"
         app:showAsAction="ifRoom"
         android:orderInCategory="1"
         android:title="@string/editItemText">
@@ -11,7 +11,7 @@
 
     <item
         android:id="@+id/sharePatientItem"
-        android:icon="@drawable/ic_share_variant_grey600_24dp"
+        android:icon="@drawable/ic_share_variant_white_24dp"
         app:showAsAction="ifRoom"
         android:orderInCategory="2"
         android:title="@string/sharePatientItemText">
@@ -19,7 +19,7 @@
 
     <item
         android:id="@+id/deleteItem"
-        android:icon="@drawable/ic_delete_grey600_24dp"
+        android:icon="@drawable/ic_delete_white_24dp"
         app:showAsAction="ifRoom"
         android:orderInCategory="3"
         android:title="@string/deleteItemText">
@@ -30,7 +30,7 @@
         app:showAsAction="ifRoom"
         android:orderInCategory="4"
         android:title="@string/refreshViewItemText"
-        android:icon="@drawable/ic_refresh_grey600_24dp">
+        android:icon="@drawable/ic_refresh_white_24dp">
     </item>
 
     <item

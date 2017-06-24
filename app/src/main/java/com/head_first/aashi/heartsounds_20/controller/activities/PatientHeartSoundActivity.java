@@ -122,18 +122,7 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
     @Override
     public void onAttachFragment(Fragment fragment){
         super.onAttachFragment(fragment);
-        if(fragment instanceof PatientFragment){
-            mToolbar.setTitle(PATIENT);
-        }
-        else if(fragment instanceof HeartSoundFragment){
-            mToolbar.setTitle(HEART_SOUND_PAGE_TITLE);
-        }
-        else if(fragment instanceof MurmurRatingFragment){
-            mToolbar.setTitle(MURMER_RATING_PAGE_TITLE);
-        }
-        else if(fragment instanceof AudioRecordingFragment){
-            mToolbar.setTitle(VOICE_COMMENT_PAGE_TITLE);
-        }
+        setSupportActionBarTitle(fragment);
     }
 
     @Override
@@ -187,6 +176,21 @@ public class PatientHeartSoundActivity extends AppCompatActivity implements Navg
             }
         }
         super.onBackPressed();
+    }
+
+    public void setSupportActionBarTitle(Fragment fragment){
+        if(fragment instanceof PatientFragment){
+            mToolbar.setTitle(PATIENT);
+        }
+        else if(fragment instanceof HeartSoundFragment){
+            mToolbar.setTitle(HEART_SOUND_PAGE_TITLE);
+        }
+        else if(fragment instanceof MurmurRatingFragment){
+            mToolbar.setTitle(MURMER_RATING_PAGE_TITLE);
+        }
+        else if(fragment instanceof AudioRecordingFragment){
+            mToolbar.setTitle(VOICE_COMMENT_PAGE_TITLE);
+        }
     }
 
     public Patient getPatient(){
